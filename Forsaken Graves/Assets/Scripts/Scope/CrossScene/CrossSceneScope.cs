@@ -9,7 +9,7 @@ namespace ForsakenGraves.Scope.CrossScene
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            RegisterMessagePipe(builder);
+            MessagePipeOptions options = RegisterMessagePipe(builder);
 
 
             builder.RegisterComponentInHierarchy<CrossSceneView>();
@@ -19,12 +19,15 @@ namespace ForsakenGraves.Scope.CrossScene
                                                        {
                                                            entryPoints.Add<CrossScenePresenter>();
                                                        });
+
+            builder.RegisterMessageBroker<string>(options);
         }
 
-        private static void RegisterMessagePipe(IContainerBuilder builder)
+        private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)
         {
             MessagePipeOptions options = builder.RegisterMessagePipe();
             builder.RegisterBuildCallback(c => GlobalMessagePipe.SetProvider(c.AsServiceProvider()));
+            return options;
         }
     }
 }

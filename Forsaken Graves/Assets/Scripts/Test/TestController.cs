@@ -1,4 +1,6 @@
+using MessagePipe;
 using UnityEngine;
+using VContainer;
 using VContainer.Unity;
 
 namespace ForsakenGraves.Test
@@ -9,6 +11,8 @@ namespace ForsakenGraves.Test
         private readonly TestService _service;
         private readonly CrossSceneService _crossSceneService;
         private readonly CrossSceneView _crossSceneView;
+
+        [Inject] private IPublisher<string> _publisher;
 
         public TestController(TestView view,
                               TestService service,
@@ -25,7 +29,7 @@ namespace ForsakenGraves.Test
         {
             _service.Print(_view.testString);
             _crossSceneService.Print($"{_crossSceneView.TestString} from cross main menu controller");
-            //_publisher.Publish($"{_view.testString} from published scene view");
+            _publisher.Publish($"{_view.testString} from published scene view");
         }
     }
 }
