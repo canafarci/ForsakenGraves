@@ -1,3 +1,4 @@
+using MessagePipe;
 using VContainer;
 using VContainer.Unity;
 
@@ -16,5 +17,6 @@ namespace ForsakenGraves.Test
             builder.Register<TestService>(Lifetime.Singleton);
             builder.RegisterComponentInHierarchy<TestView>();
         }
+        
     }
 }

@@ -13,6 +13,7 @@ namespace ForsakenGraves.Test
         private readonly CrossSceneView _crossSceneView;
 
         [Inject] private IPublisher<string> _publisher;
+        [Inject] private IPublisher<int> _publisherint;
 
         public TestController(TestView view,
                               TestService service,
@@ -30,6 +31,7 @@ namespace ForsakenGraves.Test
             _service.Print(_view.testString);
             _crossSceneService.Print($"{_crossSceneView.TestString} from cross main menu controller");
             _publisher.Publish($"{_view.testString} from published scene view");
+            //_publisherint.Publish(55);
         }
     }
 }
