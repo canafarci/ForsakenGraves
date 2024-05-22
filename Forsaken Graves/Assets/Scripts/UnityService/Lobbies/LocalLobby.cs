@@ -81,6 +81,15 @@ namespace ForsakenGraves.UnityService.Lobbies
 #endregion        
         
         public event Action<LocalLobby> OnLocalLobbyChanged;
+        
+        public void AddUser(LocalLobbyPlayer player)
+        {
+            if (!_lobbyPlayers.ContainsKey(player.ID))
+            {
+                DoAddUser(player);
+                FireOnLocalLobbyChangedEvent();
+            }
+        }
   
         public void ApplyRemoteData(Lobby lobby)
         {
@@ -194,6 +203,12 @@ namespace ForsakenGraves.UnityService.Lobbies
         private void FireOnLocalLobbyChangedEvent()
         {
             OnLocalLobbyChanged?.Invoke(this);
+        }
+
+        public void Reset(LocalLobbyPlayer localLobbyPlayer)
+        {
+            CopyDataFrom(new LobbyData(), new Dictionary<string, LocalLobbyPlayer>());
+            AddUser(localLobbyPlayer);
         }
     }
 }

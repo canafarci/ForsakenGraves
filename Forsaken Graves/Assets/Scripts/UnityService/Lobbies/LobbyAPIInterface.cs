@@ -26,9 +26,23 @@ namespace ForsakenGraves.UnityService.Lobbies
             return await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxConnectedPlayers, createOptions);
         }
 
-        public void SendHeartbeatPing(string id)
+        public async void SendHeartbeatPing(string lobbyId) => await LobbyService.Instance.SendHeartbeatPingAsync(lobbyId);
+        
+        public async UniTask DeleteLobby(string lobbyId)
         {
-            throw new System.NotImplementedException();
+            await LobbyService.Instance.DeleteLobbyAsync(lobbyId);
+        }
+
+        public async UniTask RemovePlayerFromLobby(string playerServiceID, string lobbyId)
+        {
+            try
+            {
+                await LobbyService.Instance.RemovePlayerAsync(lobbyId, playerServiceID);
+            }
+            catch (LobbyServiceException e) when (e is { Reason: LobbyExceptionReason.PlayerNotFound })
+            {
+                // If Player is not found, they have already left the lobby or have been kicked out. No need to throw here
+            }
         }
     }
 }

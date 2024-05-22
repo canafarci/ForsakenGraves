@@ -95,6 +95,8 @@ namespace ForsakenGraves.UnityService.Lobbies
             };
         }
         
+        public void ResetState() => _playerData = new PlayerData(false, _playerData.DisplayName, _playerData.ID);
+        
         [Flags]
         public enum UserMembers
         {

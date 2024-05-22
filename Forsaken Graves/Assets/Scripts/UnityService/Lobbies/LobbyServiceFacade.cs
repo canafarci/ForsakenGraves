@@ -89,13 +89,80 @@ namespace ForsakenGraves.UnityService.Lobbies
                 // Only the host sends heartbeat pings to the service to keep the lobby alive
                 if (_localLobbyPlayer.IsHost)
                 {
-                    _updateRunner.Unsubscribe(DoLobbyHeartbeat);
+                    _updateRunner.Unsubscribe(SendLobbyHeartbeat);
                 }
             }
 
             if (CurrentUnityLobby != null)
             {
-                
+                if (_localLobbyPlayer.IsHost)
+                {
+                    DeleteLobbyAsync();
+                }
+                else
+                {
+                    LeaveLobbyAsync();
+                }
+            }
+        }
+
+        private async void LeaveLobbyAsync()
+        {
+            string serviceID = AuthenticationService.Instance.PlayerId;
+            
+            try
+            {
+                await _lobbyApiInterface.RemovePlayerFromLobby(serviceID, _localLobby.LobbyID);
+            }
+            catch (LobbyServiceException e)
+            {
+                // If Lobby is not found and if we are not the host, it has already been deleted. No need to publish the error here.
+                if (e.Reason != LobbyExceptionReason.LobbyNotFound && !_localLobbyPlayer.IsHost)
+                {
+                    Debug.LogError(e); //TODO show error
+                }
+            }
+            finally
+            {
+                ResetLobby();
+            }
+
+        }
+
+        private async void DeleteLobbyAsync()
+        {
+            if (_localLobbyPlayer.IsHost)
+            {
+                try
+                {
+                    await _lobbyApiInterface.DeleteLobby(_localLobby.LobbyID);
+                }
+                catch (LobbyServiceException e)
+                {
+                    Debug.LogError(e); //TODO show error
+                }
+                finally
+                {
+                    ResetLobby();
+                }
+            }
+            else
+            {
+                Debug.LogError("Only the host can delete a lobby.");
+            }
+        }
+
+        private void ResetLobby()
+        {
+            _currentUnityLobby = null;
+            
+            if (_localLobbyPlayer != null)
+            {
+                _localLobbyPlayer.ResetState();
+            }
+            if (_localLobby != null)
+            {
+                _localLobby.Reset(_localLobbyPlayer);
             }
         }
 
@@ -107,7 +174,7 @@ namespace ForsakenGraves.UnityService.Lobbies
             }
         }
         
-        void DoLobbyHeartbeat(float dt)
+        private void SendLobbyHeartbeat(float dt)
         {
             _lastHeartbeatSentTime += dt;
             if (_lastHeartbeatSentTime > HEARTBEAT_PERIOD)
