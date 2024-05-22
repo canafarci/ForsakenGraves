@@ -16,14 +16,6 @@ namespace ForsakenGraves.Gameplay.Scope
             builder.RegisterComponentInHierarchy<LobbyCreationView>();
             
             builder.RegisterEntryPoint<LobbyCreationMediator>();
-            builder.RegisterEntryPoint<LobbyServiceFacade>().AsSelf();
-            
-            
-            // builder.UseEntryPoints(Lifetime.Singleton, entryPoints =>
-            //                                            {
-            //                                                entryPoints.Add<LobbyServiceFacade>();
-            //                                                entryPoints.Add<LobbyCreationMediator>();
-            //                                            });
         }
     }
 }

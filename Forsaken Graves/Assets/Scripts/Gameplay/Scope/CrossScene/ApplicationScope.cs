@@ -1,5 +1,7 @@
+using System;
 using ForsakenGraves.Connection;
 using ForsakenGraves.Gameplay.GameState;
+using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.Infrastructure.Dependencies;
 using ForsakenGraves.Infrastructure.SceneManagement;
@@ -10,6 +12,7 @@ using ForsakenGraves.UnityService.Signals;
 using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VContainer;
 using VContainer.Unity;
 
@@ -30,15 +33,16 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             builder.RegisterComponent(_sceneLoadingManager);
             
             builder.Register<RuntimeInjector>(Lifetime.Singleton);
-            
             builder.Register<AuthenticationServiceFacade>(Lifetime.Singleton);
             builder.Register<ProfileManager>(Lifetime.Singleton);
             
             builder.UseEntryPoints(Lifetime.Singleton, entryPoints =>
                                                        {
                                                            entryPoints.Add<MainMenuGameState>();
-                                                           entryPoints.Add<UpdateRunner>();
                                                        });
+            
+            builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
+            builder.RegisterEntryPoint<LobbyServiceFacade>().AsSelf();
             
             builder.Register<LobbyAPIInterface>(Lifetime.Singleton);
             builder.Register<LocalLobbyPlayer>(Lifetime.Singleton);
@@ -69,6 +73,12 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
         {
             base.Awake();
             DontDestroyOnLoad(this);
+        }
+
+        private void Start()
+        {
+            Application.targetFrameRate = 120;
+            SceneManager.LoadScene((int)SceneIdentifier.MainMenu);
         }
     }
 }

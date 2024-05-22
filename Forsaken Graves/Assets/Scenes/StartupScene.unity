@@ -168,7 +168,7 @@ MonoBehaviour:
   autoInjectGameObjects: []
   _connectionStateManager: {fileID: 1439130272}
   _networkManager: {fileID: 368600368628605651}
-  _sceneLoadingManager: {fileID: 0}
+  _sceneLoadingManager: {fileID: 90794893}
 --- !u!1 &90794891
 GameObject:
   m_ObjectHideFlags: 0
@@ -178,8 +178,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 90794894}
-  - component: {fileID: 90794893}
   - component: {fileID: 90794892}
+  - component: {fileID: 90794893}
   m_Layer: 0
   m_Name: SceneLoadingManager
   m_TagString: Untagged

@@ -1182,7 +1182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentReference:
-    TypeName: 
+    TypeName: ForsakenGraves.Gameplay.Scope.CrossScene.ApplicationScope
   autoRun: 1
   autoInjectGameObjects: []
 --- !u!4 &1195081501

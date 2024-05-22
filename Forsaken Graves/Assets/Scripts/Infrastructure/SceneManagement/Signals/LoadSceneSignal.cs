@@ -12,5 +12,8 @@ namespace ForsakenGraves.Infrastructure.SceneManagement.Signals
             _sceneID = sceneID;
             _useNetworkManager = useNetworkManager;
         }
+
+        public SceneIdentifier SceneID => _sceneID;
+        public bool UseNetworkManager => _useNetworkManager;
     }
 }
