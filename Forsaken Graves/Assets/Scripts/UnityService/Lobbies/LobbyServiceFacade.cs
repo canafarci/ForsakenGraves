@@ -5,13 +5,15 @@ using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using VContainer;
 using VContainer.Unity;
 
 namespace ForsakenGraves.UnityService.Lobbies
 {
     public class LobbyServiceFacade : IInitializable
     {
-        private readonly LocalLobbyPlayer _localPlayer;
+        [Inject] private LocalLobbyPlayer _localLobbyPlayer;
+        [Inject] private LocalLobby _localLobby;
 
         private LobbyAPIInterface _lobbyApiInterface;
         
@@ -19,10 +21,8 @@ namespace ForsakenGraves.UnityService.Lobbies
         //https://docs.unity.com/lobby/rate-limits.html
         private const float RATE_LIMIT_FOR_HOST = 3f;
 
-        public LobbyServiceFacade(LocalLobbyPlayer localPlayer)
-        {
-            _localPlayer = localPlayer;
-        }
+        public Lobby CurrentUnityLobby => _currentUnityLobby;
+        private Lobby _currentUnityLobby;
         
         public void Initialize()
         {
@@ -39,10 +39,11 @@ namespace ForsakenGraves.UnityService.Lobbies
             
             try
             {
-                var lobby = await _lobbyApiInterface.CreateLobby(AuthenticationService.Instance.PlayerId, lobbyName,
+                var lobby = await _lobbyApiInterface.CreateLobby(AuthenticationService.Instance.PlayerId,
+                                                                 lobbyName,
                                                                  maxConnectedPlayers, 
                                                                  isPrivate,
-                                                                 _localPlayer.GetDataForUnityServices(),
+                                                                 _localLobbyPlayer.GetDataForUnityServices(),
                                                                  null);
                 return (true, lobby);
             }
@@ -61,7 +62,11 @@ namespace ForsakenGraves.UnityService.Lobbies
 
             return (false, null);
         }
-
-
+        
+        public void SetRemoteLobby(Lobby lobby)
+        {
+            _currentUnityLobby = lobby;
+            _localLobby.ApplyRemoteData(lobby);
+        }
     }
 }

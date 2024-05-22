@@ -10,6 +10,7 @@ Forsaken Graves/[Bb]uilds/
 Forsaken Graves/[Ll]ogs/
 Forsaken Graves/[Uu]ser[Ss]ettings/
 
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 Forsaken Graves/[Mm]emoryCaptures/
@@ -70,3 +71,4 @@ Forsaken Graves/[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 # Temporary auto-generated Android Assets
 Forsaken Graves/[Aa]ssets/[Ss]treamingAssets/aa.meta
 Forsaken Graves/[Aa]ssets/[Ss]treamingAssets/aa/*
+/Forsaken Graves/Assets/3rdParty/

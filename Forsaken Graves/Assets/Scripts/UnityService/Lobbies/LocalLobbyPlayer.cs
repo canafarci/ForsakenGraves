@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using ForsakenGraves.UnityService.Data;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 namespace ForsakenGraves.UnityService.Lobbies
 {
+    [Serializable]
     public class LocalLobbyPlayer
     {
         private PlayerData _playerData;
@@ -14,26 +16,13 @@ namespace ForsakenGraves.UnityService.Lobbies
         
         public LocalLobbyPlayer()
         {
-            _playerData = new PlayerData(isHost: false, displayName: null, id: null);
+            _playerData = new PlayerData(isHost: false, displayName: Guid.NewGuid().ToString(), id: null); //TODO change to player options
         }
-        
-        public struct PlayerData
-        {
-            public bool IsHost { get; set; }
-            public string DisplayName { get; set; }
-            public string ID { get; set; }
 
-            public PlayerData(bool isHost, string displayName, string id)
-            {
-                IsHost = isHost;
-                DisplayName = displayName;
-                ID = id;
-            }
-        }
-        
+#region Getters-Setters
         public bool IsHost
         {
-            get { return _playerData.IsHost; }
+            get =>  _playerData.IsHost;
             set
             {
                 if (_playerData.IsHost != value)
@@ -45,6 +34,54 @@ namespace ForsakenGraves.UnityService.Lobbies
             }
         }
         
+        public string DisplayName
+        {
+            get => _playerData.DisplayName;
+            set
+            {
+                if (_playerData.DisplayName != value)
+                {
+                    _playerData.DisplayName = value;
+                    _lastChanged = UserMembers.DisplayName;
+                    FireOnLobbyPlayerChangedEvent();
+                }
+            }
+        }
+        
+        public string ID
+        {
+            get => _playerData.ID;
+            set
+            {
+                if (_playerData.ID != value)
+                {
+                    _playerData.ID = value;
+                    _lastChanged = UserMembers.ID;
+                    FireOnLobbyPlayerChangedEvent();
+                }
+            }
+        }
+#endregion
+
+        public void CopyDataFrom(LocalLobbyPlayer player)
+        {
+            PlayerData data = player._playerData;
+            int lastChanged = // Set flags just for the members that will be changed.
+                (_playerData.IsHost == data.IsHost ? 0 : (int)UserMembers.IsHost) |
+                (_playerData.DisplayName == data.DisplayName ? 0 : (int)UserMembers.DisplayName) |
+                (_playerData.ID == data.ID ? 0 : (int)UserMembers.ID);
+
+            if (lastChanged == 0) // Ensure something actually changed.
+            {
+                return;
+            }
+
+            _playerData = data;
+            _lastChanged = (UserMembers)lastChanged;
+
+            FireOnLobbyPlayerChangedEvent();
+        }
+        
         private void FireOnLobbyPlayerChangedEvent()
         {
             OnLobbyPlayerChanged?.Invoke(this);
@@ -52,7 +89,10 @@ namespace ForsakenGraves.UnityService.Lobbies
         
         public Dictionary<string, PlayerDataObject> GetDataForUnityServices()
         {
-            throw new NotImplementedException();
+            return new Dictionary<string, PlayerDataObject>()
+            {
+                {"DisplayName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, DisplayName)},
+            };
         }
         
         [Flags]

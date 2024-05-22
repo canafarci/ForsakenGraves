@@ -2,6 +2,8 @@ using System;
 using ForsakenGraves.Connection;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
+using UnityEngine;
+using VContainer;
 using VContainer.Unity;
 
 namespace ForsakenGraves.Gameplay.UI
@@ -11,17 +13,20 @@ namespace ForsakenGraves.Gameplay.UI
         private readonly LobbyCreationView _view;
         private readonly AuthenticationServiceFacade _authenticationServiceFacade;
         private readonly LobbyServiceFacade _lobbyServiceFacade;
-        private readonly ConnectionManager _connectionManager;
+        private readonly ConnectionStateManager _connectionStateManager;
 
+        [Inject] private LocalLobbyPlayer _localLobbyPlayer;
+        [Inject] private LocalLobby _localLobby;
+        
         public LobbyCreationMediator(LobbyCreationView view, 
                                      AuthenticationServiceFacade authenticationServiceFacade,
                                      LobbyServiceFacade lobbyServiceFacade,
-                                     ConnectionManager connectionManager)
+                                     ConnectionStateManager connectionStateManager)
         {
             _view = view;
             _authenticationServiceFacade = authenticationServiceFacade;
             _lobbyServiceFacade = lobbyServiceFacade;
-            _connectionManager = connectionManager;
+            _connectionStateManager = connectionStateManager;
         }
         
         public void Initialize()
@@ -37,8 +42,17 @@ namespace ForsakenGraves.Gameplay.UI
 
             if (!playerIsAuthorized) return; //TODO show UI
             
-            var lobbyCreationAttempt = await _lobbyServiceFacade.TryCreateLobbyAsync(e.LobbyName, _connectionManager.MaxConnectedPlayers, e.IsPrivate);
+            var lobbyCreationAttempt = await _lobbyServiceFacade.TryCreateLobbyAsync(e.LobbyName, _connectionStateManager.MaxConnectedPlayers, e.IsPrivate);
+            
+            if (lobbyCreationAttempt.Success)
+            {
+                _localLobbyPlayer.IsHost = true;
+                _lobbyServiceFacade.SetRemoteLobby(lobbyCreationAttempt.Lobby);
 
+                Debug.Log($"Created lobby with ID: {_localLobby.LobbyID} and code {_localLobby.LobbyCode}");
+                _connectionStateManager.StartHostLobby(_localLobbyPlayer.DisplayName);
+            }
+            
  
         }
 

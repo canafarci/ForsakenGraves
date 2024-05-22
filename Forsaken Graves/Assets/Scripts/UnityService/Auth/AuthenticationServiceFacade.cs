@@ -1,6 +1,6 @@
 using System;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using ForsakenGraves.Utility;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 
@@ -8,12 +8,19 @@ namespace ForsakenGraves.UnityService.Auth
 {
     public class AuthenticationServiceFacade 
     {
+        private readonly ProfileManager _profileManager;
+
+        public AuthenticationServiceFacade(ProfileManager profileManager)
+        {
+            _profileManager = profileManager;
+        }
+        
         public async UniTask InitializeAndSignInAsync()
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
             {
                 InitializationOptions options = new();
-                string uniqueID = CreateUniqueID();
+                string uniqueID =  _profileManager.GetUniqueProfileID();
 
                 options.SetProfile(uniqueID);
 
@@ -22,16 +29,6 @@ namespace ForsakenGraves.UnityService.Auth
             }
         }
         
-        private static string CreateUniqueID()
-        {
-            Guid uniqueID = Guid.NewGuid();
-            string idText = uniqueID.ToString();
-            //authentication service requires names to be 30 charaters long and GUIDs are 36 characters,
-            //so remove the last 6 characters
-            string slicedID = idText[..^6];
-            return slicedID;
-        }
-
         public async UniTask<bool> EnsurePlayerIsAuthorized()
         {
             bool isAuthorized = false;
