@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-namespace ForsakenGraves.Utility
+namespace ForsakenGraves.Infrastructure
 {
     public class ProfileManager
     {

@@ -1,6 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
-using ForsakenGraves.Utility;
+using ForsakenGraves.Infrastructure;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 

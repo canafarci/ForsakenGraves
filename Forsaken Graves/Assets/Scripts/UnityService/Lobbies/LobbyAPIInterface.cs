@@ -25,5 +25,10 @@ namespace ForsakenGraves.UnityService.Lobbies
 
             return await LobbyService.Instance.CreateLobbyAsync(lobbyName, maxConnectedPlayers, createOptions);
         }
+
+        public void SendHeartbeatPing(string id)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

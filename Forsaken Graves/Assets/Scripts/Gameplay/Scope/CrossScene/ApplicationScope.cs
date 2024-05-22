@@ -1,12 +1,15 @@
 using ForsakenGraves.Connection;
 using ForsakenGraves.Gameplay.GameState;
+using ForsakenGraves.Infrastructure;
+using ForsakenGraves.Infrastructure.Dependencies;
+using ForsakenGraves.Infrastructure.SceneManagement;
+using ForsakenGraves.Infrastructure.SceneManagement.Signals;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
 using ForsakenGraves.UnityService.Signals;
-using ForsakenGraves.Utility;
 using MessagePipe;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Serialization;
 using VContainer;
 using VContainer.Unity;
 
@@ -14,33 +17,37 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
 {
     public class ApplicationScope : LifetimeScope
     {
-        [FormerlySerializedAs("_connectionManager")] [SerializeField] ConnectionStateManager _connectionStateManager;
+        [SerializeField] ConnectionStateManager _connectionStateManager;
+        [SerializeField] NetworkManager _networkManager;
+        [SerializeField] private SceneLoadingManager _sceneLoadingManager;
         
         protected override void Configure(IContainerBuilder builder)
         {
             base.Configure(builder);
-            builder.RegisterComponent(_connectionStateManager);
             
-            MessagePipeOptions options = RegisterMessagePipe(builder);
-
-
-            // builder.RegisterComponentInHierarchy<CrossSceneView>();
-            // builder.Register<CrossSceneService>(Lifetime.Singleton);
+            builder.RegisterComponent(_connectionStateManager);
+            builder.RegisterComponent(_networkManager);
+            builder.RegisterComponent(_sceneLoadingManager);
+            
+            builder.Register<RuntimeInjector>(Lifetime.Singleton);
             
             builder.Register<AuthenticationServiceFacade>(Lifetime.Singleton);
             builder.Register<ProfileManager>(Lifetime.Singleton);
             
             builder.UseEntryPoints(Lifetime.Singleton, entryPoints =>
                                                        {
-                                                           // entryPoints.Add<CrossScenePresenter>();
-                                                           // entryPoints.Add<CrossSceneService>();
                                                            entryPoints.Add<MainMenuGameState>();
+                                                           entryPoints.Add<UpdateRunner>();
                                                        });
             
+            builder.Register<LobbyAPIInterface>(Lifetime.Singleton);
             builder.Register<LocalLobbyPlayer>(Lifetime.Singleton);
             builder.Register<LocalLobby>(Lifetime.Singleton);
+            
+            //builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
 
-            // builder.RegisterMessageBroker<string>(options);
+
+            MessagePipeOptions options = RegisterMessagePipe(builder);
             RegisterMessageBrokers(builder, options);
 
         }
@@ -48,6 +55,7 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
         private static void RegisterMessageBrokers(IContainerBuilder builder, MessagePipeOptions options)
         {
             builder.RegisterMessageBroker<OnAuthenticationSuccessfulSignal>(options);
+            builder.RegisterMessageBroker<LoadSceneSignal>(options);
         }
 
         private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)
@@ -55,6 +63,12 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             MessagePipeOptions options = builder.RegisterMessagePipe();
             builder.RegisterBuildCallback(c => GlobalMessagePipe.SetProvider(c.AsServiceProvider()));
             return options;
+        }
+
+        protected override void Awake()
+        {
+            base.Awake();
+            DontDestroyOnLoad(this);
         }
     }
 }
