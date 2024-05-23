@@ -1,5 +1,7 @@
 using System;
 using ForsakenGraves.Connection;
+using ForsakenGraves.Connection.ConnectionStates;
+using ForsakenGraves.Connection.Identifiers;
 using ForsakenGraves.Gameplay.GameState;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
@@ -32,6 +34,10 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             builder.RegisterComponent(_networkManager);
             builder.RegisterComponent(_sceneLoadingManager);
             
+            
+            builder.RegisterEntryPoint<ConnectionStatesCreator>().AsSelf();
+            builder.Register<ConnectionStatesModel>(Lifetime.Singleton);
+            
             builder.Register<RuntimeInjector>(Lifetime.Singleton);
             builder.Register<AuthenticationServiceFacade>(Lifetime.Singleton);
             builder.Register<ProfileManager>(Lifetime.Singleton);
@@ -60,6 +66,7 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
         {
             builder.RegisterMessageBroker<OnAuthenticationSuccessfulSignal>(options);
             builder.RegisterMessageBroker<LoadSceneSignal>(options);
+            builder.RegisterMessageBroker<ConnectStatus>(options);
         }
 
         private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)

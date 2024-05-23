@@ -44,5 +44,11 @@ namespace ForsakenGraves.UnityService.Lobbies
                 // If Player is not found, they have already left the lobby or have been kicked out. No need to throw here
             }
         }
+
+        public async UniTask<Lobby> UpdateLobby(string lobbyId, Dictionary<string, DataObject> data, bool shouldLock)
+        {
+            UpdateLobbyOptions updateOptions = new UpdateLobbyOptions { Data = data, IsLocked = shouldLock };
+            return await LobbyService.Instance.UpdateLobbyAsync(lobbyId, updateOptions);
+        }
     }
 }

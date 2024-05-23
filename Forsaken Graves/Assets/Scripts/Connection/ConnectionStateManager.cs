@@ -11,32 +11,27 @@ namespace ForsakenGraves.Connection
     public class ConnectionStateManager : MonoBehaviour
     {
         [Inject] private NetworkManager _networkManager;
-        [Inject] private RuntimeInjector _runtimeInjector;
+        //[Inject] private ConnectionStatesModel _connectionStatesModel;
         
         private ConnectionState _currentState;
-        private OfflineState _offlineState;
         
         [SerializeField] private int _maxConnectedPlayers = 4;
         [SerializeField] private int _numberOfReconnectAttempts = 2;
 
         public int NumberOfReconnectAttempts => _numberOfReconnectAttempts;
         public int MaxConnectedPlayers => _maxConnectedPlayers;
-        
-        public void StartHostLobby(string displayName)
-        {
-            throw new System.NotImplementedException();
-        }
+        public NetworkManager NetworkManager => _networkManager;
 
         private void Awake()
         {
             DontDestroyOnLoad(gameObject);
-            
-            _offlineState = new OfflineState();
-            _runtimeInjector.Inject(_offlineState);
-            
-            _currentState = _offlineState;
         }
-
+        
+        public void StartHostLobby(string playerName)
+        {
+            _currentState.StartHostLobby(playerName);
+        }
+        
         private void Start()
         {
             _networkManager.OnClientConnectedCallback += OnClientConnectedCallback;
@@ -81,5 +76,7 @@ namespace ForsakenGraves.Connection
             _networkManager.OnTransportFailure -= OnTransportFailure;
             _networkManager.OnServerStopped -= OnServerStopped;
         }
+        
+        
     }
 }

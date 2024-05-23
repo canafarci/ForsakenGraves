@@ -52,11 +52,8 @@ namespace ForsakenGraves.Gameplay.UI
                 Debug.Log($"Created lobby with ID: {_localLobby.LobbyID} and code {_localLobby.LobbyCode}");
                 _connectionStateManager.StartHostLobby(_localLobbyPlayer.DisplayName);
             }
-            
- 
         }
-
-
+        
         public void Dispose()
         {
             _view.OnCreateLobbyClicked -= View_OnOnCreateLobbyClicked;

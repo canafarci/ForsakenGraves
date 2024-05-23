@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using ForsakenGraves.Infrastructure;
@@ -21,10 +22,14 @@ namespace ForsakenGraves.UnityService.Lobbies
         
         //https://docs.unity.com/lobby/rate-limits.html
         private const float RATE_LIMIT_FOR_HOST = 3f;
+        private const float RATE_LIMIT_FOR_QUERY = 1f;
+        
         private const float HEARTBEAT_PERIOD = 8;
 
 
-        private RateLimitChecker _rateLimitCheckerForHost;
+        private RateLimitChecker _hostRateLimitChecker;
+        private RateLimitChecker _queryRateLimitChecker;
+        
         private ILobbyEvents _lobbyEvents;
         
         private Lobby _currentUnityLobby;
@@ -36,12 +41,13 @@ namespace ForsakenGraves.UnityService.Lobbies
         
         public void Initialize()
         {
-            _rateLimitCheckerForHost = new RateLimitChecker(RATE_LIMIT_FOR_HOST);
+            _hostRateLimitChecker = new RateLimitChecker(RATE_LIMIT_FOR_HOST);
+            _queryRateLimitChecker = new RateLimitChecker(RATE_LIMIT_FOR_QUERY);
         }
         
         public async UniTask<(bool Success, Lobby Lobby)> TryCreateLobbyAsync(string lobbyName, int maxConnectedPlayers, bool isPrivate)
         {
-            if (!_rateLimitCheckerForHost.CanCall)
+            if (!_hostRateLimitChecker.CanCall)
             {
                 Debug.LogWarning("Create Lobby request is over rate limit.");
                 return (false, null);
@@ -61,7 +67,7 @@ namespace ForsakenGraves.UnityService.Lobbies
             {
                 if (e.Reason == LobbyExceptionReason.RateLimited)
                 {
-                    _rateLimitCheckerForHost.PutOnCooldown();
+                    _hostRateLimitChecker.PutOnCooldown();
                 }
                 else
                 {
@@ -71,6 +77,52 @@ namespace ForsakenGraves.UnityService.Lobbies
             }
 
             return (false, null);
+        }
+        
+        public async UniTask UpdateLobbyDataAndUnlockAsync()
+        {
+            if (!_queryRateLimitChecker.CanCall) return;
+
+            Dictionary<string, DataObject> localData = _localLobby.GetDataForUnityServices();
+            Dictionary<string, DataObject> currentData = _currentUnityLobby.Data ?? new();
+            
+            foreach (KeyValuePair<string, DataObject> newData in localData)
+            {
+                if (currentData.ContainsKey(newData.Key))
+                {
+                    currentData[newData.Key] = newData.Value;
+                }
+                else
+                {
+                    currentData.Add(newData.Key, newData.Value);
+                }
+            }
+            
+            try
+            {
+                Lobby result = await _lobbyApiInterface.UpdateLobby(_currentUnityLobby.Id, currentData, shouldLock: false);
+
+                if (result != null)
+                {
+                    _currentUnityLobby = result;
+                }
+            }
+            catch (LobbyServiceException e)
+            {
+                if (e.Reason == LobbyExceptionReason.RateLimited)
+                {
+                    _queryRateLimitChecker.PutOnCooldown();
+                }
+                else
+                {
+                    Debug.LogError(e); //TODO show UI
+                }
+            }
+        }
+        
+        public async UniTask UpdatePlayerDataAsync(string toString, string joinCode)
+        {
+            throw new NotImplementedException();
         }
         
         public void SetRemoteLobby(Lobby lobby)

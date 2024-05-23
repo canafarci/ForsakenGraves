@@ -124,12 +124,12 @@ namespace ForsakenGraves.UnityService.Lobbies
 
                 // If the player isn't connected to Relay, get the most recent data that the lobby knows.
                 // (If we haven't seen this player yet, a new local representation of the player will have already been added by the LocalLobby.)
-                var incomingData = new LocalLobbyPlayer()
-                                   {
-                                       IsHost = lobby.HostId.Equals(player.Id),
-                                       DisplayName = player.Data != null && player.Data.ContainsKey("DisplayName") ? player.Data["DisplayName"].Value : default,
-                                       ID = player.Id
-                                   };
+                LocalLobbyPlayer incomingData = new LocalLobbyPlayer()
+                                                {
+                                                    IsHost = lobby.HostId.Equals(player.Id),
+                                                    DisplayName = player.Data != null && player.Data.ContainsKey("DisplayName") ? player.Data["DisplayName"].Value : default,
+                                                    ID = player.Id
+                                                };
 
                 lobbyPlayers.Add(incomingData.ID, incomingData);
             }
@@ -137,26 +137,28 @@ namespace ForsakenGraves.UnityService.Lobbies
             CopyDataFrom(info, lobbyPlayers);
         }
         
-        public void CopyDataFrom(LobbyData data, Dictionary<string, LocalLobbyPlayer> currUsers)
+        public void CopyDataFrom(LobbyData data, Dictionary<string, LocalLobbyPlayer> currPlayers)
         {
             _lobbyData = data;
 
-            if (currUsers == null)
+            if (currPlayers == null)
             {
                 _lobbyPlayers = new Dictionary<string, LocalLobbyPlayer>();
             }
             else
             {
                 List<LocalLobbyPlayer> toRemove = new List<LocalLobbyPlayer>();
-                foreach (var oldUser in _lobbyPlayers)
+                foreach (KeyValuePair<string, LocalLobbyPlayer> oldPlayer in _lobbyPlayers)
                 {
-                    if (currUsers.ContainsKey(oldUser.Key))
+                    LocalLobbyPlayer oldLobbyPlayer = oldPlayer.Value;
+                    if (currPlayers.ContainsKey(oldPlayer.Key))
                     {
-                        oldUser.Value.CopyDataFrom(currUsers[oldUser.Key]);
+                        LocalLobbyPlayer currLobbyPlayer = currPlayers[oldPlayer.Key];
+                        oldLobbyPlayer.CopyDataFrom(currLobbyPlayer);
                     }
                     else
                     {
-                        toRemove.Add(oldUser.Value);
+                        toRemove.Add(oldLobbyPlayer);
                     }
                 }
 
@@ -165,7 +167,7 @@ namespace ForsakenGraves.UnityService.Lobbies
                     DoRemoveUser(remove);
                 }
 
-                foreach (var currUser in currUsers)
+                foreach (var currUser in currPlayers)
                 {
                     if (!_lobbyPlayers.ContainsKey(currUser.Key))
                     {
@@ -180,7 +182,7 @@ namespace ForsakenGraves.UnityService.Lobbies
         private void DoAddUser(LocalLobbyPlayer player)
         {
             _lobbyPlayers.Add(player.ID, player);
-            player.OnLobbyPlayerChanged += OnChangedUser;
+            player.OnLobbyPlayerChanged += OnChangedPlayer;
         }
         
         private void DoRemoveUser(LocalLobbyPlayer player)
@@ -192,10 +194,10 @@ namespace ForsakenGraves.UnityService.Lobbies
             }
 
             _lobbyPlayers.Remove(player.ID);
-            player.OnLobbyPlayerChanged -= OnChangedUser;
+            player.OnLobbyPlayerChanged -= OnChangedPlayer;
         }
 
-        private void OnChangedUser(LocalLobbyPlayer player)
+        private void OnChangedPlayer(LocalLobbyPlayer player)
         {
             FireOnLocalLobbyChangedEvent();
         }
@@ -210,5 +212,11 @@ namespace ForsakenGraves.UnityService.Lobbies
             CopyDataFrom(new LobbyData(), new Dictionary<string, LocalLobbyPlayer>());
             AddUser(localLobbyPlayer);
         }
+
+        public Dictionary<string, DataObject> GetDataForUnityServices() =>
+            new Dictionary<string, DataObject>()
+            {
+                {"RelayJoinCode", new DataObject(DataObject.VisibilityOptions.Public,  RelayJoinCode)}
+            };
     }
 }
