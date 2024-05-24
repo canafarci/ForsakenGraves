@@ -4,7 +4,7 @@ using VContainer.Unity;
 
 namespace ForsakenGraves.Connection.ConnectionStates
 {
-    public class ConnectionStatesCreator : IInitializable
+    public class ConnectionStatesCreator : IStartable
     {
         [Inject] private RuntimeInjector _runtimeInjector;
         [Inject] private ConnectionStatesModel _connectionStatesModel;
@@ -13,7 +13,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
         private OfflineState _offlineState;
         private StartingHostState _startingHostState;
 
-        public void Initialize()
+        public void Start()
         {
             _offlineState = new OfflineState();
             _runtimeInjector.Inject(_offlineState);

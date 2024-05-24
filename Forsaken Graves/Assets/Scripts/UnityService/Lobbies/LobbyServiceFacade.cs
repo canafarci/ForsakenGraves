@@ -55,12 +55,12 @@ namespace ForsakenGraves.UnityService.Lobbies
             
             try
             {
-                var lobby = await _lobbyApiInterface.CreateLobby(AuthenticationService.Instance.PlayerId,
-                                                                 lobbyName,
-                                                                 maxConnectedPlayers, 
-                                                                 isPrivate,
-                                                                 _localLobbyPlayer.GetDataForUnityServices(),
-                                                                 null);
+                Lobby lobby = await _lobbyApiInterface.CreateLobby(AuthenticationService.Instance.PlayerId,
+                                                                   lobbyName,
+                                                                   maxConnectedPlayers, 
+                                                                   isPrivate,
+                                                                   _localLobbyPlayer.GetDataForUnityServices(),
+                                                                   null);
                 return (true, lobby);
             }
             catch (LobbyServiceException e)
@@ -120,9 +120,24 @@ namespace ForsakenGraves.UnityService.Lobbies
             }
         }
         
-        public async UniTask UpdatePlayerDataAsync(string toString, string joinCode)
+        public async UniTask UpdatePlayerDataAsync(string allocationId, string connectionInfo)
         {
-            throw new NotImplementedException();
+            if (!_queryRateLimitChecker.CanCall) return;
+
+            try
+            {
+                Lobby result = await _lobbyApiInterface.UpdatePlayer(_currentUnityLobby.Id,
+                                                                     AuthenticationService.Instance.PlayerId,
+                                                                     _localLobbyPlayer.GetDataForUnityServices(),
+                                                                     allocationId,
+                                                                     connectionInfo);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
         
         public void SetRemoteLobby(Lobby lobby)

@@ -42,7 +42,7 @@ namespace ForsakenGraves.Gameplay.UI
 
             if (!playerIsAuthorized) return; //TODO show UI
             
-            var lobbyCreationAttempt = await _lobbyServiceFacade.TryCreateLobbyAsync(e.LobbyName, _connectionStateManager.MaxConnectedPlayers, e.IsPrivate);
+            (bool Success, Unity.Services.Lobbies.Models.Lobby Lobby) lobbyCreationAttempt = await _lobbyServiceFacade.TryCreateLobbyAsync(e.LobbyName, _connectionStateManager.MaxConnectedPlayers, e.IsPrivate);
             
             if (lobbyCreationAttempt.Success)
             {

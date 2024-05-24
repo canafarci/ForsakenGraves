@@ -50,5 +50,16 @@ namespace ForsakenGraves.UnityService.Lobbies
             UpdateLobbyOptions updateOptions = new UpdateLobbyOptions { Data = data, IsLocked = shouldLock };
             return await LobbyService.Instance.UpdateLobbyAsync(lobbyId, updateOptions);
         }
+
+        public async UniTask<Lobby> UpdatePlayer(string lobbyId, string playerId, Dictionary<string, PlayerDataObject> data, string allocationId, string connectionInfo)
+        {
+            UpdatePlayerOptions updateOptions = new UpdatePlayerOptions
+                                                {
+                                                    Data = data,
+                                                    AllocationId = allocationId,
+                                                    ConnectionInfo = connectionInfo
+                                                };
+            return await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, updateOptions);
+        }
     }
 }

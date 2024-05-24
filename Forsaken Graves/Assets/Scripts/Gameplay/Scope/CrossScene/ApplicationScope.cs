@@ -36,9 +36,8 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             
             
             builder.RegisterEntryPoint<ConnectionStatesCreator>().AsSelf();
-            builder.Register<ConnectionStatesModel>(Lifetime.Singleton);
+            builder.Register<ConnectionStatesModel>(Lifetime.Singleton).AsSelf();
             
-            builder.Register<RuntimeInjector>(Lifetime.Singleton);
             builder.Register<AuthenticationServiceFacade>(Lifetime.Singleton);
             builder.Register<ProfileManager>(Lifetime.Singleton);
             
@@ -56,7 +55,7 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             
             //builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
 
-
+            builder.Register<RuntimeInjector>(Lifetime.Singleton);
             MessagePipeOptions options = RegisterMessagePipe(builder);
             RegisterMessageBrokers(builder, options);
 

@@ -1318,7 +1318,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f242fe6fd3040a1a04f2b3348a63095, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lobbyNameInputField: {fileID: 0}
+  _lobbyNameInputField: {fileID: 302332984}
   _createLobbyButton: {fileID: 178760895}
   _isPrivateToggle: {fileID: 1325264685}
 --- !u!1 &1325264683

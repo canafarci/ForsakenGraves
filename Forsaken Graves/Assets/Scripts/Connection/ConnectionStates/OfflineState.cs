@@ -10,7 +10,6 @@ namespace ForsakenGraves.Connection.ConnectionStates
 {
     public class OfflineState : ConnectionState
     {
-        [Inject] private ConnectionStateManager _connectionStateManager;
         [Inject] private IPublisher<LoadSceneSignal> _sceneLoadPublisher;
         [Inject] private LobbyServiceFacade _lobbyServiceFacade;
         [Inject] private NetworkManager _networkManager;
@@ -29,11 +28,12 @@ namespace ForsakenGraves.Connection.ConnectionStates
 
         public override void StartHostLobby(string playerName)
         {
-            var connectionMethod = new RelayConnectionMethod(_lobbyServiceFacade,
-                                                             _localLobby,
-                                                             _connectionStateManager,
-                                                             _profileManager,
-                                                             playerName);
+            RelayConnectionMethod connectionMethod = new RelayConnectionMethod(_lobbyServiceFacade,
+                                                                               _localLobby,
+                                                                               _connectionStateManager,
+                                                                               _profileManager,
+                                                                               playerName);
+            
             StartingHostState startingHostState = _connectionStatesModel.StartingHostState;
             startingHostState.Configure(connectionMethod);
             

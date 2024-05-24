@@ -44,7 +44,7 @@ namespace ForsakenGraves.Connection
         
         internal void ChangeState(ConnectionState nextState)
         {
-            Debug.Log($"{name}: Changed connection state from {_currentState.GetType().Name} to {nextState.GetType().Name}.");
+            Debug.Log($"{name}: Changed connection state from {_currentState?.GetType().Name} to {nextState.GetType().Name}.");
 
             if (_currentState != null)
             {
