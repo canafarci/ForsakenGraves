@@ -4,6 +4,7 @@ namespace ForsakenGraves.Identifiers
     {
         //int value represents scene index in build settings
         Startup = 0,
-        MainMenu = 1
+        MainMenu = 1,
+        CharSelect = 2
     }
 }
