@@ -23,19 +23,17 @@ namespace ForsakenGraves.UnityService.Lobbies
         //https://docs.unity.com/lobby/rate-limits.html
         private const float RATE_LIMIT_FOR_HOST = 3f;
         private const float RATE_LIMIT_FOR_QUERY = 1f;
-        
         private const float HEARTBEAT_PERIOD = 8;
-
-
+        
         private RateLimitChecker _hostRateLimitChecker;
         private RateLimitChecker _queryRateLimitChecker;
         
         private ILobbyEvents _lobbyEvents;
         
         private Lobby _currentUnityLobby;
-        private bool _isTracking = false;
-        private float _lastHeartbeatSentTime;
         private LobbyEventConnectionState _lobbyEventConnectionState = LobbyEventConnectionState.Unknown;
+        private bool _isTracking = false;
+        private float _lastHeartbeatSentTime = 0f;
         
         public Lobby CurrentUnityLobby => _currentUnityLobby;
         
@@ -45,6 +43,7 @@ namespace ForsakenGraves.UnityService.Lobbies
             _queryRateLimitChecker = new RateLimitChecker(RATE_LIMIT_FOR_QUERY);
         }
         
+#region Create Lobby
         public async UniTask<(bool Success, Lobby Lobby)> TryCreateLobbyAsync(string lobbyName, int maxConnectedPlayers, bool isPrivate)
         {
             if (!_hostRateLimitChecker.CanCall)
@@ -145,6 +144,94 @@ namespace ForsakenGraves.UnityService.Lobbies
             _currentUnityLobby = lobby;
             _localLobby.ApplyRemoteData(lobby);
         }
+        
+
+#endregion
+
+#region Lobby Events
+        private async void SubscribeToJoinedLobbyAsync()
+        {
+            LobbyEventCallbacks lobbyEventCallbacks = new LobbyEventCallbacks();
+            lobbyEventCallbacks.LobbyChanged += OnLobbyChanges;
+            lobbyEventCallbacks.KickedFromLobby += OnKickedFromLobby;
+            lobbyEventCallbacks.LobbyEventConnectionStateChanged += OnLobbyEventConnectionStateChanged;
+            // The LobbyEventCallbacks object created here will now be managed by the Lobby SDK. The callbacks will be
+            // unsubscribed from when we call UnsubscribeAsync on the ILobbyEvents object we receive and store here.
+            _lobbyEvents = await _lobbyApiInterface.SubscribeToLobby(_localLobby.LobbyID, lobbyEventCallbacks);
+        }
+        
+        private void OnLobbyChanges(ILobbyChanges changes)
+        {
+            if (changes.LobbyDeleted)
+            {
+                ResetLobby();
+                EndTracking();
+            }
+            else //lobby updated
+            {
+                changes.ApplyToLobby(_currentUnityLobby);
+                _localLobby.ApplyRemoteData(_currentUnityLobby);
+
+                bool hostIsInLobby = _localLobbyPlayer.IsHost;
+                if (!_localLobbyPlayer.IsHost) //if not host, check if host is still in the lobby
+                {
+                    foreach (var lobbyUser in _localLobby.LobbyPlayers)
+                    {
+                        if (lobbyUser.Value.IsHost)
+                        {
+                            hostIsInLobby = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!hostIsInLobby)
+                {
+                    Debug.LogWarning("HOST HAS LEFT THE LOBBY");
+                    //TODO SHOW UI
+                    EndTracking();
+                    //netcode auto disconnects here
+                }
+            }
+        }
+        
+        private void OnKickedFromLobby()
+        {
+            //TODO SHOW UI
+            ResetLobby();
+            EndTracking();
+        }
+        
+        private void OnLobbyEventConnectionStateChanged(LobbyEventConnectionState lobbyEventConnectionState)
+        {
+            _lobbyEventConnectionState = lobbyEventConnectionState;
+            Debug.Log($"LobbyEventConnectionState changed to {lobbyEventConnectionState}");
+        }
+        
+        private async void UnsubscribeToJoinedLobbyAsync()
+        {
+            if (_lobbyEvents != null && _lobbyEventConnectionState != LobbyEventConnectionState.Unsubscribed)
+            {
+                await _lobbyEvents.UnsubscribeAsync();
+            }
+        }
+#endregion
+
+#region Tracking
+        public void BeginTracking()
+        {
+            if (!_isTracking)
+            {
+                _isTracking = true;
+                SubscribeToJoinedLobbyAsync();
+
+                if (_localLobbyPlayer.IsHost) //send lobby heartbeat if host
+                {
+                    _lastHeartbeatSentTime = 0f;
+                    _updateRunner.Subscribe(SendLobbyHeartbeat, 1.5f);
+                }
+            }
+        }
 
         public void EndTracking()
         {
@@ -152,7 +239,7 @@ namespace ForsakenGraves.UnityService.Lobbies
             {
                 _isTracking = false;
                 UnsubscribeToJoinedLobbyAsync();
-                
+                        
                 // Only the host sends heartbeat pings to the service to keep the lobby alive
                 if (_localLobbyPlayer.IsHost)
                 {
@@ -172,7 +259,30 @@ namespace ForsakenGraves.UnityService.Lobbies
                 }
             }
         }
-
+        
+        private void SendLobbyHeartbeat(float dt)
+        {
+            _lastHeartbeatSentTime += dt;
+            if (_lastHeartbeatSentTime > HEARTBEAT_PERIOD)
+            {
+                _lastHeartbeatSentTime -= HEARTBEAT_PERIOD;
+                try
+                {
+                    _lobbyApiInterface.SendHeartbeatPing(CurrentUnityLobby.Id);
+                }
+                catch (LobbyServiceException e)
+                {
+                    // If Lobby is not found and if we are not the host, it has already been deleted. No need to publish the error here.
+                    if (e.Reason != LobbyExceptionReason.LobbyNotFound && !_localLobbyPlayer.IsHost)
+                    {
+                        Debug.LogError(e); //TODO show UI
+                    }
+                }
+            }
+        }
+#endregion
+        
+#region Leave Lobby
         private async void LeaveLobbyAsync()
         {
             string serviceID = AuthenticationService.Instance.PlayerId;
@@ -193,7 +303,6 @@ namespace ForsakenGraves.UnityService.Lobbies
             {
                 ResetLobby();
             }
-
         }
 
         private async void DeleteLobbyAsync()
@@ -232,36 +341,7 @@ namespace ForsakenGraves.UnityService.Lobbies
                 _localLobby.Reset(_localLobbyPlayer);
             }
         }
-
-        private async void UnsubscribeToJoinedLobbyAsync()
-        {
-            if (_lobbyEvents != null && _lobbyEventConnectionState != LobbyEventConnectionState.Unsubscribed)
-            {
-                await _lobbyEvents.UnsubscribeAsync();
-            }
-        }
-        
-        private void SendLobbyHeartbeat(float dt)
-        {
-            _lastHeartbeatSentTime += dt;
-            if (_lastHeartbeatSentTime > HEARTBEAT_PERIOD)
-            {
-                _lastHeartbeatSentTime -= HEARTBEAT_PERIOD;
-                try
-                {
-                    _lobbyApiInterface.SendHeartbeatPing(CurrentUnityLobby.Id);
-                }
-                catch (LobbyServiceException e)
-                {
-                    // If Lobby is not found and if we are not the host, it has already been deleted. No need to publish the error here.
-                    if (e.Reason != LobbyExceptionReason.LobbyNotFound && !_localLobbyPlayer.IsHost)
-                    {
-                        Debug.LogError(e); //TODO show UI
-                    }
-                }
-            }
-        }
-
+#endregion
 
         public void Dispose()
         {

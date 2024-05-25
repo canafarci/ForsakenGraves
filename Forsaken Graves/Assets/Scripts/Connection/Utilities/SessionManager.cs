@@ -70,5 +70,12 @@ namespace ForsakenGraves.Connection.Utilities
         {
             return _clientData.ContainsKey(playerId) && _clientData[playerId].IsConnected;
         }
+
+        public void OnServerEnded()
+        {
+            _clientData.Clear();
+            _clientIDToPlayerId.Clear();
+            _hasSessionStarted = false;
+        }
     }
 }

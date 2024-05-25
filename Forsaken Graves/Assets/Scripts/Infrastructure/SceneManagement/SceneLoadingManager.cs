@@ -126,7 +126,7 @@ namespace ForsakenGraves.Infrastructure.SceneManagement
         }
         
         [Rpc(SendTo.SpecifiedInParams)]
-        void ClientStopLoadingScreenRpc(RpcParams clientRpcParams = default)
+        private void ClientStopLoadingScreenRpc(RpcParams clientRpcParams = default)
         {
             //TODO clear loading screen
         }

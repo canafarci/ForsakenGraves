@@ -61,5 +61,10 @@ namespace ForsakenGraves.UnityService.Lobbies
                                                 };
             return await LobbyService.Instance.UpdatePlayerAsync(lobbyId, playerId, updateOptions);
         }
+
+        public async UniTask<ILobbyEvents> SubscribeToLobby(string lobbyId, LobbyEventCallbacks eventCallbacks)
+        {
+            return await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobbyId, eventCallbacks);
+        }
     }
 }
