@@ -12,7 +12,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
         public override void Enter()
         {
             //load char select scene when hosting start via networkmanager
-            _sceneLoadPublisher.Publish(new LoadSceneSignal(SceneIdentifier.CharSelect, useNetworkManager: true));
+            _sceneLoadPublisher.Publish(new LoadSceneSignal(SceneIdentifier.CharSelectScene, useNetworkManager: true));
         }
         
         public override void Exit() { }
