@@ -33,7 +33,7 @@ namespace ForsakenGraves.Connection.Utilities
         
         public void SetupConnectingPlayerSessionData(ulong clientId, string playerId, T sessionPlayerData)
         {
-            var isReconnecting = false;
+            bool isReconnecting = false;
 
             // Test for duplicate connection
             if (IsDuplicateConnection(playerId))
@@ -76,6 +76,77 @@ namespace ForsakenGraves.Connection.Utilities
             _clientData.Clear();
             _clientIDToPlayerId.Clear();
             _hasSessionStarted = false;
+        }
+
+        public T? GetPlayerData(ulong clientId)
+        {
+            string playerID = GetPlayerID(clientId);
+            
+            if (playerID == null)
+            {
+                Debug.LogError($"No data associated with {clientId} has been found!");
+                return null;
+            }
+            else
+            {
+                return GetPlayerData(playerID);
+            }
+        }
+
+        public T? GetPlayerData(string playerID)
+        {
+            if (!_clientData.ContainsKey(playerID))
+            {
+                Debug.LogError($"No player data associated with {playerID} has been found!");
+                return null;
+            }
+            else
+            {
+                return _clientData[playerID];
+            }
+        }
+
+        public string GetPlayerID(ulong clientId)
+        {
+            if (_clientIDToPlayerId.ContainsKey(clientId))
+            {
+                return _clientIDToPlayerId[clientId];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public void DisconnectClient(ulong clientId)
+        {
+            if (_hasSessionStarted)
+            {
+                // Mark client as disconnected, but keep their data so they can reconnect.
+                if (_clientIDToPlayerId.TryGetValue(clientId, out string playerId))
+                {
+                    T? playerData = GetPlayerData(playerId);
+                    if (playerData != null && playerData.Value.ClientID == clientId)
+                    {
+                        T clientData = _clientData[playerId];
+                        clientData.IsConnected = false;
+                        _clientData[playerId] = clientData;
+                    }
+                }
+            }
+            else
+            {
+                // Session has not started, no need to keep their data
+                if (_clientIDToPlayerId.TryGetValue(clientId, out string playerId))
+                {
+                    _clientIDToPlayerId.Remove(clientId);
+                    T? playerData = GetPlayerData(playerId);
+                    if (playerData != null && playerData.Value.ClientID == clientId)
+                    {
+                        _clientData.Remove(playerId);
+                    }
+                }
+            }
         }
     }
 }

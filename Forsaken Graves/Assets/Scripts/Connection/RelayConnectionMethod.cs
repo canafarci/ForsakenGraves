@@ -36,13 +36,12 @@ namespace ForsakenGraves.Connection
             _playerName = playerName;
         }
         
-        protected void SetConnectionPayload(string playerId, string playerName)
+        private void SetConnectionPayload(string playerId, string playerName)
         {
             string payload = JsonUtility.ToJson(new ConnectionPayload()
                                                 {
                                                     PlayerId = playerId,
                                                     PlayerName = playerName,
-                                                    IsDebug = Debug.isDebugBuild
                                                 });
 
             byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);

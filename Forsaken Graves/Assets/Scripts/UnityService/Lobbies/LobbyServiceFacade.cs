@@ -304,6 +304,18 @@ namespace ForsakenGraves.UnityService.Lobbies
                 ResetLobby();
             }
         }
+        
+        public async void RemovePlayerFromLobbyAsync(string authenticationID)
+        {
+            if (_localLobbyPlayer.IsHost)
+            {
+                _lobbyApiInterface.RemovePlayerFromLobby(authenticationID, _localLobby.LobbyID);
+            }
+            else
+            {
+                Debug.LogError("Only host can remove players from lobby");
+            }
+        }
 
         private async void DeleteLobbyAsync()
         {

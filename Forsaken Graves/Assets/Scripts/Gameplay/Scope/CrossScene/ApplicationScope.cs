@@ -1,6 +1,7 @@
 using System;
 using ForsakenGraves.Connection;
 using ForsakenGraves.Connection.ConnectionStates;
+using ForsakenGraves.Connection.Data;
 using ForsakenGraves.Connection.Identifiers;
 using ForsakenGraves.Gameplay.GameState;
 using ForsakenGraves.Identifiers;
@@ -65,6 +66,7 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
         {
             builder.RegisterMessageBroker<OnAuthenticationSuccessfulSignal>(options);
             builder.RegisterMessageBroker<LoadSceneSignal>(options);
+            builder.RegisterMessageBroker<ConnectionEventMessage>(options);
             builder.RegisterMessageBroker<ConnectStatus>(options);
         }
 

@@ -8,6 +8,5 @@ namespace ForsakenGraves.Connection.Data
     {
         public string PlayerId;
         public string PlayerName;
-        public bool IsDebug;
     }
 }
