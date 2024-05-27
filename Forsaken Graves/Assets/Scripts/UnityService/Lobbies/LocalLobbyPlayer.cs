@@ -16,7 +16,10 @@ namespace ForsakenGraves.UnityService.Lobbies
         
         public LocalLobbyPlayer()
         {
-            _playerData = new PlayerData(isHost: false, displayName: Guid.NewGuid().ToString(), id: null); //TODO change to player options
+            _playerData = new PlayerData(isHost: false,
+                                         displayName: Guid.NewGuid()
+                                                          .ToString()[0..5],
+                                         id: null); //TODO change to player options
         }
 
 #region Getters-Setters

@@ -14,8 +14,10 @@ namespace ForsakenGraves.Gameplay.Scope
             base.Configure(builder);
             
             builder.RegisterComponentInHierarchy<LobbyCreationView>();
+            builder.RegisterComponentInHierarchy<LobbyJoiningView>();
             
             builder.RegisterEntryPoint<LobbyCreationMediator>();
+            builder.RegisterEntryPoint<LobbyJoiningMediator>();
         }
     }
 }

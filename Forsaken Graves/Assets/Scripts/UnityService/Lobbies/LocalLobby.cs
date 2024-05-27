@@ -102,7 +102,8 @@ namespace ForsakenGraves.UnityService.Lobbies
             
             if (lobby.Data != null)
             {
-                // By providing RelayCode through the lobby data with Member visibility, we ensure a client is connected to the lobby before they could attempt a relay connection, preventing timing issues between them.
+                // By providing RelayCode through the lobby data with Member visibility, we ensure a client is
+                // connected to the lobby before they could attempt a relay connection, preventing timing issues between them.
                 info.RelayJoinCode = lobby.Data.ContainsKey("RelayJoinCode") ? lobby.Data["RelayJoinCode"].Value : null; 
             }
             else

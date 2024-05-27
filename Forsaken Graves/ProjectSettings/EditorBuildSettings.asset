@@ -8,5 +8,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/StartupScene.unity
     guid: f43095bd41e790c45b9e1d4be2ecc33c
+  - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: d87b10c1f8e844b4caa6cace82e42289
+  - enabled: 1
+    path: Assets/Scenes/CharSelectScene.unity
+    guid: a2a924f8e28db476c89fd5addf72fc5e
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

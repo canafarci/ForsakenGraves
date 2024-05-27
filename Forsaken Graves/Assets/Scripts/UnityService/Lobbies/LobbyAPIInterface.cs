@@ -8,6 +8,22 @@ namespace ForsakenGraves.UnityService.Lobbies
 {
     public class LobbyAPIInterface
     {
+        private const int MAX_LOBBIES_TO_SHOW = 16;
+
+        private readonly List<QueryFilter> _queryFilter = new() {
+                                                            new QueryFilter(field: QueryFilter.FieldOptions.AvailableSlots,
+                                                                            op: QueryFilter.OpOptions.GT,
+                                                                            value: "0")
+                                                                };
+        
+        private readonly List<QueryOrder> _queryOrder = new() {
+                                                          new QueryOrder(asc: false,
+                                                                         field: QueryOrder.FieldOptions.Created)
+                                                              };
+
+        // Filter for open lobbies only
+        // Order by newest lobbies first
+
         public async UniTask<Lobby> CreateLobby(string instancePlayerId,
                                                 string lobbyName,
                                                 int maxConnectedPlayers,
@@ -66,5 +82,15 @@ namespace ForsakenGraves.UnityService.Lobbies
         {
             return await LobbyService.Instance.SubscribeToLobbyEventsAsync(lobbyId, eventCallbacks);
         }
+
+        public async UniTask<Lobby> QuickJoinLobby(string authId, Dictionary<string, PlayerDataObject> localUserData)
+        {
+            var joinRequest = new QuickJoinLobbyOptions
+                              {
+                                  Filter = _queryFilter,
+                                  Player = new Player(id: authId, data: localUserData)
+                              };
+
+            return await LobbyService.Instance.QuickJoinLobbyAsync(joinRequest);        }
     }
 }

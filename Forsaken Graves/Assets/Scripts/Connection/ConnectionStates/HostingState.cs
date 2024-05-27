@@ -99,7 +99,8 @@ namespace ForsakenGraves.Connection.ConnectionStates
             _connectStatusPublisher.Publish(ConnectStatus.GenericDisconnect);
             //switch to offline state
             OfflineState offlineState = _connectionStatesModel.OfflineState;
-            _connectionStateManager.ChangeState(offlineState);        }
+            _connectionStateManager.ChangeState(offlineState);        
+        }
 
         public override void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {

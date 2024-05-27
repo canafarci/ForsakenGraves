@@ -23,10 +23,12 @@ namespace ForsakenGraves.UnityService.Lobbies
         //https://docs.unity.com/lobby/rate-limits.html
         private const float RATE_LIMIT_FOR_HOST = 3f;
         private const float RATE_LIMIT_FOR_QUERY = 1f;
+        private const float RATE_LIMIT_FOR_QUICK_JOIN = 10f;
         private const float HEARTBEAT_PERIOD = 8;
         
         private RateLimitChecker _hostRateLimitChecker;
         private RateLimitChecker _queryRateLimitChecker;
+        private RateLimitChecker _quickJoinRateLimitChecker;
         
         private ILobbyEvents _lobbyEvents;
         
@@ -41,6 +43,7 @@ namespace ForsakenGraves.UnityService.Lobbies
         {
             _hostRateLimitChecker = new RateLimitChecker(RATE_LIMIT_FOR_HOST);
             _queryRateLimitChecker = new RateLimitChecker(RATE_LIMIT_FOR_QUERY);
+            _quickJoinRateLimitChecker = new RateLimitChecker(RATE_LIMIT_FOR_QUICK_JOIN);
         }
         
 #region Create Lobby
@@ -100,7 +103,7 @@ namespace ForsakenGraves.UnityService.Lobbies
             try
             {
                 Lobby result = await _lobbyApiInterface.UpdateLobby(_currentUnityLobby.Id, currentData, shouldLock: false);
-
+                
                 if (result != null)
                 {
                     _currentUnityLobby = result;
@@ -146,6 +149,39 @@ namespace ForsakenGraves.UnityService.Lobbies
         }
         
 
+#endregion
+
+#region Join Lobby
+        public async UniTask<(bool Success, Lobby Lobby)> TryQuickJoiningLobbyAsync()
+        {
+            if (!_quickJoinRateLimitChecker.CanCall)
+            {
+                Debug.LogWarning("Quick Join Lobby hit the rate limit.");
+                return (false, null);
+            }
+
+            try
+            {
+                Lobby lobby = await _lobbyApiInterface.QuickJoinLobby(AuthenticationService.Instance.PlayerId,
+                                                        _localLobbyPlayer.GetDataForUnityServices());
+                return (true, lobby);
+            }
+            catch (LobbyServiceException e)
+            {
+                if (e.Reason == LobbyExceptionReason.RateLimited)
+                {
+                    _quickJoinRateLimitChecker.PutOnCooldown();
+                }
+                else
+                {
+                    Debug.LogWarning(e);
+                    //TODO show UI
+                }
+            }
+            
+            return (false, null);
+
+        }
 #endregion
 
 #region Lobby Events

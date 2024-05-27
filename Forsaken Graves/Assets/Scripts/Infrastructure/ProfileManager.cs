@@ -10,8 +10,12 @@ namespace ForsakenGraves.Infrastructure
         
         public ProfileManager()
         {
+#if !UNITY_EDITOR //different id for each editor instance            
             _profileID = ES3.Load(PROFILE_ID_KEY, PROFILE_DATA_PATH, CreateGUID());
             ES3.Save(PROFILE_ID_KEY, _profileID, PROFILE_DATA_PATH);
+#else
+            _profileID = CreateGUID();
+#endif
         }
 
         public string GetUniqueProfileID() => _profileID;
