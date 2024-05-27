@@ -27,11 +27,6 @@ namespace ForsakenGraves.Connection
             DontDestroyOnLoad(gameObject);
         }
         
-        public void StartHostLobby(string playerName)
-        {
-            _currentState.StartHostLobby(playerName);
-        }
-        
         private void Start()
         {
             _networkManager.OnClientConnectedCallback += OnClientConnectedCallback;
@@ -67,6 +62,16 @@ namespace ForsakenGraves.Connection
 
         private void OnClientConnectedCallback(ulong clientId) => _currentState.OnClientConnectedCallback(clientId);
         
+        public void StartHostLobby(string playerName)
+        {
+            _currentState.StartHostLobby(playerName);
+        }
+
+        public void StartClientLobby(string displayName)
+        {
+            _currentState.StartClientLobby(displayName);
+        }
+
         void OnDestroy()
         {
             _networkManager.OnClientConnectedCallback -= OnClientConnectedCallback;
@@ -76,7 +81,5 @@ namespace ForsakenGraves.Connection
             _networkManager.OnTransportFailure -= OnTransportFailure;
             _networkManager.OnServerStopped -= OnServerStopped;
         }
-        
-        
     }
 }

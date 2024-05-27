@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using ForsakenGraves.Connection.Data;
@@ -17,7 +18,7 @@ namespace ForsakenGraves.Connection
     {
         private readonly LobbyServiceFacade _lobbyServiceFacade;
         private readonly LocalLobby _localLobby;
-        private readonly ConnectionStateManager _connectionManager;
+        private readonly ConnectionStateManager _connectionStateManager;
         private readonly ProfileManager _profileManager;
         private readonly string _playerName;
 
@@ -25,13 +26,13 @@ namespace ForsakenGraves.Connection
 
         public RelayConnectionMethod(LobbyServiceFacade lobbyServiceFacade,
                                      LocalLobby localLobby,
-                                     ConnectionStateManager connectionManager,
+                                     ConnectionStateManager connectionStateManager,
                                      ProfileManager profileManager,
                                      string playerName)
         {
             _lobbyServiceFacade = lobbyServiceFacade;
             _localLobby = localLobby;
-            _connectionManager = connectionManager;
+            _connectionStateManager = connectionStateManager;
             _profileManager = profileManager;
             _playerName = playerName;
         }
@@ -39,14 +40,13 @@ namespace ForsakenGraves.Connection
         private void SetConnectionPayload(string playerId, string playerName)
         {
             string payload = JsonUtility.ToJson(new ConnectionPayload()
-                                                {
-                                                    PlayerId = playerId,
-                                                    PlayerName = playerName,
-                                                });
+                                                    {
+                                                        PlayerId = playerId,
+                                                        PlayerName = playerName,
+                                                    });
 
             byte[] payloadBytes = System.Text.Encoding.UTF8.GetBytes(payload);
-
-            _connectionManager.NetworkManager.NetworkConfig.ConnectionData = payloadBytes;
+            _connectionStateManager.NetworkManager.NetworkConfig.ConnectionData = payloadBytes;
         }
 
         public async UniTask SetupHostConnectionAsync()
@@ -56,7 +56,7 @@ namespace ForsakenGraves.Connection
             SetConnectionPayload(GetPlayerId(), _playerName); // Need to set connection payload for host as well, as host is a client too
 
             // Create relay allocation
-            Allocation hostAllocation = await RelayService.Instance.CreateAllocationAsync(_connectionManager.MaxConnectedPlayers, region: null);
+            Allocation hostAllocation = await RelayService.Instance.CreateAllocationAsync(_connectionStateManager.MaxConnectedPlayers, region: null);
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(hostAllocation.AllocationId);
 
             Debug.Log($"server: connection data: {hostAllocation.ConnectionData[0]} {hostAllocation.ConnectionData[1]}, " +
@@ -69,10 +69,37 @@ namespace ForsakenGraves.Connection
             await _lobbyServiceFacade.UpdatePlayerDataAsync(hostAllocation.AllocationIdBytes.ToString(), joinCode);
 
             // Setup UTP with relay connection info
-            UnityTransport utp = (UnityTransport)_connectionManager.NetworkManager.NetworkConfig.NetworkTransport;
+            UnityTransport utp = (UnityTransport)_connectionStateManager.NetworkManager.NetworkConfig.NetworkTransport;
             utp.SetRelayServerData(new RelayServerData(hostAllocation, DTLS_CONN_TYPE)); // This is with DTLS enabled for a secure connection
 
             Debug.Log($"Created relay allocation with join code {_localLobby.RelayJoinCode}");
+        }
+        
+        public async UniTask SetupClientConnectionAsync()
+        {
+            Debug.Log("Setting up Unity Relay client");
+
+            SetConnectionPayload(GetPlayerId(), _playerName);
+
+            if (_lobbyServiceFacade.CurrentUnityLobby == null)
+            {
+                throw new Exception("Trying to start relay while Lobby isn't set");
+            }
+
+            Debug.Log($"Setting Unity Relay client with join code {_localLobby.RelayJoinCode}");
+
+            // Create client joining allocation from join code
+            JoinAllocation joinedAllocation = await RelayService.Instance.JoinAllocationAsync(_localLobby.RelayJoinCode);
+            Debug.Log($"client: {joinedAllocation.ConnectionData[0]} {joinedAllocation.ConnectionData[1]}, " +
+                      $"host: {joinedAllocation.HostConnectionData[0]} {joinedAllocation.HostConnectionData[1]}, " +
+                      $"client: {joinedAllocation.AllocationId}");
+
+            await _lobbyServiceFacade.UpdatePlayerDataAsync(joinedAllocation.AllocationId.ToString(), 
+                                                            _localLobby.RelayJoinCode);
+
+            // Configure UTP with allocation
+            UnityTransport utp = (UnityTransport)_connectionStateManager.NetworkManager.NetworkConfig.NetworkTransport;
+            utp.SetRelayServerData(new RelayServerData(joinedAllocation, DTLS_CONN_TYPE));
         }
         
         private string GetPlayerId()

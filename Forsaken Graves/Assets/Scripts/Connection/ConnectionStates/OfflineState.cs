@@ -35,9 +35,24 @@ namespace ForsakenGraves.Connection.ConnectionStates
                                                                                playerName);
             
             StartingHostState startingHostState = _connectionStatesModel.StartingHostState;
-            startingHostState.Configure(connectionMethod);
             
+            startingHostState.Configure(connectionMethod);
             _connectionStateManager.ChangeState(startingHostState);
+            
+        }
+
+        public override void StartClientLobby(string playerName)
+        {
+            RelayConnectionMethod connectionMethod = new RelayConnectionMethod(_lobbyServiceFacade,
+                                                                               _localLobby,
+                                                                               _connectionStateManager,
+                                                                               _profileManager,
+                                                                               playerName);
+            
+            ClientConnectingState clientConnectingState = _connectionStatesModel.ClientConnectingState;
+            
+            clientConnectingState.Configure(connectionMethod);
+            _connectionStateManager.ChangeState(clientConnectingState);
         }
     }
 }

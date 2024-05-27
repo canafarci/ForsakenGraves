@@ -16,6 +16,8 @@ namespace ForsakenGraves.Connection.ConnectionStates
         
         public virtual void StartHostLobby(string playerName) { }
         public virtual void StartClientLobby(string playerName) { }
+        public virtual void OnClientConnected(ulong clientId) { }
+        public virtual void OnClientDisconnect(ulong clientId) { }
         public virtual void OnUserRequestedShutdown() {}
         
         //Network Manager Callbacks

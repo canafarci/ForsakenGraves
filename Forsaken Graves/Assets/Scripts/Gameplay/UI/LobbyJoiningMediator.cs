@@ -1,4 +1,5 @@
 using System;
+using ForsakenGraves.Connection;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -15,6 +16,8 @@ namespace ForsakenGraves.Gameplay.UI
         [Inject] private LobbyAPIInterface _lobbyAPIInterface;
         [Inject] private AuthenticationServiceFacade _authenticationServiceFacade;
         [Inject] private LocalLobby _localLobby;
+        [Inject] private LocalLobbyPlayer _localLobbyPlayer;
+        [Inject] private ConnectionStateManager _connectionStateManager;
         
         private readonly LobbyJoiningView _view;
 
@@ -50,6 +53,7 @@ namespace ForsakenGraves.Gameplay.UI
             _lobbyServiceFacade.SetRemoteLobby(remoteLobby);
             Debug.Log($"Joined lobby with code: {_localLobby.LobbyCode}, Internal Relay Join Code{_localLobby.RelayJoinCode}");
 
+            _connectionStateManager.StartClientLobby(_localLobbyPlayer.DisplayName);
         }
 
         public void Dispose()

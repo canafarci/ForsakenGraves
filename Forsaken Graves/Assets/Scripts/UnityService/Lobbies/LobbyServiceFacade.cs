@@ -147,8 +147,6 @@ namespace ForsakenGraves.UnityService.Lobbies
             _currentUnityLobby = lobby;
             _localLobby.ApplyRemoteData(lobby);
         }
-        
-
 #endregion
 
 #region Join Lobby
