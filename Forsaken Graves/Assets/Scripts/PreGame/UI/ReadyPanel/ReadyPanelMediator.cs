@@ -1,16 +1,17 @@
+using System;
 using VContainer.Unity;
 
 namespace ForsakenGraves.PreGame.UI.ReadyPanel
 {
-    public class ReadyPanelMediator : IInitializable
+    public class ReadyPanelMediator : IInitializable, IDisposable
     {
         private readonly ReadyPanelView _view;
-        private readonly ClientNetworkedPreGameLogic _clientNetworkedPreGameLogic;
+        private readonly PreGameNetwork _preGameNetwork;
 
-        public ReadyPanelMediator(ReadyPanelView view, ClientNetworkedPreGameLogic clientNetworkedPreGameLogic)
+        public ReadyPanelMediator(ReadyPanelView view, PreGameNetwork preGameNetwork)
         {
             _view = view;
-            _clientNetworkedPreGameLogic = clientNetworkedPreGameLogic;
+            _preGameNetwork = preGameNetwork;
         }
         
         public void Initialize()
@@ -21,7 +22,7 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         private void OnReadyButtonClicked()
         {
             _view.ReadyButton.interactable = false;
-            _clientNetworkedPreGameLogic.OnReadyClickedServerRpc();
+            _preGameNetwork.OnReadyClickedServerRpc();
         }
 
         public void UpdateReadyButton(bool isReady)
@@ -36,6 +37,11 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
             {
                 _view.Text.SetText("Ready");
             }
+        }
+        
+        public void Dispose()
+        {
+            _view.ReadyButton.onClick.RemoveAllListeners();
         }
     }
 }

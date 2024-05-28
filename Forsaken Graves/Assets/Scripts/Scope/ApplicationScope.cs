@@ -6,9 +6,9 @@ using ForsakenGraves.GameState;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.Infrastructure.Dependencies;
+using ForsakenGraves.Infrastructure.Netcode;
 using ForsakenGraves.Infrastructure.SceneManagement;
 using ForsakenGraves.Infrastructure.SceneManagement.Messages;
-using ForsakenGraves.PreGame.Signals;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
 using ForsakenGraves.UnityService.Messages;
@@ -54,8 +54,6 @@ namespace ForsakenGraves.Scope
             builder.Register<LocalLobbyPlayer>(Lifetime.Singleton);
             builder.Register<LocalLobby>(Lifetime.Singleton);
             
-            //builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
-
             builder.Register<RuntimeInjector>(Lifetime.Singleton);
             MessagePipeOptions options = RegisterMessagePipe(builder);
             RegisterMessageBrokers(builder, options);
@@ -69,8 +67,9 @@ namespace ForsakenGraves.Scope
             builder.RegisterMessageBroker<ConnectionEventMessage>(options);
             builder.RegisterMessageBroker<ConnectStatus>(options);
             
-            //pregame
-            builder.RegisterMessageBroker<PlayerReadyChangedMessage>(options);
+            //netcode
+            builder.RegisterMessageBroker<OnNetworkSpawnMessage>(options);
+            builder.RegisterMessageBroker<OnNetworkDespawnMessage>(options);
         }
 
         private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using ForsakenGraves.Connection;
-using ForsakenGraves.PreGame.Signals;
+using ForsakenGraves.PreGame;
+using ForsakenGraves.PreGame.Data;
 using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,53 +12,62 @@ namespace ForsakenGraves.GameState
 {
     public class ServerPreGameState : NetworkBehaviour
     {
-        //listened by ReadyPanelController
-        [Inject] private IPublisher<PlayerReadyChangedMessage> _readyChangedPublisher;
         [Inject] private ConnectionStateManager _connectionStateManager;
+        [Inject] private PreGameNetwork _preGameNetwork;
         
-        private Dictionary<ulong, bool> _clientReadyLookup = new();
-
         public override void OnNetworkSpawn()
         {
-            base.OnNetworkSpawn();
-            if (!IsServer) return;
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                enabled = false;
+                return;
+            }
 
             ulong clientID = _connectionStateManager.NetworkManager.LocalClient.ClientId;
-            OnClientConnectedCallbackHandler(clientID);
             
-            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallbackHandler;
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += OnClientLoadedScene;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
+        }
+
+        private void OnClientLoadedScene(SceneEvent sceneEvent)
+        {
+            if (sceneEvent.SceneEventType != SceneEventType.LoadComplete) return;
+            
+            _preGameNetwork.AddNewPlayerData(sceneEvent.ClientId);
         }
 
         private void OnClientDisconnectCallback(ulong clientID)
         {
-            _clientReadyLookup.Remove(clientID);
-        }
-
-        private void OnClientConnectedCallbackHandler(ulong clientID)
-        {
-            _clientReadyLookup.Add(clientID, false);
-            Debug.Log($"CLIENT with ID {clientID} connected!");
-        }
-
-        public void OnPlayerReadyChanged(ulong clientId)
-        {
-            if (!IsServer) return;
-            if (!_clientReadyLookup.ContainsKey(clientId))
-            {
-                throw new Exception($"Player with clientID {clientId} is not inside the lookup!");
-            }
-            
-            bool playerIsReady = _clientReadyLookup[clientId];
-            _clientReadyLookup[clientId] = !playerIsReady;
-            
-            SendReadyButtonChangeRpc(clientId, _clientReadyLookup[clientId]);
+            _preGameNetwork.RemovePlayerData(clientID);
         }
         
-        [Rpc(SendTo.Everyone)]
-        private void SendReadyButtonChangeRpc(ulong clientId, bool isReady)
+        //called from server rpc
+        public void OnPlayerReadyChanged(ulong clientId)
         {
-            _readyChangedPublisher.Publish(new PlayerReadyChangedMessage(isReady, clientId));
+            (int playerIndex, PlayerLobbyData lobbyData) clientData = _preGameNetwork.GetPlayerLobbyData(clientId);
+            
+            bool playerIsReady = clientData.lobbyData.IsReady;
+            clientData.lobbyData.IsReady = !playerIsReady;
+
+            _preGameNetwork.ChangeLobbyData(clientData.playerIndex, clientData.lobbyData);
+        }
+        
+        //called from server rpc
+        public void OnClientAvatarChanged(ulong clientId, int nextIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (!NetworkManager.Singleton.IsServer)
+            {
+                enabled = false;
+                return;
+            }
+            
+            NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnClientLoadedScene;
+            NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
         }
     }
 }
