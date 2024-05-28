@@ -3,7 +3,7 @@ using ForsakenGraves.Connection.Identifiers;
 using ForsakenGraves.Connection.Utilities;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Data;
-using ForsakenGraves.Infrastructure.SceneManagement.Signals;
+using ForsakenGraves.Infrastructure.SceneManagement.Messages;
 using ForsakenGraves.UnityService.Lobbies;
 using MessagePipe;
 using Unity.Netcode;
@@ -14,7 +14,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
 {
     public class HostingState : ConnectionState
     {
-        [Inject] private IPublisher<LoadSceneSignal> _sceneLoadPublisher;
+        [Inject] private IPublisher<LoadSceneMessage> _sceneLoadPublisher;
         [Inject] IPublisher<ConnectionEventMessage> _connectionEventPublisher;
         [Inject] private LobbyServiceFacade _lobbyServiceFacade;
         [Inject] private ConnectionStatesModel _connectionStatesModel;
@@ -24,7 +24,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
         public override void Enter()
         {
             //load char select scene when hosting start via networkmanager
-            _sceneLoadPublisher.Publish(new LoadSceneSignal(SceneIdentifier.PreGameScene, useNetworkManager: true));
+            _sceneLoadPublisher.Publish(new LoadSceneMessage(SceneIdentifier.PreGameScene, useNetworkManager: true));
             
             if (_lobbyServiceFacade.CurrentUnityLobby == null) return;
             _lobbyServiceFacade.BeginTracking();

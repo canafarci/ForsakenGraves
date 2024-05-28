@@ -1,6 +1,6 @@
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
-using ForsakenGraves.Infrastructure.SceneManagement.Signals;
+using ForsakenGraves.Infrastructure.SceneManagement.Messages;
 using ForsakenGraves.UnityService.Lobbies;
 using MessagePipe;
 using Unity.Netcode;
@@ -10,7 +10,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
 {
     public class OfflineState : ConnectionState
     {
-        [Inject] private IPublisher<LoadSceneSignal> _sceneLoadPublisher;
+        [Inject] private IPublisher<LoadSceneMessage> _sceneLoadPublisher;
         [Inject] private LobbyServiceFacade _lobbyServiceFacade;
         [Inject] private NetworkManager _networkManager;
         [Inject] private LocalLobby _localLobby;
@@ -21,7 +21,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
             _lobbyServiceFacade.EndTracking();
             _networkManager.Shutdown();
             
-            _sceneLoadPublisher.Publish(new LoadSceneSignal(SceneIdentifier.MainMenu, false));
+            _sceneLoadPublisher.Publish(new LoadSceneMessage(SceneIdentifier.MainMenu, false));
         }
 
         public override void Exit() { }

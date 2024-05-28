@@ -1,7 +1,7 @@
 using System;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
-using ForsakenGraves.UnityService.Signals;
+using ForsakenGraves.UnityService.Messages;
 using MessagePipe;
 using Unity.Services.Authentication;
 using UnityEngine;
@@ -14,7 +14,7 @@ namespace ForsakenGraves.GameState
     {
         private readonly AuthenticationServiceFacade _authenticationServiceFacade;
         
-        [Inject] private IPublisher<OnAuthenticationSuccessfulSignal> _authorizationSuccessfulPublisher;
+        [Inject] private IPublisher<OnAuthenticationSuccessfulMessage> _authorizationSuccessfulPublisher;
         [Inject] private LocalLobbyPlayer _localPlayer;
         
         public MainMenuState(AuthenticationServiceFacade authenticationServiceFacade)
@@ -44,7 +44,7 @@ namespace ForsakenGraves.GameState
         private void OnAuthenticationSuccessful()
         {
             Debug.Log($"Signed in. Unity Player ID {AuthenticationService.Instance.PlayerId}");
-            _authorizationSuccessfulPublisher.Publish(new OnAuthenticationSuccessfulSignal());
+            _authorizationSuccessfulPublisher.Publish(new OnAuthenticationSuccessfulMessage());
             _localPlayer.ID = AuthenticationService.Instance.PlayerId;
         }
     }

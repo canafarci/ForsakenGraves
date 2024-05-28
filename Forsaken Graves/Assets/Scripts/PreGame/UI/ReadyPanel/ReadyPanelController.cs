@@ -1,13 +1,13 @@
 using System;
 using ForsakenGraves.Connection;
+using ForsakenGraves.Infrastructure.Templates;
 using ForsakenGraves.PreGame.Signals;
 using MessagePipe;
 using VContainer;
-using VContainer.Unity;
 
 namespace ForsakenGraves.PreGame.UI.ReadyPanel
 {
-    public class ReadyPanelController : IInitializable, IDisposable
+    public class ReadyPanelController : MessageSubscriberTemplate
     {
         [Inject] private ISubscriber<PlayerReadyChangedMessage> _readyChangedSubscriber;
         [Inject] private ConnectionStateManager _connectionStateManager;
@@ -20,11 +20,9 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
             _mediator = mediator;
         }
 
-        public void Initialize()
+        public override void ListenToMessages()
         {
-            DisposableBagBuilder bag = DisposableBag.CreateBuilder();;
-            _readyChangedSubscriber.Subscribe(OnPlayerReadyChanged).AddTo(bag);
-            _disposableBag = bag.Build();
+            _readyChangedSubscriber.Subscribe(OnPlayerReadyChanged).AddTo(_bag);
         }
 
         private void OnPlayerReadyChanged(PlayerReadyChangedMessage message)
@@ -33,11 +31,6 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
             if (clientId != message.ClientID) return;
 
             _mediator.UpdateReadyButton(message.IsReady);
-        }
-
-        public void Dispose()
-        {
-            _disposableBag?.Dispose();
         }
     }
 }

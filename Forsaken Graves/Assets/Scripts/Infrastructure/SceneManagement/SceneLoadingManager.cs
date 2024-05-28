@@ -1,5 +1,5 @@
 using System;
-using ForsakenGraves.Infrastructure.SceneManagement.Signals;
+using ForsakenGraves.Infrastructure.SceneManagement.Messages;
 using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,7 +10,7 @@ namespace ForsakenGraves.Infrastructure.SceneManagement
 {
     public class SceneLoadingManager : NetworkBehaviour
     {
-        [Inject] private ISubscriber<LoadSceneSignal> _sceneLoadSubscriber;
+        [Inject] private ISubscriber<LoadSceneMessage> _sceneLoadSubscriber;
         
         private IDisposable _disposableBag;
 
@@ -101,24 +101,24 @@ namespace ForsakenGraves.Infrastructure.SceneManagement
             _disposableBag = bag.Build();
         }
 
-        private void OnLoadSceneSignal(LoadSceneSignal loadSceneSignal)
+        private void OnLoadSceneSignal(LoadSceneMessage loadSceneMessage)
         {
-            if (SceneManager.GetActiveScene().buildIndex == (int)loadSceneSignal.SceneID) return;
-            if (loadSceneSignal.UseNetworkManager)
+            if (SceneManager.GetActiveScene().buildIndex == (int)loadSceneMessage.SceneID) return;
+            if (loadSceneMessage.UseNetworkManager)
             {
                 if (IsSpawned && IsNetworkSceneManagementEnabled() && !NetworkManager.ShutdownInProgress)
                 {
                     if (NetworkManager.IsServer)
                     {
                         // If is active server and NetworkManager uses scene management, load scene using NetworkManager's SceneManager
-                        NetworkManager.SceneManager.LoadScene(loadSceneSignal.SceneID.ToString(), LoadSceneMode.Single);
+                        NetworkManager.SceneManager.LoadScene(loadSceneMessage.SceneID.ToString(), LoadSceneMode.Single);
                     }
                 }
             }
             else
             {
                 // Load using SceneManager
-                AsyncOperation loadOperation = SceneManager.LoadSceneAsync((int)loadSceneSignal.SceneID);
+                AsyncOperation loadOperation = SceneManager.LoadSceneAsync((int)loadSceneMessage.SceneID);
                 
                 //_clientLoadingScreen.StartLoadingScreen(sceneName);
                 //_loadingProgressManager.LocalLoadOperation = loadOperation;

@@ -7,11 +7,11 @@ using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.Infrastructure.Dependencies;
 using ForsakenGraves.Infrastructure.SceneManagement;
-using ForsakenGraves.Infrastructure.SceneManagement.Signals;
+using ForsakenGraves.Infrastructure.SceneManagement.Messages;
 using ForsakenGraves.PreGame.Signals;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
-using ForsakenGraves.UnityService.Signals;
+using ForsakenGraves.UnityService.Messages;
 using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
@@ -64,10 +64,11 @@ namespace ForsakenGraves.Scope
 
         private static void RegisterMessageBrokers(IContainerBuilder builder, MessagePipeOptions options)
         {
-            builder.RegisterMessageBroker<OnAuthenticationSuccessfulSignal>(options);
-            builder.RegisterMessageBroker<LoadSceneSignal>(options);
+            builder.RegisterMessageBroker<OnAuthenticationSuccessfulMessage>(options);
+            builder.RegisterMessageBroker<LoadSceneMessage>(options);
             builder.RegisterMessageBroker<ConnectionEventMessage>(options);
             builder.RegisterMessageBroker<ConnectStatus>(options);
+            
             //pregame
             builder.RegisterMessageBroker<PlayerReadyChangedMessage>(options);
         }

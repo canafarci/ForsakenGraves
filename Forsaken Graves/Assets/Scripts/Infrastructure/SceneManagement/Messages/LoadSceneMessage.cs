@@ -1,13 +1,13 @@
 using ForsakenGraves.Identifiers;
 
-namespace ForsakenGraves.Infrastructure.SceneManagement.Signals
+namespace ForsakenGraves.Infrastructure.SceneManagement.Messages
 {
-    public readonly struct LoadSceneSignal
+    public readonly struct LoadSceneMessage
     {
         private readonly SceneIdentifier _sceneID;
         private readonly bool _useNetworkManager;
 
-        public LoadSceneSignal(SceneIdentifier sceneID, bool useNetworkManager)
+        public LoadSceneMessage(SceneIdentifier sceneID, bool useNetworkManager)
         {
             _sceneID = sceneID;
             _useNetworkManager = useNetworkManager;
