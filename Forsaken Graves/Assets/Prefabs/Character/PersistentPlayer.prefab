@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8195718986266515606}
   - component: {fileID: 3063080053248175128}
+  - component: {fileID: -2034415063616549309}
   m_Layer: 0
-  m_Name: PlayerAvatar
+  m_Name: PersistentPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 697778317
+  GlobalObjectIdHash: 3561401516
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -53,3 +54,15 @@ MonoBehaviour:
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+--- !u!114 &-2034415063616549309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5928988836584487775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 72040de9f93245a9b2944f33c52423fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

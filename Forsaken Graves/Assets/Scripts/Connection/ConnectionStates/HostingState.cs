@@ -24,7 +24,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
         public override void Enter()
         {
             //load char select scene when hosting start via networkmanager
-            _sceneLoadPublisher.Publish(new LoadSceneSignal(SceneIdentifier.CharSelectScene, useNetworkManager: true));
+            _sceneLoadPublisher.Publish(new LoadSceneSignal(SceneIdentifier.PreGameScene, useNetworkManager: true));
             
             if (_lobbyServiceFacade.CurrentUnityLobby == null) return;
             _lobbyServiceFacade.BeginTracking();
@@ -120,10 +120,7 @@ namespace ForsakenGraves.Connection.ConnectionStates
             {
                 SessionManager<SessionPlayerData>.Instance.SetupConnectingPlayerSessionData(clientId,
                     connectionPayload.PlayerId, new SessionPlayerData(clientId,
-                                                                      connectionPayload.PlayerName,
-                                                                      new NetworkGuid(),
-                                                                      0,
-                                                                      true)); 
+                                                                      connectionPayload.PlayerName)); 
                 //approval creates a player object
                 response.Approved = true;
                 response.CreatePlayerObject = true;

@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: d87b10c1f8e844b4caa6cace82e42289
   - enabled: 1
-    path: Assets/Scenes/CharSelectScene.unity
+    path: Assets/Scenes/PreGameScene.unity
     guid: a2a924f8e28db476c89fd5addf72fc5e
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

@@ -30,7 +30,8 @@ namespace ForsakenGraves.Connection.ConnectionStates
                 ConnectionPayload connectionPayload = JsonUtility.FromJson<ConnectionPayload>(payload);
 
                 SessionManager<SessionPlayerData>.Instance.SetupConnectingPlayerSessionData(clientId, connectionPayload.PlayerId,
-                                    new SessionPlayerData(clientId, connectionPayload.PlayerName, new NetworkGuid(), 0, true));
+                                    new SessionPlayerData(clientId,
+                                                          connectionPayload.PlayerName));
 
                 // connection approval will create a player object for you
                 response.Approved = true;

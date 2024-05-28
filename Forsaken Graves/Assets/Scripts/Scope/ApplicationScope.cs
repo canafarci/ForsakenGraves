@@ -1,14 +1,14 @@
-using System;
 using ForsakenGraves.Connection;
 using ForsakenGraves.Connection.ConnectionStates;
 using ForsakenGraves.Connection.Data;
 using ForsakenGraves.Connection.Identifiers;
-using ForsakenGraves.Gameplay.GameState;
+using ForsakenGraves.GameState;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.Infrastructure.Dependencies;
 using ForsakenGraves.Infrastructure.SceneManagement;
 using ForsakenGraves.Infrastructure.SceneManagement.Signals;
+using ForsakenGraves.PreGame.Signals;
 using ForsakenGraves.UnityService.Auth;
 using ForsakenGraves.UnityService.Lobbies;
 using ForsakenGraves.UnityService.Signals;
@@ -19,7 +19,7 @@ using UnityEngine.SceneManagement;
 using VContainer;
 using VContainer.Unity;
 
-namespace ForsakenGraves.Gameplay.Scope.CrossScene
+namespace ForsakenGraves.Scope
 {
     public class ApplicationScope : LifetimeScope
     {
@@ -44,7 +44,7 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             
             builder.UseEntryPoints(Lifetime.Singleton, entryPoints =>
                                                        {
-                                                           entryPoints.Add<MainMenuGameState>();
+                                                           entryPoints.Add<MainMenuState>();
                                                        });
             
             builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
@@ -68,6 +68,8 @@ namespace ForsakenGraves.Gameplay.Scope.CrossScene
             builder.RegisterMessageBroker<LoadSceneSignal>(options);
             builder.RegisterMessageBroker<ConnectionEventMessage>(options);
             builder.RegisterMessageBroker<ConnectStatus>(options);
+            //pregame
+            builder.RegisterMessageBroker<PlayerReadyChangedMessage>(options);
         }
 
         private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)

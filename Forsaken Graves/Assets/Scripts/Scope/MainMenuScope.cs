@@ -1,11 +1,8 @@
 using ForsakenGraves.Gameplay.UI;
-using ForsakenGraves.UnityService.Auth;
-using ForsakenGraves.UnityService.Lobbies;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-namespace ForsakenGraves.Gameplay.Scope
+namespace ForsakenGraves.Scope
 {
     public class MainMenuScope : LifetimeScope
     {

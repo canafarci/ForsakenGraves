@@ -8,16 +8,16 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-namespace ForsakenGraves.Gameplay.GameState
+namespace ForsakenGraves.GameState
 {
-    public class MainMenuGameState : IInitializable
+    public class MainMenuState : IInitializable
     {
         private readonly AuthenticationServiceFacade _authenticationServiceFacade;
         
         [Inject] private IPublisher<OnAuthenticationSuccessfulSignal> _authorizationSuccessfulPublisher;
         [Inject] private LocalLobbyPlayer _localPlayer;
         
-        public MainMenuGameState(AuthenticationServiceFacade authenticationServiceFacade)
+        public MainMenuState(AuthenticationServiceFacade authenticationServiceFacade)
         {
             _authenticationServiceFacade = authenticationServiceFacade;
         }
