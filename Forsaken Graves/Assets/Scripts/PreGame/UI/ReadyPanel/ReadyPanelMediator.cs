@@ -7,6 +7,7 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
     {
         private readonly ReadyPanelView _view;
         private readonly PreGameNetwork _preGameNetwork;
+        public event Action ReadyButtonClicked;
 
         public ReadyPanelMediator(ReadyPanelView view, PreGameNetwork preGameNetwork)
         {
@@ -22,7 +23,7 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         private void OnReadyButtonClicked()
         {
             _view.ReadyButton.interactable = false;
-            _preGameNetwork.OnReadyClickedServerRpc();
+            ReadyButtonClicked?.Invoke();
         }
 
         public void UpdateReadyButton(bool isReady)

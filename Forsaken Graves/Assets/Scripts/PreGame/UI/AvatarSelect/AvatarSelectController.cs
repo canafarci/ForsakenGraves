@@ -31,6 +31,8 @@ namespace ForsakenGraves.PreGame.UI.AvatarSelect
 
         private void AvatarChangeButtonClickedHandler()
         {
+            if (_preGameNetwork.IsLobbyLocked.Value) return;
+            
             int currentIndex = _model.AvatarIndex;
             int avatarsLength = _playerAvatarsSO.PlayerAvatars.Count;
 

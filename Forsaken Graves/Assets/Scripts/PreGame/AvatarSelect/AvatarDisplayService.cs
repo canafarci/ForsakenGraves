@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cysharp.Threading.Tasks;
-using ForsakenGraves.Connection;
 using ForsakenGraves.GameState;
 using ForsakenGraves.Infrastructure.Netcode;
 using ForsakenGraves.Infrastructure.Templates;
@@ -11,7 +8,6 @@ using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
-using VContainer.Unity;
 
 namespace ForsakenGraves.PreGame.AvatarSelect
 {
@@ -25,10 +21,7 @@ namespace ForsakenGraves.PreGame.AvatarSelect
         private readonly PlayerAvatarsSO _avatarsSO;
         private readonly AvatarSelectModel _model;
         private readonly AvatarDisplayCompositeView _view;
-
-        private GameObject _currentLocalAvatar;
-        private List<GameObject> _otherPlayerAvatars = new();
-
+        
         public AvatarDisplayService(ServerPreGameState serverPreGameState,
                                     PreGameNetwork preGameNetwork,
                                     PlayerAvatarsSO avatarsSO,
@@ -56,60 +49,47 @@ namespace ForsakenGraves.PreGame.AvatarSelect
             _preGameNetwork.ChangeAvatarServerRpc(avatarIndex);
         }
 
-        private async void NetworkListChangedHandler(NetworkListEvent<PlayerLobbyData> changeEvent)
+        private void NetworkListChangedHandler(NetworkListEvent<PlayerLobbyData> changeEvent)
         {
-            CleanOldAvatars();
+            Debug.Log($"Is Lobby Locked: {_preGameNetwork.IsLobbyLocked.Value}");
+            if (_preGameNetwork.IsLobbyLocked.Value) return;
             
-            //wait until all avatars are cleaned
-            await UniTask.WaitUntil(() => _view.AvatarDisplayViews[0].AvatarHolderTransform.childCount == 0);
-
             NetworkList<PlayerLobbyData> playerLobbyDataNetworkList = _preGameNetwork.PlayerLobbyDataNetworkList;
             ulong clientID = NetworkManager.Singleton.LocalClient.ClientId;
-            
+
+            int otherPlayerIndex = 0;
             for (int i = 0; i < playerLobbyDataNetworkList.Count; i++)
             {
                 PlayerLobbyData lobbyData = playerLobbyDataNetworkList[i];
                 if (lobbyData.ClientID == clientID)
                     SpawnLocalPlayerAvatar(lobbyData);
                 else
-                    SpawnOtherPlayerAvatar(lobbyData);
+                    SpawnOtherPlayerAvatar(lobbyData, otherPlayerIndex++);
             }
         }
-
-        private void CleanOldAvatars()
+        
+        private void SpawnOtherPlayerAvatar(PlayerLobbyData playerLobbyData, int index)
         {
-            //Clear present avatar GOs
-            //NOTE: this can be optimized by checking if avatars have changed
-            //or only updating the changes
-            //or pre-spawning avatars and changing activation
-            GameObject.Destroy(_currentLocalAvatar);
-            _otherPlayerAvatars.ForEach(GameObject.Destroy);
-            _otherPlayerAvatars.Clear();
-        }
-
-        private void SpawnOtherPlayerAvatar(PlayerLobbyData playerLobbyData)
-        {
-            Transform otherPlayerTransform = _view.AvatarDisplayViews
-                                                  .FirstOrDefault(x => x.AvatarHolderTransform.childCount == 0)
-                                                  ?.AvatarHolderTransform;
+            Transform otherPlayerTransform = _view.AvatarDisplayViews[index].AvatarHolderTransform;
             
-            GameObject otherPlayerAvatar = SpawnAvatar(playerLobbyData, otherPlayerTransform);
-            _otherPlayerAvatars.Add(otherPlayerAvatar);
+            SpawnAvatar(playerLobbyData, otherPlayerTransform);
         }
 
         private void SpawnLocalPlayerAvatar(PlayerLobbyData playerLobbyData)
         {
             Transform localAvatarTransform = _view.LocalClientAvatarDisplayView.AvatarHolderTransform;
-            _currentLocalAvatar = SpawnAvatar(playerLobbyData, localAvatarTransform);
+            SpawnAvatar(playerLobbyData, localAvatarTransform);
         }
         
-        private GameObject SpawnAvatar(PlayerLobbyData playerLobbyData, Transform spawnTransform)
+        private void SpawnAvatar(PlayerLobbyData playerLobbyData, Transform spawnTransform)
         {
+            if (spawnTransform.childCount != 0)
+                GameObject.Destroy(spawnTransform.GetChild(0).gameObject);
+            
             int avatarIndex = playerLobbyData.AvatarIndex;
             GameObject avatarPrefab = _avatarsSO.PlayerAvatars[avatarIndex];
             
-            GameObject otherPlayerAvatar =  GameObject.Instantiate(avatarPrefab, spawnTransform);
-            return otherPlayerAvatar;
+            GameObject.Instantiate(avatarPrefab, spawnTransform);
         }
         
         private void OnNetworkDespawnMessage(OnNetworkDespawnMessage message)

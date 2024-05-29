@@ -25,7 +25,20 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         {
             _mediator = mediator;
         }
-        
+
+        public override void Initialize()
+        {
+            base.Initialize();
+            _mediator.ReadyButtonClicked += ReadButtonClickedHandler;
+        }
+
+        private void ReadButtonClickedHandler()
+        {
+            if (_preGameNetwork.IsLobbyLocked.Value) return;
+            
+            _preGameNetwork.OnReadyClickedServerRpc();
+        }
+
         public override void ListenToMessages()
         {
             _networkSpawnSubscriber.Subscribe(OnNetworkSpawn).AddTo(_bag);
@@ -40,8 +53,6 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         private void OnNetworkListChanged(NetworkListEvent<PlayerLobbyData> changedList)
         {
             ulong clientID = _connectionStateManager.NetworkManager.LocalClient.ClientId;
-            //(int playerIndex, PlayerLobbyData lobbyData) clientData = _preGameNetwork.GetPlayerLobbyData(clientID);
-            
             if (changedList.Value.ClientID != clientID) return;
             
             _mediator.UpdateReadyButton(changedList.Value.IsReady);
@@ -50,6 +61,12 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         private void OnNetworkDespawn(OnNetworkDespawnMessage message)
         {
             _preGameNetwork.PlayerLobbyDataNetworkList.OnListChanged -= OnNetworkListChanged;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            _mediator.ReadyButtonClicked -= ReadButtonClickedHandler;
         }
     }
 }

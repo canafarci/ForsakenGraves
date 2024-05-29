@@ -13,13 +13,27 @@ namespace ForsakenGraves.PreGame
     {
         [Inject] private ServerPreGameState _serverPreGameState;
         private NetworkList<PlayerLobbyData> _playerLobbyDataNetworkList;
-        public NetworkList<PlayerLobbyData> PlayerLobbyDataNetworkList => _playerLobbyDataNetworkList;
+        private NetworkVariable<bool> _isLobbyLocked = new NetworkVariable<bool>(false);
 
+        public NetworkList<PlayerLobbyData> PlayerLobbyDataNetworkList => _playerLobbyDataNetworkList;
+        public NetworkVariable<bool> IsLobbyLocked => _isLobbyLocked;
+        
         private void Awake()
         {
             _playerLobbyDataNetworkList = new NetworkList<PlayerLobbyData>();
         }
-        
+
+        public override void OnNetworkSpawn()
+        {
+            if (IsServer) return;
+            _isLobbyLocked.OnValueChanged += OnLobbyLockedChanged;
+        }
+
+        private void OnLobbyLockedChanged(bool previousValue, bool newValue)
+        {
+            _isLobbyLocked.Value = newValue;
+        }
+
         public void ChangeLobbyData(int networkListPlayerIndex, PlayerLobbyData clientLobbyData)
         {
             _playerLobbyDataNetworkList[networkListPlayerIndex] = clientLobbyData;
@@ -61,7 +75,11 @@ namespace ForsakenGraves.PreGame
             (int playerIndex, PlayerLobbyData lobbyData) clientData = GetPlayerLobbyData(clientId);
             _playerLobbyDataNetworkList.RemoveAt(clientData.playerIndex);
         }
-
-
+        
+        public override void OnNetworkDespawn()
+        {
+            if (IsServer) return;
+            _isLobbyLocked.OnValueChanged -= OnLobbyLockedChanged;
+        }
     }
 }
