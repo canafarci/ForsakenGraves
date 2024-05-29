@@ -13,10 +13,10 @@ namespace ForsakenGraves.UnityService.Lobbies
         private LobbyData _lobbyData;
 
 #region Getter-Setters
-
         public int PlayerCount => _lobbyPlayers.Count;
 
         public LobbyData LobbyData => new LobbyData(_lobbyData);
+        
         public Dictionary<string, LocalLobbyPlayer> LobbyPlayers => _lobbyPlayers;
         
         public string LobbyID

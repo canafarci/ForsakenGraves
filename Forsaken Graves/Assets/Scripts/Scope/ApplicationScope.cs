@@ -29,8 +29,6 @@ namespace ForsakenGraves.Scope
         
         protected override void Configure(IContainerBuilder builder)
         {
-            base.Configure(builder);
-            
             builder.RegisterComponent(_connectionStateManager);
             builder.RegisterComponent(_networkManager);
             builder.RegisterComponent(_sceneLoadingManager);

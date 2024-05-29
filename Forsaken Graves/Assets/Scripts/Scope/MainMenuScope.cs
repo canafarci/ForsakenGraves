@@ -10,8 +10,6 @@ namespace ForsakenGraves.Scope
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            base.Configure(builder);
-            
             builder.RegisterComponentInHierarchy<LobbyCreationView>();
             builder.RegisterComponentInHierarchy<LobbyJoiningView>();
             

@@ -1,10 +1,14 @@
 using Cysharp.Threading.Tasks;
 using ForsakenGraves.Connection;
+using ForsakenGraves.Connection.Data;
+using ForsakenGraves.Connection.Utilities;
+using ForsakenGraves.Gameplay.GameplayObjects;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.SceneManagement.Messages;
 using ForsakenGraves.PreGame;
 using ForsakenGraves.PreGame.Data;
 using MessagePipe;
+using Unity.Collections;
 using Unity.Netcode;
 using VContainer;
 
@@ -32,7 +36,9 @@ namespace ForsakenGraves.GameState
             _preGameNetwork.PlayerLobbyDataNetworkList.OnListChanged += PlayerDataListChangedHandler;
         }
 
-#region Check Player Ready
+#region Check Player Ready & Scene Transition
+//TODO bug:
+    //when all players are ready, a cancellation token is needed when another player enters the lobby to cancel scene load.
         private void PlayerDataListChangedHandler(NetworkListEvent<PlayerLobbyData> changeEvent)
         {
             if (CheckIfAllPlayersAreReady())
@@ -45,8 +51,29 @@ namespace ForsakenGraves.GameState
         {
             _preGameNetwork.IsLobbyLocked.Value = true;
             
-            await UniTask.Delay(1000);
+            await UniTask.Delay(500);
+            SavePlayerData();
+            await UniTask.Delay(500);
+            
             _loadScenePublisher.Publish(new LoadSceneMessage(SceneIdentifier.PrototypeGameplayScene, true));
+        }
+
+        private void SavePlayerData()
+        {
+            foreach (PlayerLobbyData playerLobbyData in _preGameNetwork.PlayerLobbyDataNetworkList)
+            {
+                NetworkObject playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(playerLobbyData.ClientID);
+
+                if (playerNetworkObject && playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer))
+                {
+                    persistentPlayer.PlayerVisualData.AvatarIndex.Value = playerLobbyData.AvatarIndex;
+                    string displayName = SessionManager<SessionPlayerData>.Instance
+                                                                                 .GetPlayerData(playerLobbyData.ClientID)?
+                                                                                 .PlayerName;
+                    
+                    persistentPlayer.PlayerVisualData.DisplayName.Value = new FixedString32Bytes(displayName);
+                }
+            }
         }
 
         private bool CheckIfAllPlayersAreReady()

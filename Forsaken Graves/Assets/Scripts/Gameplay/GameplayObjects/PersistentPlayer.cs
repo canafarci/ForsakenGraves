@@ -1,4 +1,4 @@
-using ForsakenGraves.UnityService.Data;
+using ForsakenGraves.Gameplay.Data;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -6,6 +6,7 @@ namespace ForsakenGraves.Gameplay.GameplayObjects
 {
     public class PersistentPlayer : NetworkBehaviour
     {
-        private PlayerData _playerData;
+        [SerializeField] private NetworkPlayerVisualData _networkPlayerVisualData;
+        public NetworkPlayerVisualData PlayerVisualData => _networkPlayerVisualData;
     }
 }
