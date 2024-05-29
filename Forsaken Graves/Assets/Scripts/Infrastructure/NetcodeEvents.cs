@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using ForsakenGraves.Infrastructure.Netcode;
 using MessagePipe;
 using Unity.Netcode;
@@ -11,8 +12,10 @@ namespace ForsakenGraves.Infrastructure
         [Inject] private IPublisher<OnNetworkDespawnMessage> _despawnMessagePublisher;
         [Inject] private IPublisher<OnNetworkSpawnMessage> _spawnMessagePublisher;
         
-        public override void OnNetworkSpawn()
+        public override async void OnNetworkSpawn()
         {
+            await UniTask.WaitUntil(() => IsSpawned);
+            
             _spawnMessagePublisher.Publish(new OnNetworkSpawnMessage());
         }
 

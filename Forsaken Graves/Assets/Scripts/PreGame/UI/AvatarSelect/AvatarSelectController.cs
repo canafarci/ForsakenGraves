@@ -35,6 +35,8 @@ namespace ForsakenGraves.PreGame.UI.AvatarSelect
             int avatarsLength = _playerAvatarsSO.PlayerAvatars.Count;
 
             int nextIndex = currentIndex + 1 == avatarsLength ? 0 : currentIndex + 1;
+            
+            _model.ChangeAvatarIndex(nextIndex);
             _preGameNetwork.ChangeAvatarServerRpc(nextIndex);
         }
 

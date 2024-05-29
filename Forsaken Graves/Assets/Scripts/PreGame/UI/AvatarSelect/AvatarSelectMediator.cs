@@ -12,8 +12,7 @@ namespace ForsakenGraves.PreGame.UI.AvatarSelect
         {
             _view = view;
         }
-
-
+        
         public void Initialize()
         {
             _view.ChangeAvatarButton.onClick.AddListener(OnChangeAvatarButtonClicked);

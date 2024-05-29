@@ -1,8 +1,9 @@
+#pragma warning disable 1633
+
 using ForsakenGraves.Connection.Data;
 using ForsakenGraves.Connection.Identifiers;
 using ForsakenGraves.Connection.Utilities;
 using ForsakenGraves.Identifiers;
-using ForsakenGraves.Infrastructure.Data;
 using ForsakenGraves.Infrastructure.SceneManagement.Messages;
 using ForsakenGraves.UnityService.Lobbies;
 using MessagePipe;
@@ -15,9 +16,8 @@ namespace ForsakenGraves.Connection.ConnectionStates
     public class HostingState : ConnectionState
     {
         [Inject] private IPublisher<LoadSceneMessage> _sceneLoadPublisher;
-        [Inject] IPublisher<ConnectionEventMessage> _connectionEventPublisher;
+        [Inject] private IPublisher<ConnectionEventMessage> _connectionEventPublisher;
         [Inject] private LobbyServiceFacade _lobbyServiceFacade;
-        [Inject] private ConnectionStatesModel _connectionStatesModel;
 
         private const int MAX_PAYLOAD_SIZE = 1024;
         

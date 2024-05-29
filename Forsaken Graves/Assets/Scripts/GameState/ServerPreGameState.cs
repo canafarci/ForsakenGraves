@@ -14,6 +14,7 @@ namespace ForsakenGraves.GameState
     {
         [Inject] private ConnectionStateManager _connectionStateManager;
         [Inject] private PreGameNetwork _preGameNetwork;
+        [Inject] private PlayerAvatarsSO _avatarsSO;
         
         public override void OnNetworkSpawn()
         {
@@ -55,7 +56,11 @@ namespace ForsakenGraves.GameState
         //called from server rpc
         public void OnClientAvatarChanged(ulong clientId, int nextIndex)
         {
-            throw new NotImplementedException();
+            (int playerIndex, PlayerLobbyData lobbyData) clientData = _preGameNetwork.GetPlayerLobbyData(clientId);
+            
+            PlayerLobbyData changedLobbyData = clientData.lobbyData;
+            changedLobbyData.AvatarIndex = nextIndex;
+            _preGameNetwork.ChangeLobbyData(clientData.playerIndex, changedLobbyData);
         }
 
         public override void OnNetworkDespawn()

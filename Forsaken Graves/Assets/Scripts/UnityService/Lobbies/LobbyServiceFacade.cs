@@ -1,6 +1,8 @@
+#pragma warning disable 4014
+#pragma warning disable 1998
+
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.UnityService.Helpers;
