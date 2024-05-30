@@ -3,6 +3,7 @@ using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.GameplayObjects;
 using NUnit.Framework;
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -37,6 +38,7 @@ namespace ForsakenGraves.GameState
         {
             if (_isInitialSpawnDone || loadSceneMode != LoadSceneMode.Single ) return;
 
+            _isInitialSpawnDone = true;
             foreach (KeyValuePair<ulong, NetworkClient> clients in NetworkManager.Singleton.ConnectedClients)
             {
                 InitialSpawnPlayer(clients.Key);
@@ -54,9 +56,9 @@ namespace ForsakenGraves.GameState
             
             bool playerDataObjectExists = newPlayer.TryGetComponent(out ClientCharacterPlayerDataObject playerDataObject);
             Assert.IsTrue(playerDataObjectExists,  $"ClientCharacterPlayerDataObject for {clientID} is not present!");
-            
-            playerDataObject.DisplayName = persistentPlayer.PlayerVisualData.DisplayName.Value.ToString();
-            playerDataObject.AvatarIndex = persistentPlayer.PlayerVisualData.AvatarIndex.Value;
+
+            playerDataObject.DisplayName = new NetworkVariable<FixedString32Bytes>(persistentPlayer.PlayerVisualData.DisplayName.Value);
+            playerDataObject.AvatarIndex = new NetworkVariable<int>( persistentPlayer.PlayerVisualData.AvatarIndex.Value);
             
             newPlayer.SpawnWithOwnership(clientID, true);
         }

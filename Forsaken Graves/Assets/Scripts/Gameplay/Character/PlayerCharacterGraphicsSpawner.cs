@@ -15,14 +15,14 @@ namespace ForsakenGraves.Gameplay.Character
 
         public override void OnNetworkSpawn()
         {
-            if (!IsOwner || _avatarSpawned) return;
+            if (!IsClient || _avatarSpawned) return;
 
             SpawnAvatar();
         }
 
         private void SpawnAvatar()
         {
-            int avatarIndex = _clientCharacterPlayerDataObject.AvatarIndex;
+            int avatarIndex = _clientCharacterPlayerDataObject.AvatarIndex.Value;
             Instantiate(_avatarsSO.PlayerAvatars[avatarIndex], _avatarParent);
 
             _avatarSpawned = true;

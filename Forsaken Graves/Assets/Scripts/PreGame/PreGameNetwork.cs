@@ -12,6 +12,7 @@ namespace ForsakenGraves.PreGame
     public class PreGameNetwork : NetworkBehaviour
     {
         [Inject] private ServerPreGameState _serverPreGameState;
+        
         private NetworkList<PlayerLobbyData> _playerLobbyDataNetworkList;
         private NetworkVariable<bool> _isLobbyLocked = new NetworkVariable<bool>(false);
 

@@ -52,13 +52,14 @@ namespace ForsakenGraves.GameState
             _preGameNetwork.IsLobbyLocked.Value = true;
             
             await UniTask.Delay(500);
-            SavePlayerData();
+            SavePlayerDataServerRpc();
             await UniTask.Delay(500);
             
             _loadScenePublisher.Publish(new LoadSceneMessage(SceneIdentifier.PrototypeGameplayScene, true));
         }
-
-        private void SavePlayerData()
+        
+        [Rpc(SendTo.Server)]
+        private void SavePlayerDataServerRpc()
         {
             foreach (PlayerLobbyData playerLobbyData in _preGameNetwork.PlayerLobbyDataNetworkList)
             {

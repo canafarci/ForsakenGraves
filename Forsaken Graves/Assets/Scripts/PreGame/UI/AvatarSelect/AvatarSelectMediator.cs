@@ -20,7 +20,13 @@ namespace ForsakenGraves.PreGame.UI.AvatarSelect
 
         private void OnChangeAvatarButtonClicked()
         {
+            _view.ChangeAvatarButton.interactable = false;
             OnAvatarChangeButtonClicked?.Invoke();
+        }
+
+        public void EnableButton()
+        {
+            _view.ChangeAvatarButton.interactable = true;
         }
 
         public void Dispose()

@@ -51,7 +51,6 @@ namespace ForsakenGraves.PreGame.AvatarSelect
 
         private void NetworkListChangedHandler(NetworkListEvent<PlayerLobbyData> changeEvent)
         {
-            Debug.Log($"Is Lobby Locked: {_preGameNetwork.IsLobbyLocked.Value}");
             if (_preGameNetwork.IsLobbyLocked.Value) return;
             
             NetworkList<PlayerLobbyData> playerLobbyDataNetworkList = _preGameNetwork.PlayerLobbyDataNetworkList;
@@ -83,8 +82,9 @@ namespace ForsakenGraves.PreGame.AvatarSelect
         
         private void SpawnAvatar(PlayerLobbyData playerLobbyData, Transform spawnTransform)
         {
-            if (spawnTransform.childCount != 0)
-                GameObject.Destroy(spawnTransform.GetChild(0).gameObject);
+            if (spawnTransform.childCount > 0)
+                for (int i = 0; i < spawnTransform.childCount; i++)
+                    GameObject.Destroy(spawnTransform.GetChild(i).gameObject);
             
             int avatarIndex = playerLobbyData.AvatarIndex;
             GameObject avatarPrefab = _avatarsSO.PlayerAvatars[avatarIndex];
