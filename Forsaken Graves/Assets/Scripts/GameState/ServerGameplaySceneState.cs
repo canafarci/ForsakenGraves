@@ -51,8 +51,12 @@ namespace ForsakenGraves.GameState
             
             bool persistentPlayerExists = playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer);
             Assert.IsTrue(persistentPlayerExists,  $"Persistent player for {clientID} is not present!");
-
-                //NetworkPlayerVisualData playerVisualData = persistentPlayer.PlayerVisualData;
+            
+            bool playerDataObjectExists = newPlayer.TryGetComponent(out ClientCharacterPlayerDataObject playerDataObject);
+            Assert.IsTrue(playerDataObjectExists,  $"ClientCharacterPlayerDataObject for {clientID} is not present!");
+            
+            playerDataObject.DisplayName = persistentPlayer.PlayerVisualData.DisplayName.Value.ToString();
+            playerDataObject.AvatarIndex = persistentPlayer.PlayerVisualData.AvatarIndex.Value;
             
             newPlayer.SpawnWithOwnership(clientID, true);
         }
