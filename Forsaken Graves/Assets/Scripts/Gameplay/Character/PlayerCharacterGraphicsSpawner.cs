@@ -23,7 +23,9 @@ namespace ForsakenGraves.Gameplay.Character
         private void SpawnAvatar()
         {
             int avatarIndex = _clientCharacterPlayerDataObject.AvatarIndex.Value;
-            Instantiate(_avatarsSO.PlayerAvatars[avatarIndex], _avatarParent);
+            
+            GameObject avatarPrefab = IsOwner ? _avatarsSO.PlayableAvatars[avatarIndex] : _avatarsSO.OtherPlayerAvatars[avatarIndex]; 
+            Instantiate(avatarPrefab, _avatarParent);
 
             _avatarSpawned = true;
         }

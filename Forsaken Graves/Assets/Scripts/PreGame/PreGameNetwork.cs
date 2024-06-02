@@ -52,14 +52,14 @@ namespace ForsakenGraves.PreGame
             throw new Exception($"No data associated with {clientID} is inside the network list!");
         }
         
-        [Rpc(SendTo.Server, RequireOwnership = false)]
+        [Rpc(SendTo.Server)]
         public void OnReadyClickedServerRpc(RpcParams rpcParams = default)
         {
             ulong clientId = rpcParams.Receive.SenderClientId;
             _serverPreGameState.OnPlayerReadyChanged(clientId);
         }
         
-        [Rpc(SendTo.Server, RequireOwnership = false)]
+        [Rpc(SendTo.Server)]
         public void ChangeAvatarServerRpc(int avatarIndex, RpcParams rpcParams = default)
         {
             ulong clientId = rpcParams.Receive.SenderClientId;

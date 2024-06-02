@@ -12,7 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 42f505cca20d43c082273aac898fb384, type: 3}
   m_Name: Player Avatars
   m_EditorClassIdentifier: 
-  PlayerAvatars:
+  OtherPlayerAvatars:
   - {fileID: 2568642951110748033, guid: 117303aeb11f0457caa63f01b71c755a, type: 3}
   - {fileID: 5282489717383631009, guid: 1d1d091c0ee444ef996cc71232d56362, type: 3}
   - {fileID: 1521861300499579670, guid: 6a57b06627fff47bba4d9b11213dd00c, type: 3}
+  PlayableAvatars:
+  - {fileID: 2568642951110748033, guid: 001e393c6e3974b0e8e2eb5e64c7ac7a, type: 3}
+  - {fileID: 5282489717383631009, guid: 762accccf3a8f49e7a793ea70ce3585f, type: 3}
+  - {fileID: 1521861300499579670, guid: 32b956faead8047c2bb8b363f4636428, type: 3}

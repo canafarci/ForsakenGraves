@@ -87,7 +87,7 @@ namespace ForsakenGraves.PreGame.AvatarSelect
                     GameObject.Destroy(spawnTransform.GetChild(i).gameObject);
             
             int avatarIndex = playerLobbyData.AvatarIndex;
-            GameObject avatarPrefab = _avatarsSO.PlayerAvatars[avatarIndex];
+            GameObject avatarPrefab = _avatarsSO.OtherPlayerAvatars[avatarIndex];
             
             GameObject.Instantiate(avatarPrefab, spawnTransform);
         }

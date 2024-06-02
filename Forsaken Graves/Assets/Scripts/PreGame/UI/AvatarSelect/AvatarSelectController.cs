@@ -66,7 +66,7 @@ namespace ForsakenGraves.PreGame.UI.AvatarSelect
             if (_preGameNetwork.IsLobbyLocked.Value) return;
             
             int currentIndex = _model.AvatarIndex;
-            int avatarsLength = _playerAvatarsSO.PlayerAvatars.Count;
+            int avatarsLength = _playerAvatarsSO.OtherPlayerAvatars.Count;
 
             int nextIndex = currentIndex + 1 == avatarsLength ? 0 : currentIndex + 1;
             
