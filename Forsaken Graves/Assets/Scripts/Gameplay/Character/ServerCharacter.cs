@@ -10,7 +10,7 @@ namespace ForsakenGraves.Gameplay.Character
             ulong clientID = OwnerClientId;
             name = $"Client {clientID}'s Gameplay Character";
 
-            transform.position = new Vector3(Random.Range(-5f, 5f), Random.Range(-5f, 5f), Random.Range(-5f, 5f));
+            transform.position = new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
         }
     }
 }
