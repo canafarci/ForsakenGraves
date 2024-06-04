@@ -1,3 +1,4 @@
+using ForsakenGraves.Application;
 using ForsakenGraves.Connection;
 using ForsakenGraves.Connection.ConnectionStates;
 using ForsakenGraves.Connection.Data;
@@ -32,7 +33,8 @@ namespace ForsakenGraves.Scope
             builder.RegisterComponent(_connectionStateManager);
             builder.RegisterComponent(_networkManager);
             builder.RegisterComponent(_sceneLoadingManager);
-            
+
+            builder.RegisterEntryPoint<ApplicationSettings>().AsSelf();
             
             builder.RegisterEntryPoint<ConnectionStatesCreator>().AsSelf();
             builder.Register<ConnectionStatesModel>(Lifetime.Singleton).AsSelf();
@@ -85,7 +87,6 @@ namespace ForsakenGraves.Scope
 
         private void Start()
         {
-            Application.targetFrameRate = 120;
             SceneManager.LoadScene((int)SceneIdentifier.MainMenu);
         }
     }

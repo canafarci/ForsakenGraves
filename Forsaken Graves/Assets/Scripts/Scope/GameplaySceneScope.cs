@@ -1,3 +1,4 @@
+using ForsakenGraves.Gameplay;
 using ForsakenGraves.GameState;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.PreGame.Data;
@@ -18,6 +19,8 @@ namespace ForsakenGraves.Scope
             builder.RegisterInstance(_playerAvatarsSO);
             builder.RegisterInstance(_serverGameplaySceneState);
             builder.RegisterInstance(_netcodeEvents);
+
+            builder.RegisterEntryPoint<GameplaySettings>().AsSelf();
         }
     }
 }

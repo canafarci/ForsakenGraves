@@ -1,4 +1,5 @@
 using ForsakenGraves.Gameplay.UI;
+using ForsakenGraves.MainMenu;
 using ForsakenGraves.PreGame.Data;
 using UnityEngine;
 using VContainer;
@@ -15,6 +16,7 @@ namespace ForsakenGraves.Scope
             
             builder.RegisterEntryPoint<LobbyCreationMediator>();
             builder.RegisterEntryPoint<LobbyJoiningMediator>();
+            builder.RegisterEntryPoint<MainMenuSettings>();
         }
     }
 }
