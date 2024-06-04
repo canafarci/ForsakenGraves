@@ -7,12 +7,9 @@ namespace ForsakenGraves.Gameplay.Character
 {
     public class InputPoller : NetworkBehaviour
     {
-        public InputFlags GetInput()
+        public InputFlags GetMovementInput()
         {
-            if (!NetworkManager.IsListening )
-            {
-                return 0;
-            }
+            if (!NetworkManager.IsListening) return 0;
 
             InputFlags input = 0;
             if (Input.GetKey(KeyCode.W))
@@ -36,6 +33,13 @@ namespace ForsakenGraves.Gameplay.Character
             }
             
             return input;
+        }
+
+        public float GetRotationInput()
+        {
+            if (!NetworkManager.IsListening) return 0;
+            
+            return Input.GetAxis("Mouse X");
         }
     }
 }

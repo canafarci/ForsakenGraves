@@ -72,6 +72,7 @@ GameObject:
   - component: {fileID: -6320597049045587}
   - component: {fileID: 3765004934966193840}
   - component: {fileID: 312774656852090016}
+  - component: {fileID: -6720939594804348826}
   m_Layer: 0
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -138,7 +139,7 @@ CapsuleCollider:
   m_Radius: 0.35
   m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!143 &7949942246383444560
 CharacterController:
   m_ObjectHideFlags: 0
@@ -163,7 +164,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!114 &6277696399862577449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,7 +263,7 @@ MonoBehaviour:
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
-  PositionThreshold: 0.01
+  PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   UseQuaternionSynchronization: 0
@@ -288,6 +289,7 @@ MonoBehaviour:
   _inputPoller: {fileID: 312774656852090016}
   _characterController: {fileID: 7949942246383444560}
   _capsuleCollider: {fileID: 7714528340259402451}
+  _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
 --- !u!114 &312774656852090016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -300,3 +302,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b13f52c6617144bc920b1d9ceac0e5d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-6720939594804348826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7832303255236224990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe5f4a0768564a9280afae337de88071, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _inputPoller: {fileID: 312774656852090016}
+  _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
+  _anticipatedNetworkTransform: {fileID: -6320597049045587}
