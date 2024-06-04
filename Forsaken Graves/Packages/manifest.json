@@ -9,7 +9,7 @@
     "com.unity.multiplayer.playmode": "1.0.0",
     "com.unity.multiplayer.tools": "2.1.0",
     "com.unity.netcode.gameobjects": "1.9.1",
-    "com.unity.render-pipelines.high-definition": "17.0.3",
+    "com.unity.render-pipelines.universal": "17.0.3",
     "com.unity.services.lobby": "1.2.1",
     "com.unity.services.multiplay": "1.2.2",
     "com.unity.services.relay": "1.0.5",
