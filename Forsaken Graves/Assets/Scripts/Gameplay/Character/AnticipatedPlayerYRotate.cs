@@ -19,7 +19,11 @@ namespace ForsakenGraves.Gameplay.Character
         
         public override void OnNetworkSpawn()
         {
-            if (!IsOwner) return;
+            if (!IsOwner)
+            {
+                enabled = false;
+                return;
+            }
             
             //set max input send rate
             uint tickRate = NetworkManager.NetworkTickSystem.TickRate;
@@ -28,9 +32,7 @@ namespace ForsakenGraves.Gameplay.Character
 
         private void Update()
         {
-            if (!IsOwner) return;
-            
-            float mouseXRotation = _inputPoller.GetRotationInput();
+            float mouseXRotation = _inputPoller.GetRotationXInput();
             
             if (ApplyRotation(mouseXRotation)) return;
 
@@ -42,7 +44,7 @@ namespace ForsakenGraves.Gameplay.Character
         {
             if (Mathf.Approximately(0f, mouseXRotation)) return true;
             
-            transform.Rotate(Vector3.up, mouseXRotation * _playerConfig.RotationSpeed);
+            transform.Rotate(Vector3.up, mouseXRotation * _playerConfig.RotationSpeed * Time.deltaTime);
             _anticipatedNetworkTransform.AnticipateRotate(transform.rotation);
             
             return false;

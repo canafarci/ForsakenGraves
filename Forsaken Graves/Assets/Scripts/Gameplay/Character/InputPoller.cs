@@ -1,5 +1,4 @@
 using ForsakenGraves.Identifiers;
-using ForsakenGraves.Infrastructure.Data;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -35,11 +34,18 @@ namespace ForsakenGraves.Gameplay.Character
             return input;
         }
 
-        public float GetRotationInput()
+        public float GetRotationXInput()
         {
             if (!NetworkManager.IsListening) return 0;
             
             return Input.GetAxis("Mouse X");
+        }
+        
+        public float GetRotationYInput()
+        {
+            if (!NetworkManager.IsListening) return 0;
+            
+            return Input.GetAxis("Mouse Y");
         }
     }
 }
