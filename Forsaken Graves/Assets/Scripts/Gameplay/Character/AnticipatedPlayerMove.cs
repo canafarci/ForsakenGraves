@@ -21,6 +21,10 @@ namespace ForsakenGraves.Gameplay.Character
         //safeguard to prevent sending updates faster than network update rate
         private float _inputSendRate = 0f;
         private float _lastInputSentTime;
+
+        private const float SMOOTH_TIME = 0.1f;
+        private const float TELEPORT_DISTANCE_SQR = 3f;
+        private const float SMOOTH_DISTANCE_SQR = 1.6f;
         
         public override void OnNetworkSpawn()
         {
@@ -112,9 +116,16 @@ namespace ForsakenGraves.Gameplay.Character
         
         public override void OnReanticipate(double lastRoundTripTime)
         {
-            if (!IsOwner) return;
-            
             AnticipatedNetworkTransform.TransformState previousState = _anticipatedNetworkTransform.PreviousAnticipatedState;
+            
+            if (!IsOwner)
+            {
+                _anticipatedNetworkTransform.Smooth(previousState,
+                                                    _anticipatedNetworkTransform.AuthoritativeState,
+                                                    SMOOTH_TIME);
+                return;
+            }
+
 
             double localTime = NetworkManager.LocalTime.Time;
             double authorityTime = localTime - lastRoundTripTime;
@@ -133,12 +144,32 @@ namespace ForsakenGraves.Gameplay.Character
                     timeDelta = localTimeDelta;
                 }
             }
+            
+            _positionHistory.RemoveBefore(authorityTime);
 
             Vector3 anticipationError = nearestPositionFrame.Item - previousState.Position;
-            _characterController.Move(anticipationError);
 
+            float errorSquared = anticipationError.sqrMagnitude;
+            
+            if (errorSquared < SMOOTH_DISTANCE_SQR)
+            {
+                //error rate is small, just add movement 
+                _characterController.Move(anticipationError);
+            }
+            else if (errorSquared < TELEPORT_DISTANCE_SQR)
+            {
+                //error rate is negligible, smooth position
+                _anticipatedNetworkTransform.Smooth(previousState,
+                                                    _anticipatedNetworkTransform.AuthoritativeState,
+                                                    SMOOTH_TIME);
+            }
+            else
+            {
+                //error rate is too high, teleport to authoritative position
+                _anticipatedNetworkTransform.AnticipateMove(_anticipatedNetworkTransform.AuthoritativeState.Position);
+            }
+            
             Debug.Log($"time {Time.frameCount}, error: {anticipationError}, timeDelta : {timeDelta}");          
-            _positionHistory.RemoveBefore(authorityTime);
         }
 
         [Rpc(SendTo.Server)]
