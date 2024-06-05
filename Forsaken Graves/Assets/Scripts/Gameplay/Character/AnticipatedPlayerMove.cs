@@ -63,15 +63,51 @@ namespace ForsakenGraves.Gameplay.Character
             _inputSendRate = 1f / tickRate;
         }
         
+        private void Update()
+        {
+            if (!IsOwner) return;
+
+            InputFlags input =  _inputPoller.GetMovementInput();
+            MoveAndSendRpc(input);
+        }
+        
         private void MoveAndSendRpc(InputFlags inputs)
         {
-            if (ApplyMovement(inputs, Time.deltaTime)) return;
+            Vector3 direction = GetDirection(inputs);
+
+            Move(direction);
+
             if (IsHost) return;
             
             if (CanSendInput())
-                ServerMoveRpc(transform.position);
+                ServerMoveRpc(direction);
         }
 
+        private void Move(Vector3 direction)
+        {
+            _characterController.Move(direction * (_playerConfig.MovementSpeed * Time.deltaTime));
+            
+            if (IsHost)
+            {
+                if (CanSendInput())
+                {
+                    _anticipatedNetworkTransform.AnticipateMove(transform.position);
+                }
+            }
+            else
+            {
+                _anticipatedNetworkTransform.AnticipateMove(transform.position);
+            }
+            
+            //Debug.Log($"time {Time.frameCount}, calledFromIsServer: {IsServer},  calledFromIsOwner: {IsOwner}");          
+        }
+
+        [Rpc(SendTo.Server)]
+        private void ServerMoveRpc(Vector3 direction)
+        {
+            Move(direction);
+        }
+        
         private bool CanSendInput()
         {
             if (_lastInputSentTime + _inputSendRate < Time.time)
@@ -85,7 +121,7 @@ namespace ForsakenGraves.Gameplay.Character
             }
         }
 
-        private bool ApplyMovement(InputFlags inputs, float deltaTime)
+        private Vector3 GetDirection(InputFlags inputs)
         {
             Vector3 direction = Vector3.zero;
             
@@ -100,12 +136,8 @@ namespace ForsakenGraves.Gameplay.Character
 
             if ((inputs & InputFlags.Right) != 0) 
                 direction += transform.right;
-
-            if (direction == Vector3.zero) return true;
             
-            _characterController.Move(direction * (_playerConfig.MovementSpeed * deltaTime));
-            _anticipatedNetworkTransform.AnticipateMove(transform.position);
-            return false;
+            return direction;
         }
         
         private void OnNetworkTick()
@@ -170,20 +202,6 @@ namespace ForsakenGraves.Gameplay.Character
             }
             
             Debug.Log($"time {Time.frameCount}, error: {anticipationError}, timeDelta : {timeDelta}");          
-        }
-
-        [Rpc(SendTo.Server)]
-        private void ServerMoveRpc(Vector3 position)
-        {
-            _anticipatedNetworkTransform.AnticipateMove(position);
-        }
-
-        private void Update()
-        {
-            if (!IsOwner) return;
-
-            InputFlags input =  _inputPoller.GetMovementInput();
-            MoveAndSendRpc(input);
         }
 
         public override void OnNetworkDespawn()
