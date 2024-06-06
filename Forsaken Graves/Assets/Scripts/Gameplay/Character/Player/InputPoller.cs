@@ -2,7 +2,7 @@ using ForsakenGraves.Identifiers;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace ForsakenGraves.Gameplay.Character
+namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class InputPoller : NetworkBehaviour
     {

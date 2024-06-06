@@ -1,21 +1,31 @@
+using System;
 using System.Collections.Generic;
 using ForsakenGraves.Gameplay.Character;
+using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.GameplayObjects;
+using ForsakenGraves.Gameplay.Spawners;
+using MessagePipe;
 using NUnit.Framework;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using VContainer;
 
 namespace ForsakenGraves.GameState
 {
     public class ServerGameplaySceneState: NetworkBehaviour
     {
         [SerializeField] private NetworkObject _playerPrefab;
+        [Inject] private ISubscriber<PlayerCharacterDespawnedMessage> _playerDespawnedSubscriber;
         
         private bool _isInitialSpawnDone = false;
-        
+        private List<GameObject> _playerCharacters = new();
+        public List<GameObject> PlayerCharacters => _playerCharacters;
+
+        private IDisposable _disposables;
+
         public override void OnNetworkSpawn()
         {
             if (!IsServer)
@@ -23,12 +33,26 @@ namespace ForsakenGraves.GameState
                 enabled = false;
                 return;
             }
-            
+
+            SubscribeToMessages();
+
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnLoadEventCompleted;
 
         }
 
-#region Load Event & Spawn Players
+        private void SubscribeToMessages()
+        {
+            DisposableBagBuilder bag = DisposableBag.CreateBuilder();
+            
+            _playerDespawnedSubscriber.Subscribe(OnPlayerDespawned).AddTo(bag);
+
+            _disposables = bag.Build();
+        }
+
+        private void OnPlayerDespawned(PlayerCharacterDespawnedMessage message) =>
+            _playerCharacters.Remove(message.PlayerCharacter);
+
+        #region Load Event & Spawn Players
         private void OnLoadEventCompleted(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
         {
             InitialSpawn(loadSceneMode);
@@ -49,7 +73,7 @@ namespace ForsakenGraves.GameState
         {
             NetworkObject playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientID);
             NetworkObject newPlayer = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
-            ServerCharacter newPlayerCharacter = newPlayer.GetComponent<ServerCharacter>();
+            ServerPlayerCharacter newPlayerPlayerCharacter = newPlayer.GetComponent<ServerPlayerCharacter>();
             
             bool persistentPlayerExists = playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer);
             Assert.IsTrue(persistentPlayerExists,  $"Persistent player for {clientID} is not present!");
@@ -61,6 +85,8 @@ namespace ForsakenGraves.GameState
             playerDataObject.AvatarIndex = new NetworkVariable<int>( persistentPlayer.PlayerVisualData.AvatarIndex.Value);
             
             newPlayer.SpawnWithOwnership(clientID, true);
+            
+            _playerCharacters.Add(newPlayer.gameObject);
         }
 #endregion
         
@@ -70,6 +96,12 @@ namespace ForsakenGraves.GameState
             if (!IsServer) return;
             
             NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnLoadEventCompleted;
+        }
+
+        public override void OnDestroy()
+        {
+            _disposables.Dispose();
+            base.OnDestroy();
         }
     }
 }

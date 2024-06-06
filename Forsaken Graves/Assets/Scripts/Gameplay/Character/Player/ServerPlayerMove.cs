@@ -1,6 +1,6 @@
 using Unity.Netcode;
 
-namespace ForsakenGraves.Gameplay.Character
+namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class ServerPlayerMove : NetworkBehaviour
     {

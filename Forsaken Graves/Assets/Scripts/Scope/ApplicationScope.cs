@@ -3,6 +3,7 @@ using ForsakenGraves.Connection;
 using ForsakenGraves.Connection.ConnectionStates;
 using ForsakenGraves.Connection.Data;
 using ForsakenGraves.Connection.Identifiers;
+using ForsakenGraves.Gameplay.Spawners;
 using ForsakenGraves.GameState;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
@@ -70,6 +71,9 @@ namespace ForsakenGraves.Scope
             //netcode
             builder.RegisterMessageBroker<OnNetworkSpawnMessage>(options);
             builder.RegisterMessageBroker<OnNetworkDespawnMessage>(options);
+            
+            //gameplay
+            builder.RegisterMessageBroker<PlayerCharacterDespawnedMessage>(options);
         }
 
         private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)

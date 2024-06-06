@@ -102,6 +102,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 1805162828
       objectReference: {fileID: 0}
+    - target: {fileID: 2661373475174162836, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
+      propertyPath: _graph
+      value: 
+      objectReference: {fileID: 11400000, guid: fcd33bdc65b71439b8477673847e6931, type: 2}
     - target: {fileID: 6841920370124270296, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -141,6 +145,20 @@ PrefabInstance:
     - target: {fileID: 6841920370124270296, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8415469031148711358, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
+      propertyPath: _serializedBlackboard
+      value: '{"_variables":{"closestPlayer":{"_name":"closestPlayer","_id":"a1b041cd-db6a-4ccc-b239-61925a6be6c3","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.GameObject,
+        UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}}}'
+      objectReference: {fileID: 0}
+    - target: {fileID: 8415469031148711358, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
+      propertyPath: _serializedVariables.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8415469031148711358, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
+      propertyPath: _serializedVariables.Array.data[0]._json
+      value: '{"_name":"closestPlayer","_id":"a1b041cd-db6a-4ccc-b239-61925a6be6c3","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.GameObject,
+        UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null]]"}'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

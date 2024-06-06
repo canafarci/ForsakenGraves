@@ -1,9 +1,8 @@
-using System;
 using ForsakenGraves.Gameplay.Data;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace ForsakenGraves.Gameplay.Character
+namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class LocalCameraXRotate : NetworkBehaviour
     {

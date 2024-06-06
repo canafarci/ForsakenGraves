@@ -1,9 +1,9 @@
 using Unity.Netcode;
 using UnityEngine;
 
-namespace ForsakenGraves.Gameplay.Character
+namespace ForsakenGraves.Gameplay.Character.Player
 {
-    public class ServerCharacter : NetworkBehaviour
+    public class ServerPlayerCharacter : NetworkBehaviour
     {
         [SerializeField] private GameObject _camera;
 

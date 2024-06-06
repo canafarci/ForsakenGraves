@@ -1,9 +1,8 @@
 using ForsakenGraves.PreGame.Data;
 using Unity.Netcode;
 using UnityEngine;
-using VContainer;
 
-namespace ForsakenGraves.Gameplay.Character
+namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class PlayerCharacterGraphicsSpawner : NetworkBehaviour
     {

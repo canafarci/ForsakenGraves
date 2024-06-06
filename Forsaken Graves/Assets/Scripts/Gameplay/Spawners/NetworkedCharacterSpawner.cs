@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace ForsakenGraves.Gameplay.Spawners
@@ -23,7 +25,12 @@ namespace ForsakenGraves.Gameplay.Spawners
                 enabled = false;
                 return;
             }
+            
+            NetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventCompleteHandler;
+        }
 
+        private void OnLoadEventCompleteHandler(string scenename, LoadSceneMode loadscenemode, List<ulong> clientscompleted, List<ulong> clientstimedout)
+        {
             _hasSpawned = true;
         }
 
@@ -43,7 +50,12 @@ namespace ForsakenGraves.Gameplay.Spawners
             NetworkObject clone = Instantiate(_characterToSpawn, randomizedSpawnPos, Quaternion.identity);
 
             clone.Spawn(true);
-            Debug.Log("CALLED SPAWN");
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (IsServer)
+                NetworkManager.SceneManager.OnLoadEventCompleted -= OnLoadEventCompleteHandler;
         }
     }
 }

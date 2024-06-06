@@ -1,10 +1,9 @@
-using System;
 using ForsakenGraves.Gameplay.Data;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
 
-namespace ForsakenGraves.Gameplay.Character
+namespace ForsakenGraves.Gameplay.Character.Player
 {
     //handles character's Y rotation, which is server authoritative with client side anticipation
     public class AnticipatedPlayerYRotate : NetworkBehaviour
