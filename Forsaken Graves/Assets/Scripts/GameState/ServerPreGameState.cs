@@ -34,6 +34,9 @@ namespace ForsakenGraves.GameState
             NetworkManager.Singleton.SceneManager.OnSceneEvent += OnClientLoadedScene;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnectCallback;
             _preGameNetwork.PlayerLobbyDataNetworkList.OnListChanged += PlayerDataListChangedHandler;
+
+            _preGameNetwork.OnPlayerReadyChanged += OnPlayerReadyChanged;
+            _preGameNetwork.OnClientAvatarChanged += OnClientAvatarChanged;
         }
 
 #region Check Player Ready & Scene Transition
@@ -140,10 +143,11 @@ namespace ForsakenGraves.GameState
                 return;
             }
             
+            _preGameNetwork.OnPlayerReadyChanged -= OnPlayerReadyChanged;
+            _preGameNetwork.OnClientAvatarChanged -= OnClientAvatarChanged;
+            _preGameNetwork.PlayerLobbyDataNetworkList.OnListChanged -= PlayerDataListChangedHandler;
             NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnClientLoadedScene;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnectCallback;
-            _preGameNetwork.PlayerLobbyDataNetworkList.OnListChanged -= PlayerDataListChangedHandler;
-
         }
     }
 }

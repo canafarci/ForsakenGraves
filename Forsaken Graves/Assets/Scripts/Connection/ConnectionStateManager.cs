@@ -71,6 +71,12 @@ namespace ForsakenGraves.Connection
         {
             _currentState.StartClientLobby(displayName);
         }
+        
+        public void RequestShutdown()
+        {
+            _currentState.OnUserRequestedShutdown();
+
+        }
 
         void OnDestroy()
         {
@@ -80,6 +86,7 @@ namespace ForsakenGraves.Connection
             _networkManager.ConnectionApprovalCallback -= ApprovalCheck;
             _networkManager.OnTransportFailure -= OnTransportFailure;
             _networkManager.OnServerStopped -= OnServerStopped;
+
         }
     }
 }

@@ -7,7 +7,7 @@ namespace ForsakenGraves.Gameplay.UI
 {
     public class LobbyCreationView : MonoBehaviour
     {
-        [SerializeField] private TMP_InputField _lobbyNameInputField;
+        [SerializeField] private InputField _lobbyNameInputField;
         [SerializeField] private Button _createLobbyButton;
         [SerializeField] Toggle _isPrivateToggle;
         

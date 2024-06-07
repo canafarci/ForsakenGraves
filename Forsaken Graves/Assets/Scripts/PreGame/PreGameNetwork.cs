@@ -11,13 +11,14 @@ namespace ForsakenGraves.PreGame
     //holder for client side interactions inside pre game lobby
     public class PreGameNetwork : NetworkBehaviour
     {
-        [Inject] private ServerPreGameState _serverPreGameState;
-        
         private NetworkList<PlayerLobbyData> _playerLobbyDataNetworkList;
         private NetworkVariable<bool> _isLobbyLocked = new NetworkVariable<bool>(false);
 
         public NetworkList<PlayerLobbyData> PlayerLobbyDataNetworkList => _playerLobbyDataNetworkList;
         public NetworkVariable<bool> IsLobbyLocked => _isLobbyLocked;
+
+        public event Action<ulong> OnPlayerReadyChanged;
+        public event Action<ulong, int> OnClientAvatarChanged;
         
         private void Awake()
         {
@@ -56,14 +57,14 @@ namespace ForsakenGraves.PreGame
         public void OnReadyClickedServerRpc(RpcParams rpcParams = default)
         {
             ulong clientId = rpcParams.Receive.SenderClientId;
-            _serverPreGameState.OnPlayerReadyChanged(clientId);
+            OnPlayerReadyChanged?.Invoke(clientId);
         }
         
         [Rpc(SendTo.Server)]
         public void ChangeAvatarServerRpc(int avatarIndex, RpcParams rpcParams = default)
         {
             ulong clientId = rpcParams.Receive.SenderClientId;
-            _serverPreGameState.OnClientAvatarChanged(clientId, avatarIndex);
+            OnClientAvatarChanged?.Invoke(clientId, avatarIndex);
         }
 
         public void AddNewPlayerData(ulong clientID)

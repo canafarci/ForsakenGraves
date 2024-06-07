@@ -8,8 +8,8 @@ namespace ForsakenGraves.Gameplay.Character.AI
 {
     public class ServerAICharacter : ServerCharacter
     {
-        [Inject ] private Blackboard _blackboard;
-        [Inject ] private BehaviourTreeOwner _behaviourTreeOwner;
+        [Inject] private Blackboard _blackboard;
+        [Inject] private BehaviourTreeOwner _behaviourTreeOwner;
 
         public override void OnNetworkSpawn()
         {
@@ -25,6 +25,7 @@ namespace ForsakenGraves.Gameplay.Character.AI
 
         public override void OnNetworkDespawn()
         {
+            _behaviourTreeOwner.StopBehaviour();
             _behaviourTreeOwner.enabled = false;
             _blackboard.enabled = false;
             

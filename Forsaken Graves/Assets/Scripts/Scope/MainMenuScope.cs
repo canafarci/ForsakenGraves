@@ -16,7 +16,7 @@ namespace ForsakenGraves.Scope
             
             builder.RegisterEntryPoint<LobbyCreationMediator>();
             builder.RegisterEntryPoint<LobbyJoiningMediator>();
-            builder.RegisterEntryPoint<MainMenuSettings>();
+            builder.RegisterEntryPoint<UIMenuSceneSettings>();
         }
     }
 }

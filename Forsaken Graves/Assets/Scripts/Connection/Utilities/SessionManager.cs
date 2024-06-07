@@ -148,5 +148,50 @@ namespace ForsakenGraves.Connection.Utilities
                 }
             }
         }
+
+        public void OnSessionEnded()
+        {
+            ClearDisconnectedPlayersData();
+            ReinitializePlayersData();
+            
+            _hasSessionStarted = false;
+        }
+        
+        private void ReinitializePlayersData()
+        {
+            foreach (ulong id in _clientIDToPlayerId.Keys)
+            {
+                string playerId = _clientIDToPlayerId[id];
+                T sessionPlayerData = _clientData[playerId];
+                sessionPlayerData.Reinitialize();
+                _clientData[playerId] = sessionPlayerData;
+            }
+        }
+        
+        private void ClearDisconnectedPlayersData()
+        {
+            List<ulong> idsToClear = new List<ulong>();
+            
+            foreach (ulong id in _clientIDToPlayerId.Keys)
+            {
+                T? data = GetPlayerData(id);
+                if (data is { IsConnected: false })
+                {
+                    idsToClear.Add(id);
+                }
+            }
+
+            foreach (ulong id in idsToClear)
+            {
+                string playerId = _clientIDToPlayerId[id];
+                T? playerData = GetPlayerData(playerId);
+                if (playerData != null && playerData.Value.ClientID == id)
+                {
+                    _clientData.Remove(playerId);
+                }
+
+                _clientIDToPlayerId.Remove(id);
+            }
+        }
     }
 }

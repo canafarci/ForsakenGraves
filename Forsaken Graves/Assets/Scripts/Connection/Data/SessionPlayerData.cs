@@ -9,17 +9,20 @@ namespace ForsakenGraves.Connection.Data
         public string PlayerName { get; set; }
         public bool IsConnected { get; set; }
         public ulong ClientID { get; set; }
+        public bool HasCharacterSpawned { get; set; }
         
         public SessionPlayerData(ulong clientID, string name)
         {
             ClientID = clientID;
             PlayerName = name;
             IsConnected = true;
+            
+            HasCharacterSpawned = false;
         }
         
         public void Reinitialize()
         {
-            //TODO reconnection logic
+            HasCharacterSpawned = false;
         }
     }
 }

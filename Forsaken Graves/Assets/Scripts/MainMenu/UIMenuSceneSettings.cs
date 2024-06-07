@@ -3,7 +3,7 @@ using VContainer.Unity;
 
 namespace ForsakenGraves.MainMenu
 {
-    public class MainMenuSettings : IStartable
+    public class UIMenuSceneSettings : IStartable
     {
         public void Start()
         {
