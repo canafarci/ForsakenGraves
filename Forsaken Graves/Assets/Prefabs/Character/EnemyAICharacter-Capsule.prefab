@@ -98,6 +98,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemyAICharacter-Capsule
       objectReference: {fileID: 0}
+    - target: {fileID: 697924195653355653, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1318723666689518966, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1805162828
@@ -146,6 +150,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6968906570338551907, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
+      propertyPath: _characterConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 9100c3bc126fc4492960af508f3222ea, type: 2}
     - target: {fileID: 8415469031148711358, guid: 591b2263f86cc4ff397846635da3ad8e, type: 3}
       propertyPath: _serializedBlackboard
       value: '{"_variables":{"closestPlayer":{"_name":"closestPlayer","_id":"a1b041cd-db6a-4ccc-b239-61925a6be6c3","$type":"NodeCanvas.Framework.Variable`1[[UnityEngine.GameObject,

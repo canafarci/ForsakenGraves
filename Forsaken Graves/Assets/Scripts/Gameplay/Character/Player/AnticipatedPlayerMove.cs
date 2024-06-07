@@ -66,7 +66,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         
         private void Update()
         {
-            if (!IsOwner) return;
+            if (!IsOwner || !IsSpawned) return;
 
             InputFlags input =  _inputPoller.GetMovementInput();
             MoveAndSendRpc(input);

@@ -5,6 +5,7 @@ using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.GameplayObjects;
 using ForsakenGraves.Gameplay.Spawners;
+using ForsakenGraves.Infrastructure.Extensions;
 using MessagePipe;
 using NUnit.Framework;
 using Unity.Collections;
@@ -84,6 +85,7 @@ namespace ForsakenGraves.GameState
             playerDataObject.DisplayName = new NetworkVariable<FixedString32Bytes>(persistentPlayer.PlayerVisualData.DisplayName.Value);
             playerDataObject.AvatarIndex = new NetworkVariable<int>( persistentPlayer.PlayerVisualData.AvatarIndex.Value);
             
+            newPlayer.Configure();
             newPlayer.SpawnWithOwnership(clientID, true);
             
             _playerCharacters.Add(newPlayer.gameObject);
@@ -100,7 +102,11 @@ namespace ForsakenGraves.GameState
 
         public override void OnDestroy()
         {
-            _disposables.Dispose();
+            if (IsServer)
+            {
+                _disposables.Dispose();
+            }
+            
             base.OnDestroy();
         }
     }

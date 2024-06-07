@@ -9,6 +9,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
+            
             ulong clientID = OwnerClientId;
             name = $"Client {clientID}'s Gameplay Character";
 

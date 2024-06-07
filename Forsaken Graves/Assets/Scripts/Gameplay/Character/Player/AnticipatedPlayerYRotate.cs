@@ -32,6 +32,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private void Update()
         {
+            if (!IsSpawned) return;
+            
             float mouseXRotation = _inputPoller.GetRotationXInput();
             
             if (ApplyRotation(mouseXRotation)) return;

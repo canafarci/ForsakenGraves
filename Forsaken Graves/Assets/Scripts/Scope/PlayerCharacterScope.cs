@@ -1,5 +1,6 @@
 using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Gameplay.Character.Player;
+using ForsakenGraves.Gameplay.Character.Stats;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.PreGame.Data;
 using Unity.Netcode.Components;
@@ -12,12 +13,17 @@ namespace ForsakenGraves.Scope
     public class PlayerCharacterScope : LifetimeScope
     {
         [SerializeField] private ServerCharacter _serverCharacter;
-        [SerializeField] private PlayerConfig _playerConfig;
         [SerializeField] private AnticipatedNetworkTransform _anticipatedNetworkTransform;
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private CapsuleCollider _capsuleCollider;
-        [SerializeField] private PlayerAvatarsSO _avatarsSO;
         [SerializeField] private ClientCharacterPlayerDataObject _clientCharacterPlayerDataObject;
+        [SerializeField ] private LayerMask _targetMask;
+        [SerializeField ] private NetworkCharacterHealth _characterHealth;
+        
+        //data
+        [SerializeField] private PlayerConfig _playerConfig;
+        [SerializeField] private PlayerAvatarsSO _avatarsSO;
+        [SerializeField ] private CharacterConfig _characterConfig;
         
         protected override void Configure(IContainerBuilder builder)
         {
@@ -28,6 +34,9 @@ namespace ForsakenGraves.Scope
             builder.RegisterInstance(_capsuleCollider);
             builder.RegisterInstance(_avatarsSO);
             builder.RegisterInstance(_clientCharacterPlayerDataObject);
+            builder.RegisterInstance(_targetMask);
+            builder.RegisterInstance(_characterConfig);
+            builder.RegisterInstance(_characterHealth);
 
             builder.Register<InputPoller>(Lifetime.Singleton);
         }

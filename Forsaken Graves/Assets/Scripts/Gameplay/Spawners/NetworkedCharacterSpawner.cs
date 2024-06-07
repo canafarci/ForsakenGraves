@@ -5,6 +5,7 @@ using ForsakenGraves.Infrastructure.Extensions;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace ForsakenGraves.Gameplay.Spawners
@@ -13,9 +14,9 @@ namespace ForsakenGraves.Gameplay.Spawners
     {
         [SerializeField] private NetworkObject _characterToSpawn;
         [SerializeField] private Transform _spawnPoint;
+        [SerializeField] private  float _spawnRate = 5f;
         
-        private const float SPAWN_RATE = 5f;
-        private float _timeSinceSpawn = SPAWN_RATE;
+        private float _timeSinceSpawn;
 
         private bool _hasSpawned = false;
 
@@ -26,7 +27,8 @@ namespace ForsakenGraves.Gameplay.Spawners
                 enabled = false;
                 return;
             }
-            
+
+            _timeSinceSpawn = _spawnRate;
             NetworkManager.SceneManager.OnLoadEventCompleted += OnLoadEventCompleteHandler;
         }
 
@@ -37,7 +39,7 @@ namespace ForsakenGraves.Gameplay.Spawners
 
         private void Update()
         {
-            if (!_hasSpawned || _timeSinceSpawn < SPAWN_RATE)
+            if (!_hasSpawned || _timeSinceSpawn < _spawnRate)
             {
                 _timeSinceSpawn += Time.deltaTime;
                 return;

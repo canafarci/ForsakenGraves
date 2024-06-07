@@ -1,13 +1,14 @@
 using ForsakenGraves.Gameplay.Character.Stats;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character
 {
     //holds server side RPC methods for server logic
     public class ServerCharacter : NetworkBehaviour
     {
-        [SerializeField] private NetworkCharacterHealth _networkCharacterHealth;
+        [Inject] private NetworkCharacterHealth _networkCharacterHealth;
         
         public override void OnNetworkSpawn()
         {
@@ -22,10 +23,12 @@ namespace ForsakenGraves.Gameplay.Character
 
         private void NetworkCharacterDamagedHandler(float damage)
         {
-            _networkCharacterHealth.Health.Value -= damage;
+            Debug.Log($"Server received call for {damage} damage on GO {gameObject.name}");
+            _networkCharacterHealth.CharacterHealth.Value -= damage;
 
-            if (_networkCharacterHealth.Health.Value <= 0f)
+            if (_networkCharacterHealth.CharacterHealth.Value <= 0f)
             {
+                Debug.Log($"Server CALLED DESPAWN");
                 DespawnObject();
             }
         }
@@ -41,6 +44,22 @@ namespace ForsakenGraves.Gameplay.Character
             if (!IsServer) return;
             
             _networkCharacterHealth.OnCharacterDamaged -= NetworkCharacterDamagedHandler;
+        }
+        
+        [Rpc(SendTo.Server)]
+        public void DamageTargetServerRpc(NetworkObjectReference networkObjectReference, float damage)
+        {
+            NetworkObject networkObject = networkObjectReference;
+            if (networkObject == null) return; //character reference is already despawned
+            
+            if (networkObject.TryGetComponent(out ITargetable targetable))
+            {
+                targetable.Damage(damage);
+            }
+            else
+            {
+                Debug.LogError("DAMAGE RPC HAS BEEN CALLED BUT NO ITargetable interface has been found!");
+            }
         }
     }
 }

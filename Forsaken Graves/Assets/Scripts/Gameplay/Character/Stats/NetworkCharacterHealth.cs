@@ -1,31 +1,37 @@
 using System;
 using ForsakenGraves.Gameplay.Data;
-using NUnit.Framework;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Serialization;
+using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character.Stats
 {
     public class NetworkCharacterHealth : NetworkBehaviour, ITargetable, IConfigurable
     {
-        [SerializeField] private CharacterConfig _characterConfig;
-        private NetworkVariable<float> _characterHealth;
-
-        public NetworkVariable<float> Health => _characterHealth;
+        [Inject] private CharacterConfig _characterConfig;
         
+        public NetworkVariable<float> CharacterHealth;
         public event Action<float> OnCharacterDamaged;
+        
+        //called before spawn
+        public void Configure()
+        {
+            CharacterHealth = new NetworkVariable<float>(_characterConfig.Health);
+        }
 
         public override void OnNetworkSpawn()
         {
-            _characterHealth.OnValueChanged += HealthChangedHandler;
+            CharacterHealth.OnValueChanged += HealthChangedHandler;
         }
         
         //TODO listen on client animator
         private void HealthChangedHandler(float previousValue, float newValue)
         {
-            _characterHealth.Value = newValue;
+            CharacterHealth.Value = newValue;
+            Debug.Log($"HEALTH CHANGED TO: {newValue}");
 
-            if (_characterHealth.Value < 0f)
+            if (CharacterHealth.Value < 0f)
             {
                 Debug.Log("CHARACTER DIED");
                 //TODO play animation
@@ -34,18 +40,13 @@ namespace ForsakenGraves.Gameplay.Character.Stats
         
         public void Damage(float damage)
         {
+            Debug.Log($"GO {gameObject.name} received {damage} damage on client {OwnerClientId}");
             OnCharacterDamaged?.Invoke(damage);
         }
         
-        //called before spawn
-        public void Configure()
-        {
-            _characterHealth = new NetworkVariable<float>(_characterConfig.Health);
-        }
-
         public override void OnNetworkDespawn()
         {
-            _characterHealth.OnValueChanged -= HealthChangedHandler;
+            CharacterHealth.OnValueChanged -= HealthChangedHandler;
         }
     }
 }

@@ -10,6 +10,8 @@ namespace ForsakenGraves.Gameplay.Character.AI
 
         public override void OnNetworkSpawn()
         {
+            base.OnNetworkSpawn();
+            
             if (!IsOwner)
             {
                 _behaviourTreeOwner.enabled = false;

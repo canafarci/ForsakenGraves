@@ -889,6 +889,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _characterToSpawn: {fileID: 7917140061910281864, guid: 0c59ee5f310974cb287826cb4a83437b, type: 3}
   _spawnPoint: {fileID: 2081731834}
+  _spawnRate: 25
 --- !u!4 &2081731834
 Transform:
   m_ObjectHideFlags: 0
