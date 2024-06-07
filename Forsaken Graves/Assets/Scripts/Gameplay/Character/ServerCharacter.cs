@@ -1,4 +1,7 @@
 using ForsakenGraves.Gameplay.Character.Stats;
+using ForsakenGraves.Gameplay.Messages;
+using ForsakenGraves.Identifiers;
+using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -9,7 +12,11 @@ namespace ForsakenGraves.Gameplay.Character
     public class ServerCharacter : NetworkBehaviour
     {
         [Inject] private NetworkCharacterHealth _networkCharacterHealth;
+        [Inject] private IPublisher<CharacterDiedMessage> _characterDiedMessagePublisher;
         
+        [SerializeField] private CharacterTypes _characterType;
+        public CharacterTypes CharacterType => _characterType;
+
         public override void OnNetworkSpawn()
         {
             if (!IsServer)
@@ -29,14 +36,22 @@ namespace ForsakenGraves.Gameplay.Character
             if (_networkCharacterHealth.CharacterHealth.Value <= 0f)
             {
                 Debug.Log($"Server CALLED DESPAWN");
-                DespawnObject();
+                KillCharacter();
             }
+        }
+
+        private void KillCharacter()
+        {
+            _characterDiedMessagePublisher.Publish(new CharacterDiedMessage(gameObject, CharacterType));
+            DespawnObject();
         }
 
         private void DespawnObject()
         {
             NetworkObject networkObject = GetComponent<NetworkObject>();
-            networkObject.Despawn();
+            
+            if (networkObject.IsSpawned)
+                networkObject.Despawn();
         }
 
         public override void OnNetworkDespawn()

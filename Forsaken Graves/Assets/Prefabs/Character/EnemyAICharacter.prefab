@@ -103,6 +103,9 @@ MonoBehaviour:
   autoInjectGameObjects:
   - {fileID: 697924195653355653}
   _characterHealth: {fileID: 7931099524279292645}
+  _blackboard: {fileID: 8415469031148711358}
+  _behaviourTreeOwner: {fileID: 2661373475174162836}
+  _characterConfig: {fileID: 0}
 --- !u!195 &4711049678929293697
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -182,6 +185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 851d285ab18b47a7b0bb9f4d88b0dea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _characterType: 1
   _behaviourTreeOwner: {fileID: 2661373475174162836}
 --- !u!114 &7931099524279292645
 MonoBehaviour:

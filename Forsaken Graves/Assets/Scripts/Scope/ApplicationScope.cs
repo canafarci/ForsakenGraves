@@ -3,7 +3,9 @@ using ForsakenGraves.Connection;
 using ForsakenGraves.Connection.ConnectionStates;
 using ForsakenGraves.Connection.Data;
 using ForsakenGraves.Connection.Identifiers;
+using ForsakenGraves.Gameplay.Messages;
 using ForsakenGraves.Gameplay.Spawners;
+using ForsakenGraves.Gameplay.State;
 using ForsakenGraves.GameState;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure;
@@ -31,31 +33,35 @@ namespace ForsakenGraves.Scope
         
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterComponent(_connectionStateManager);
-            builder.RegisterComponent(_networkManager);
+            //infrastructure
             builder.RegisterComponent(_sceneLoadingManager);
-
             builder.RegisterEntryPoint<ApplicationSettings>().AsSelf();
+            builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
+            builder.Register<RuntimeInjector>(Lifetime.Singleton);
             
+            //connection
+            builder.RegisterComponent(_networkManager);
+            builder.RegisterComponent(_connectionStateManager);
             builder.RegisterEntryPoint<ConnectionStatesCreator>().AsSelf();
             builder.Register<ConnectionStatesModel>(Lifetime.Singleton).AsSelf();
             
+            //Unity Services
             builder.Register<AuthenticationServiceFacade>(Lifetime.Singleton);
             builder.Register<ProfileManager>(Lifetime.Singleton);
             
-            builder.UseEntryPoints(Lifetime.Singleton, entryPoints =>
-                                                       {
-                                                           entryPoints.Add<MainMenuState>();
-                                                       });
+            //persistent Main Menu State
+            builder.RegisterEntryPoint<MainMenuState>().AsSelf();
             
-            builder.RegisterEntryPoint<UpdateRunner>().AsSelf();
+            
+            //lobby
             builder.RegisterEntryPoint<LobbyServiceFacade>().AsSelf();
-            
             builder.Register<LobbyAPIInterface>(Lifetime.Singleton);
             builder.Register<LocalLobbyPlayer>(Lifetime.Singleton);
             builder.Register<LocalLobby>(Lifetime.Singleton);
             
-            builder.Register<RuntimeInjector>(Lifetime.Singleton);
+            //gameplay
+            builder.Register<PersistentGameplayState>(Lifetime.Singleton).AsSelf();
+            
             MessagePipeOptions options = RegisterMessagePipe(builder);
             RegisterMessageBrokers(builder, options);
 
@@ -73,7 +79,8 @@ namespace ForsakenGraves.Scope
             builder.RegisterMessageBroker<OnNetworkDespawnMessage>(options);
             
             //gameplay
-            builder.RegisterMessageBroker<PlayerCharacterDespawnedMessage>(options);
+            builder.RegisterMessageBroker<CharacterDiedMessage>(options);
+            builder.RegisterMessageBroker<CharacterSpawnedMessage>(options);
         }
 
         private MessagePipeOptions RegisterMessagePipe(IContainerBuilder builder)

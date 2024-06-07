@@ -6,6 +6,7 @@ namespace ForsakenGraves.Identifiers
         StartupScene = 0,
         MainMenu = 1,
         PreGameScene = 2,
-        PrototypeGameplayScene = 3
+        PrototypeGameplayScene = 3,
+        PostGameScene = 4
     }
 }

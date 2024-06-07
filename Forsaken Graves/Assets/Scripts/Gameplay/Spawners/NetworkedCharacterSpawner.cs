@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using ForsakenGraves.Gameplay.Character;
+using ForsakenGraves.Gameplay.Messages;
+using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Extensions;
+using MessagePipe;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using VContainer;
 using Random = UnityEngine.Random;
 
 namespace ForsakenGraves.Gameplay.Spawners
@@ -15,9 +20,11 @@ namespace ForsakenGraves.Gameplay.Spawners
         [SerializeField] private NetworkObject _characterToSpawn;
         [SerializeField] private Transform _spawnPoint;
         [SerializeField] private  float _spawnRate = 5f;
+
+        [Inject] private IPublisher<CharacterSpawnedMessage> _characterSpawnedMessagePublisher;
+        [Inject] private ServerCharacterSpawnState _serverCharacterSpawnState;
         
         private float _timeSinceSpawn;
-
         private bool _hasSpawned = false;
 
         public override void OnNetworkSpawn()
@@ -39,7 +46,7 @@ namespace ForsakenGraves.Gameplay.Spawners
 
         private void Update()
         {
-            if (!_hasSpawned || _timeSinceSpawn < _spawnRate)
+            if (!_hasSpawned || _timeSinceSpawn < _spawnRate || !_serverCharacterSpawnState.CanSpawn)
             {
                 _timeSinceSpawn += Time.deltaTime;
                 return;
@@ -47,6 +54,11 @@ namespace ForsakenGraves.Gameplay.Spawners
 
             _timeSinceSpawn = 0f;
             
+            SpawnNetworkCharacter();
+        }
+
+        private void SpawnNetworkCharacter()
+        {
             Vector3 spawnPos = _spawnPoint.position;
             Vector3 randomizedSpawnPos = new Vector3(spawnPos.x + Random.value * 5f, 0f, spawnPos.z + Random.value * 5f);
             
@@ -54,6 +66,9 @@ namespace ForsakenGraves.Gameplay.Spawners
             
             clone.Configure(); //initializes network variables before spawn
             clone.Spawn(true);
+
+            CharacterTypes characterType = clone.GetComponent<ServerCharacter>().CharacterType;
+            _characterSpawnedMessagePublisher.Publish(new CharacterSpawnedMessage(characterType, clone.gameObject));
         }
 
         public override void OnNetworkDespawn()
