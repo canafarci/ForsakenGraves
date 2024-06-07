@@ -1,13 +1,15 @@
 using ForsakenGraves.PreGame.Data;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class PlayerCharacterGraphicsSpawner : NetworkBehaviour
     {
-        [SerializeField] private PlayerAvatarsSO _avatarsSO;
-        [SerializeField] private ClientCharacterPlayerDataObject _clientCharacterPlayerDataObject;
+        [Inject] private PlayerAvatarsSO _avatarsSO;
+        [Inject] private ClientCharacterPlayerDataObject _clientCharacterPlayerDataObject;
+        
         [SerializeField] private Transform _avatarParent;
 
         private bool _avatarSpawned = false;

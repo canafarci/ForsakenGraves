@@ -2,15 +2,16 @@ using ForsakenGraves.Gameplay.Data;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
     //handles character's Y rotation, which is server authoritative with client side anticipation
     public class AnticipatedPlayerYRotate : NetworkBehaviour
     {
-        [SerializeField] private InputPoller _inputPoller; 
-        [SerializeField] private PlayerConfig _playerConfig;
-        [SerializeField] private AnticipatedNetworkTransform _anticipatedNetworkTransform;
+        [Inject] private InputPoller _inputPoller;
+        [Inject] private PlayerConfig _playerConfig;
+        [Inject] private AnticipatedNetworkTransform _anticipatedNetworkTransform;
         
         //safeguard to prevent sending updates faster than network update rate
         private float _inputSendRate = 0f;

@@ -1,15 +1,17 @@
 using ForsakenGraves.Gameplay.Data;
 using Unity.Netcode;
 using UnityEngine;
+using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class LocalCameraXRotate : NetworkBehaviour
     {
-        [SerializeField] private InputPoller _inputPoller; 
-        [SerializeField] private PlayerConfig _playerConfig;
+        [Inject] private InputPoller _inputPoller;
+        [Inject] private PlayerConfig _playerConfig;
+        
         [SerializeField] private Transform _cameraTransform;
-
+        
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)

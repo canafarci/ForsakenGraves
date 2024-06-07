@@ -138,6 +138,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4318118991289124227}
+  - component: {fileID: 1185335868357445024}
   - component: {fileID: 8598326320738452013}
   - component: {fileID: 7714528340259402451}
   - component: {fileID: 7949942246383444560}
@@ -147,7 +148,6 @@ GameObject:
   - component: {fileID: -6320597049045587}
   - component: {fileID: 3765004934966193840}
   - component: {fileID: -6720939594804348826}
-  - component: {fileID: 312774656852090016}
   - component: {fileID: 7231576610617546516}
   m_Layer: 0
   m_Name: PlayerCharacter
@@ -173,6 +173,30 @@ Transform:
   - {fileID: 6838979581863210149}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1185335868357445024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7832303255236224990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84be148d91bc46669e608c2844ae3584, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentReference:
+    TypeName: ForsakenGraves.Scope.GameplaySceneScope
+  autoRun: 1
+  autoInjectGameObjects:
+  - {fileID: 7832303255236224990}
+  _serverCharacter: {fileID: 6277696399862577449}
+  _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
+  _anticipatedNetworkTransform: {fileID: -6320597049045587}
+  _characterController: {fileID: 7949942246383444560}
+  _capsuleCollider: {fileID: 7714528340259402451}
+  _avatarsSO: {fileID: 11400000, guid: f95f075d062064b7b8105c3ea50bb85b, type: 2}
+  _clientCharacterPlayerDataObject: {fileID: 5896325336948248731}
 --- !u!114 &8598326320738452013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,6 +278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e722abb0c38a40928f75c53387df3321, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _networkCharacterHealth: {fileID: 0}
   _camera: {fileID: 7350413410032913031}
 --- !u!114 &5896325336948248731
 MonoBehaviour:
@@ -316,8 +341,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 991ca72a555947aa88a0133874a6e4cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _avatarsSO: {fileID: 11400000, guid: f95f075d062064b7b8105c3ea50bb85b, type: 2}
-  _clientCharacterPlayerDataObject: {fileID: 5896325336948248731}
   _avatarParent: {fileID: 6838979581863210149}
 --- !u!114 &-6320597049045587
 MonoBehaviour:
@@ -363,11 +386,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4bc3b172d9c4446b3010bc6f04b1c31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _anticipatedNetworkTransform: {fileID: -6320597049045587}
-  _inputPoller: {fileID: 312774656852090016}
-  _characterController: {fileID: 7949942246383444560}
-  _capsuleCollider: {fileID: 7714528340259402451}
-  _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
 --- !u!114 &-6720939594804348826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -380,21 +398,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe5f4a0768564a9280afae337de88071, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputPoller: {fileID: 312774656852090016}
-  _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
   _anticipatedNetworkTransform: {fileID: -6320597049045587}
---- !u!114 &312774656852090016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7832303255236224990}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b13f52c6617144bc920b1d9ceac0e5d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7231576610617546516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -407,6 +411,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17addac633154523a8b4922079d77b8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputPoller: {fileID: 312774656852090016}
-  _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
   _cameraTransform: {fileID: 7160491114756976153}

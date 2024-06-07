@@ -1,15 +1,20 @@
 using ForsakenGraves.Identifiers;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
-    public class InputPoller : NetworkBehaviour
+    public class InputPoller
     {
+        public bool GetShootingInput()
+        {
+            if (Input.GetMouseButtonDown(0))
+                return true;
+            
+            return false;
+        }
+        
         public InputFlags GetMovementInput()
         {
-            if (!NetworkManager.IsListening) return 0;
-
             InputFlags input = 0;
             if (Input.GetKey(KeyCode.W))
             {
@@ -36,15 +41,11 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         public float GetRotationXInput()
         {
-            if (!NetworkManager.IsListening) return 0;
-            
             return Input.GetAxis("Mouse X");
         }
         
         public float GetRotationYInput()
         {
-            if (!NetworkManager.IsListening) return 0;
-            
             return Input.GetAxis("Mouse Y");
         }
     }

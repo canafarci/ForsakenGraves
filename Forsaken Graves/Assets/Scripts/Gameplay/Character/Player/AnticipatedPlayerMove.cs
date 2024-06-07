@@ -5,16 +5,17 @@ using ForsakenGraves.Infrastructure.Data;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class AnticipatedPlayerMove : NetworkBehaviour
     {
-        [SerializeField] private AnticipatedNetworkTransform _anticipatedNetworkTransform;
-        [SerializeField] private InputPoller _inputPoller;
-        [SerializeField] private CharacterController _characterController;
-        [SerializeField] private CapsuleCollider _capsuleCollider;
-        [SerializeField] private PlayerConfig _playerConfig;
+        [Inject] private InputPoller _inputPoller;
+        [Inject] private PlayerConfig _playerConfig;
+        [Inject] private AnticipatedNetworkTransform _anticipatedNetworkTransform;
+        [Inject] private CharacterController _characterController;
+        [Inject] private CapsuleCollider _capsuleCollider;
         
         private FrameHistory<Vector3> _positionHistory = new();
         

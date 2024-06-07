@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using ForsakenGraves.Infrastructure.Extensions;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -48,7 +49,8 @@ namespace ForsakenGraves.Gameplay.Spawners
             Vector3 randomizedSpawnPos = new Vector3(spawnPos.x + Random.value * 5f, 0f, spawnPos.z + Random.value * 5f);
             
             NetworkObject clone = Instantiate(_characterToSpawn, randomizedSpawnPos, Quaternion.identity);
-
+            
+            clone.Configure(); //initializes network variables before spawn
             clone.Spawn(true);
         }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Character.AI
 {
-    public class ServerAICharacter : NetworkBehaviour
+    public class ServerAICharacter : ServerCharacter
     {
         [SerializeField] private BehaviourTreeOwner _behaviourTreeOwner;
 

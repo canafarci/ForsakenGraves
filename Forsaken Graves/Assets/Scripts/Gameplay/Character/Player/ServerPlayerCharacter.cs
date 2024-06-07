@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
-    public class ServerPlayerCharacter : NetworkBehaviour
+    public class ServerPlayerCharacter : ServerCharacter
     {
         [SerializeField] private GameObject _camera;
 
