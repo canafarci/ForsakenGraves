@@ -1,18 +1,15 @@
 using ForsakenGraves.Identifiers;
+using ForsakenGraves.Infrastructure.Data;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class InputPoller
     {
-        public bool GetShootingInput()
-        {
-            if (Input.GetMouseButtonDown(0))
-                return true;
-            
-            return false;
-        }
-        
+        private FrameHistory<InputFlags> _inputHistory = new();
+        public FrameHistory<InputFlags> InputHistory => _inputHistory;
+
         public InputFlags GetMovementInput()
         {
             InputFlags input = 0;
@@ -36,9 +33,18 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 input |= InputFlags.Right;
             }
             
+            _inputHistory.Add(NetworkManager.Singleton.LocalTime.Time, input);
             return input;
         }
-
+        
+        public bool GetShootingInput()
+        {
+            if (Input.GetMouseButtonDown(0))
+                return true;
+            
+            return false;
+        }
+        
         public float GetRotationXInput()
         {
             return Input.GetAxis("Mouse X");

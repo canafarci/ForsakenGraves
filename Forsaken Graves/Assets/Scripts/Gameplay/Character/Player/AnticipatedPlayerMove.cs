@@ -1,4 +1,3 @@
-using System;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Data;
@@ -17,19 +16,17 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private CharacterController _characterController;
         [Inject] private CapsuleCollider _capsuleCollider;
         
-        private FrameHistory<Vector3> _positionHistory = new();
-        
-        //safeguard to prevent sending updates faster than network update rate
-        private float _inputSendRate = 0f;
         private float _lastInputSentTime;
 
-        private const float SMOOTH_TIME = 0.1f;
-        private const float TELEPORT_DISTANCE_SQR = 3f;
-        private const float SMOOTH_DISTANCE_SQR = 1.6f;
+        private const float NETWORK_TICK_RATE = 30;
+        private const float SMOOTH_TIME = 1f / NETWORK_TICK_RATE;
+        
+        private const float SMOOTH_DISTANCE_SQR = 3f * 3f;
+        private const float SMALL_ERROR_SQR = 0.25f * 0.25f;
         
         public override void OnNetworkSpawn()
         {
-            _anticipatedNetworkTransform.StaleDataHandling = StaleDataHandling.Ignore;
+            _anticipatedNetworkTransform.StaleDataHandling = StaleDataHandling.Reanticipate;
             ChangeComponentActivationRelativeToAuthority();
         }
 
@@ -56,72 +53,94 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             _characterController.enabled = true;
             _capsuleCollider.enabled = false;
+        }
+
+        private void Move(InputFlags moveInput)
+        {
+            Vector3 direction = GetDirection(moveInput);
             
-            NetworkManager.NetworkTickSystem.Tick += OnNetworkTick;
+            _characterController.Move(direction * (_playerConfig.MovementSpeed * Time.fixedDeltaTime));
+            _anticipatedNetworkTransform.AnticipateMove(transform.position);
             
-            //set max input send rate
-            uint tickRate = NetworkManager.NetworkTickSystem.TickRate;
-            _inputSendRate = 1f / tickRate;
+            Debug.Log(transform.position);
         }
         
-        private void Update()
+        private void Rotate(float mouseXRotation)
         {
-            if (!IsOwner || !IsSpawned) return;
-
-            InputFlags input =  _inputPoller.GetMovementInput();
-            MoveAndSendRpc(input);
-        }
-        
-        private void MoveAndSendRpc(InputFlags inputs)
-        {
-            Vector3 direction = GetDirection(inputs);
-
-            Move(direction);
-
-            if (IsHost) return;
+            if (Mathf.Approximately(0f, mouseXRotation)) return;
             
-            if (CanSendInput())
-                ServerMoveRpc(direction);
-        }
-
-        private void Move(Vector3 direction)
-        {
-            _characterController.Move(direction * (_playerConfig.MovementSpeed * Time.deltaTime));
-            
-            if (IsHost)
-            {
-                if (CanSendInput())
-                {
-                    _anticipatedNetworkTransform.AnticipateMove(transform.position);
-                }
-            }
-            else
-            {
-                _anticipatedNetworkTransform.AnticipateMove(transform.position);
-            }
-            
-            //Debug.Log($"time {Time.frameCount}, calledFromIsServer: {IsServer},  calledFromIsOwner: {IsOwner}");          
+            transform.Rotate(Vector3.up, mouseXRotation * _playerConfig.RotationSpeed * Time.fixedDeltaTime);
+            _anticipatedNetworkTransform.AnticipateRotate(transform.rotation);
         }
 
         [Rpc(SendTo.Server)]
-        private void ServerMoveRpc(Vector3 direction)
+        private void PlayerControlServerRpc(InputFlags movementInput, float rotation)
         {
-            Move(direction);
+            Move(movementInput);
+            //Rotate(rotation);
+            if (!IsOwner)
+                Debug.Log(transform.position);
+            
+            //smooth on server side
+            AnticipatedNetworkTransform.TransformState currentPosition = _anticipatedNetworkTransform.AnticipatedState;
+            _anticipatedNetworkTransform.Smooth(currentPosition, _anticipatedNetworkTransform.AuthoritativeState, SMOOTH_TIME);
         }
         
-        private bool CanSendInput()
+        public override void OnReanticipate(double lastRoundTripTime)
         {
-            if (_lastInputSentTime + _inputSendRate < Time.time)
+            if (!_anticipatedNetworkTransform.ShouldReanticipate) return;
+            
+            //cache previous false anticipated state
+            AnticipatedNetworkTransform.TransformState previousState = _anticipatedNetworkTransform.PreviousAnticipatedState;
+            
+            double authorityTime = NetworkManager.LocalTime.Time - lastRoundTripTime;
+
+            int calledTimes = 0;
+            
+            //reanticipate based on stored previous input
+            foreach (FrameHistory<InputFlags>.ItemFrameData item in _inputPoller.InputHistory.GetHistory())
             {
-                _lastInputSentTime = Time.time;
-                return true;
+                if (item.Time <= authorityTime)
+                {
+                    continue;
+                }
+                
+                Move(item.Item);
+                calledTimes++;
             }
-            else
+
+            if (Time.timeSinceLevelLoad > 2f)
             {
-                return false;
+                Debug.Log("ddd");
+            }
+                
+
+            Debug.Log(calledTimes);
+            
+            //remove all input before last server time
+            _inputPoller.InputHistory.RemoveBefore(authorityTime);
+            
+            //handle by smoothing based on error distance
+            if (SMOOTH_TIME != 0.0)
+            {
+                float sqDist = Vector3.SqrMagnitude(previousState.Position - _anticipatedNetworkTransform.AnticipatedState.Position);
+                if (sqDist <= SMOOTH_DISTANCE_SQR)
+                {
+                    // This prevents small amounts of wobble from slight differences.
+                    _anticipatedNetworkTransform.AnticipateState(previousState);
+                }
+                else if (sqDist < SMOOTH_DISTANCE_SQR)
+                {
+                    //smooth if distance is big
+                    _anticipatedNetworkTransform.Smooth(previousState, _anticipatedNetworkTransform.AnticipatedState, SMOOTH_TIME);
+                }
+                else //error is too big, just teleport
+                {
+                    _anticipatedNetworkTransform.AnticipateMove(_anticipatedNetworkTransform.AuthoritativeState.Position);
+                }
             }
         }
-
+        
         private Vector3 GetDirection(InputFlags inputs)
         {
             Vector3 direction = Vector3.zero;
@@ -141,73 +160,22 @@ namespace ForsakenGraves.Gameplay.Character.Player
             return direction;
         }
         
-        private void OnNetworkTick()
+        private void FixedUpdate()
         {
-            double localTime = NetworkManager.LocalTime.Time;
-            _positionHistory.Add(localTime, transform.position);
-        }
-        
-        public override void OnReanticipate(double lastRoundTripTime)
-        {
-            AnticipatedNetworkTransform.TransformState previousState = _anticipatedNetworkTransform.PreviousAnticipatedState;
+            if (!IsOwner || !IsSpawned) return;
+
+            InputFlags movementInput =  _inputPoller.GetMovementInput();
+            float mouseXRotationInput = _inputPoller.GetRotationXInput();
             
-            if (!IsOwner)
-            {
-                _anticipatedNetworkTransform.Smooth(previousState,
-                                                    _anticipatedNetworkTransform.AuthoritativeState,
-                                                    SMOOTH_TIME);
-                return;
-            }
-
-
-            double localTime = NetworkManager.LocalTime.Time;
-            double authorityTime = localTime - lastRoundTripTime;
-
-            double timeDelta = Mathf.Infinity;
-            FrameHistory<Vector3>.ItemFrameData nearestPositionFrame = default;
-
-            foreach (FrameHistory<Vector3>.ItemFrameData positionFrame in _positionHistory.GetHistory())
-            {
-                double frameTime = positionFrame.Time;
-                double localTimeDelta = Math.Abs(frameTime - authorityTime);
-
-                if (localTimeDelta < timeDelta)
-                {
-                    nearestPositionFrame = positionFrame;
-                    timeDelta = localTimeDelta;
-                }
-            }
+            if (movementInput == 0) return;
             
-            _positionHistory.RemoveBefore(authorityTime);
+            Move(movementInput);
+            //Rotate(mouseXRotationInput);
 
-            Vector3 anticipationError = nearestPositionFrame.Item - previousState.Position;
-
-            float errorSquared = anticipationError.sqrMagnitude;
-            
-            if (errorSquared < SMOOTH_DISTANCE_SQR)
+            if (!IsServer)
             {
-                //error rate is small, just add movement 
-                _characterController.Move(anticipationError);
+                PlayerControlServerRpc(movementInput, mouseXRotationInput);
             }
-            else if (errorSquared < TELEPORT_DISTANCE_SQR)
-            {
-                //error rate is negligible, smooth position
-                _anticipatedNetworkTransform.Smooth(previousState,
-                                                    _anticipatedNetworkTransform.AuthoritativeState,
-                                                    SMOOTH_TIME);
-            }
-            else
-            {
-                //error rate is too high, teleport to authoritative position
-                _anticipatedNetworkTransform.AnticipateMove(_anticipatedNetworkTransform.AuthoritativeState.Position);
-            }
-            
-            Debug.Log($"time {Time.frameCount}, error: {anticipationError}, timeDelta : {timeDelta}");          
-        }
-
-        public override void OnNetworkDespawn()
-        {
-             NetworkManager.NetworkTickSystem.Tick -= OnNetworkTick;
         }
     }
 }
