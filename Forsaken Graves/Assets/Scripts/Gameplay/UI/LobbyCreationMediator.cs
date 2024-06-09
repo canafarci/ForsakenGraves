@@ -36,13 +36,21 @@ namespace ForsakenGraves.Gameplay.UI
 
         private async void View_OnOnCreateLobbyClicked(object sender, CreateLobbyClickedEventArgs e)
         {
-            if (string.IsNullOrEmpty(e.LobbyName)) return;
+            string lobbyName;
+            if (string.IsNullOrEmpty(e.LobbyName))
+            {
+                lobbyName = Guid.NewGuid().ToString();
+            }
+            else
+            {
+                lobbyName = e.LobbyName;
+            }
             
             bool playerIsAuthorized = await _authenticationServiceFacade.EnsurePlayerIsAuthorized();
 
             if (!playerIsAuthorized) return; //TODO show UI
             
-            (bool Success, Unity.Services.Lobbies.Models.Lobby Lobby) lobbyCreationAttempt = await _lobbyServiceFacade.TryCreateLobbyAsync(e.LobbyName, _connectionStateManager.MaxConnectedPlayers, e.IsPrivate);
+            (bool Success, Unity.Services.Lobbies.Models.Lobby Lobby) lobbyCreationAttempt = await _lobbyServiceFacade.TryCreateLobbyAsync(lobbyName, _connectionStateManager.MaxConnectedPlayers, e.IsPrivate);
             
             if (lobbyCreationAttempt.Success)
             {

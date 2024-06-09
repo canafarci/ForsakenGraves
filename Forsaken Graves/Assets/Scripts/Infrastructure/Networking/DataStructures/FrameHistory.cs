@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ForsakenGraves.Infrastructure.Data
+namespace ForsakenGraves.Infrastructure.Networking.DataStructures
 {
     /// <summary>
     /// Simple container to store historical data associated with a frame for the sake of replaying that data.

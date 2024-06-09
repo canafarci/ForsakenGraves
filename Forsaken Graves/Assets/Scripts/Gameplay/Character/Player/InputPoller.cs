@@ -7,34 +7,30 @@ namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class InputPoller
     {
-        private FrameHistory<InputFlags> _inputHistory = new();
-        public FrameHistory<InputFlags> InputHistory => _inputHistory;
-
-        public InputFlags GetMovementInput()
+        public Vector3 GetMovementInput()
         {
-            InputFlags input = 0;
+            Vector3 movementInput = Vector3.zero;
             if (Input.GetKey(KeyCode.W))
             {
-                input |= InputFlags.Up;
-            }
-
-            if (Input.GetKey(KeyCode.A))
-            {
-                input |= InputFlags.Left;
+                movementInput += Vector3.forward;
             }
 
             if (Input.GetKey(KeyCode.S))
             {
-                input |= InputFlags.Down;
+                movementInput -= Vector3.forward;
+            }
+
+            if (Input.GetKey(KeyCode.A))
+            {
+                movementInput -= Vector3.right;
             }
 
             if (Input.GetKey(KeyCode.D))
             {
-                input |= InputFlags.Right;
+                movementInput += Vector3.right;
             }
             
-            _inputHistory.Add(NetworkManager.Singleton.LocalTime.Time, input);
-            return input;
+            return movementInput;
         }
         
         public bool GetShootingInput()

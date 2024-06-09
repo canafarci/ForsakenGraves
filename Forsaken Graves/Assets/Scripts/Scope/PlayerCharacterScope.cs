@@ -13,7 +13,6 @@ namespace ForsakenGraves.Scope
     public class PlayerCharacterScope : LifetimeScope
     {
         [SerializeField] private ServerCharacter _serverCharacter;
-        [SerializeField] private AnticipatedNetworkTransform _anticipatedNetworkTransform;
         [SerializeField] private CharacterController _characterController;
         [SerializeField] private CapsuleCollider _capsuleCollider;
         [SerializeField] private ClientCharacterPlayerDataObject _clientCharacterPlayerDataObject;
@@ -29,7 +28,6 @@ namespace ForsakenGraves.Scope
         {
             builder.RegisterInstance(_serverCharacter);
             builder.RegisterInstance(_playerConfig);
-            builder.RegisterInstance(_anticipatedNetworkTransform);
             builder.RegisterInstance(_characterController);
             builder.RegisterInstance(_capsuleCollider);
             builder.RegisterInstance(_avatarsSO);
