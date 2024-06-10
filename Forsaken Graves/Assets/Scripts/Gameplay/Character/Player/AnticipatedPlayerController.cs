@@ -42,8 +42,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private CountdownTimer _reconciliationTimer;
         private const float RECONCILIATION_POSITION_TRESHOLD = 0.05f;
         private const float RECONCILIATION_COOLDOWN_TIME = 1f;
-
-
+        
         public override void OnNetworkSpawn()
         {
             ChangeComponentActivationRelativeToAuthority();
@@ -72,15 +71,21 @@ private void FixedUpdate()
 
             while (_networkTimer.ShouldTick())
             {
-                HandleClientTick();
-                HandleServerTick();
+                HandleMovement();
+                HandleRotation();
             }
         }
-        #endregion
+#endregion
 
-#region Network State Handling
+#region Movement
+        private void HandleMovement()
+        {
+            HandleClientTickForMovement();
+            HandleServerTickForMovement();
+        }
+        
     #region Client
-        private void HandleClientTick()
+        private void HandleClientTickForMovement()
         {
             if (!IsOwner) return;
             
@@ -92,7 +97,8 @@ private void FixedUpdate()
             InputPayload inputPayload = new InputPayload()
                                         {
                                             Tick = currentTick,
-                                            InputVector = movementInput
+                                            InputVector = movementInput,
+                                            YRotation = transform.eulerAngles.y
                                         };
                 
             _clientInputBuffer.Add(inputPayload, bufferIndex);
@@ -142,7 +148,6 @@ private void FixedUpdate()
             
             //replay all input from the rewind state to the current state
             int tickToReplay = _lastServerState.Tick;
-            int reconciliationCount = 0;
             while (tickToReplay < _networkTimer.CurrentTick)
             {
                 Physics.SyncTransforms();
@@ -151,7 +156,6 @@ private void FixedUpdate()
                 StatePayload statePayload = ProcessMovement(inputPayload);
                 _clientStateBuffer.Add(statePayload, bufferIndex % BUFFER_SIZE);
                 tickToReplay++;
-                reconciliationCount++;
             }
         }
 
@@ -166,7 +170,7 @@ private void FixedUpdate()
     #endregion
 
     #region Server
-        private void HandleServerTick()
+        private void HandleServerTickForMovement()
         {
             if (!IsServer) return;
             
@@ -199,25 +203,56 @@ private void FixedUpdate()
             _serverInputQueue.Enqueue(inputPayload);
         }
     #endregion
-#endregion
-
-#region Movement
+    
+    #region Movement Methods
         private void Move(Vector3 movementInput)
         {
-            _characterController.Move(movementInput * (_playerConfig.MovementSpeed * _tickTime));
+            Vector3 moveInputRelativeToLook = Quaternion.Euler(0, transform.eulerAngles.y, 0) * movementInput;
+            _characterController.Move(moveInputRelativeToLook * (_playerConfig.MovementSpeed * _tickTime));
         }
         
         private StatePayload ProcessMovement(InputPayload inputPayload)
         {
+            //set y rotation for reconciliation, no effect on local client while regular movement
+            if (!Mathf.Approximately(transform.eulerAngles.y, inputPayload.YRotation))
+            {
+                Quaternion rotation = Quaternion.Euler(0f, inputPayload.YRotation, 0f);
+                transform.rotation = rotation;
+            }
+            
             Move(inputPayload.InputVector);
             
             return new StatePayload()
                    {
                        Position = transform.position,
-                       Tick = inputPayload.Tick
+                       Tick = inputPayload.Tick,
+                       YRotation = transform.eulerAngles.y
                    };
         }
+    #endregion
 #endregion
+        
+#region Rotation 
+    #region Client
+        // rotation is client authoritative
+        private void HandleRotation()
+        {
+            if (!IsOwner)  return;
+
+            float rotationInput = _inputPoller.GetRotationXInput();
+            Rotate(rotationInput);
+        }
+        
+        #endregion
+
+        #region Rotation Methods
+            private void Rotate(float rotationInput)
+            {
+                transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * _tickTime);
+            }
+       #endregion
+#endregion
+
         
 #region Component Activation regarding Ownership
         private void ChangeComponentActivationRelativeToAuthority()

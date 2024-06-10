@@ -9,11 +9,13 @@ namespace ForsakenGraves.Infrastructure.Networking.Data
     {
         public int Tick;
         public Vector3 InputVector;
+        public float YRotation;
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref Tick);
             serializer.SerializeValue(ref InputVector);
+            serializer.SerializeValue(ref YRotation);
         }
     }
 }
