@@ -21,6 +21,8 @@ namespace ForsakenGraves.Gameplay.Spawners
         {
             NetworkObject playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientID);
             NetworkObject newPlayer = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
+            newPlayer.transform.position = new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+            
             ServerPlayerCharacter newPlayerPlayerCharacter = newPlayer.GetComponent<ServerPlayerCharacter>();
             
             bool persistentPlayerExists = playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer);
@@ -32,6 +34,7 @@ namespace ForsakenGraves.Gameplay.Spawners
             playerDataObject.DisplayName = new NetworkVariable<FixedString32Bytes>(persistentPlayer.PlayerVisualData.DisplayName.Value);
             playerDataObject.AvatarIndex = new NetworkVariable<int>( persistentPlayer.PlayerVisualData.AvatarIndex.Value);
             
+
             newPlayer.Configure();
             newPlayer.SpawnWithOwnership(clientID, true);
             

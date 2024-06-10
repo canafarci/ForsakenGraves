@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Infrastructure.Networking;
 using ForsakenGraves.Infrastructure.Networking.Data;
 using ForsakenGraves.Infrastructure.Networking.DataStructures;
+using ForsakenGraves.Utils.Utilities;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -18,14 +20,14 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private CapsuleCollider _capsuleCollider;
 
         private const int BUFFER_SIZE = 1024;
-        private uint _networkTickRate;
+        private int _networkTickRate;
         private NetworkTimer _networkTimer;
         private float _tickTime;
 
         //client data
-        private CircularBuffer<StatePayload> _clientStateBuffer = new(BUFFER_SIZE);
 
         private CircularBuffer<InputPayload> _clientInputBuffer = new(BUFFER_SIZE);
+        private CircularBuffer<StatePayload> _clientStateBuffer = new(BUFFER_SIZE);
 
         //last state received from server
         private StatePayload _lastServerState;
@@ -36,17 +38,28 @@ namespace ForsakenGraves.Gameplay.Character.Player
         //server data
         private CircularBuffer<StatePayload> _serverStateBuffer = new(BUFFER_SIZE);
         private Queue<InputPayload> _serverInputQueue = new();
+        private const float RECONCILIATION_POSITION_TRESHOLD = 0.05f;
+        private bool _spawned = false;
+
+        //reconciliation
+        private CountdownTimer _reconciliationTimer;
+        private const float RECONCILIATION_COOLDOWN_TIME = 1f;
+
 
         public override void OnNetworkSpawn()
         {
             ChangeComponentActivationRelativeToAuthority();
+            
+            Debug.Log($"clientId {OwnerClientId}, pos {transform.position}");
+            _spawned = true;
         }
 
 #region Initialization
         private void Awake()
         {
-            _networkTickRate = _networkManager.NetworkTickSystem.TickRate;
+            _networkTickRate = (int)_networkManager.NetworkTickSystem.TickRate;
             _networkTimer = new NetworkTimer(_networkTickRate);
+            _reconciliationTimer = new CountdownTimer(RECONCILIATION_COOLDOWN_TIME);
             _tickTime = 1f / _networkTickRate;
         }
 #endregion
@@ -55,10 +68,19 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Update()
         {
             _networkTimer.Tick(Time.deltaTime);
-            if (!_networkTimer.ShouldTick() || !IsSpawned) return;
+            _reconciliationTimer.Tick(Time.deltaTime);
+        }
 
-            HandleClientTick();
-            HandleServerTick();
+private void FixedUpdate()
+        {
+            
+            if (!_spawned) return;
+
+            while (_networkTimer.ShouldTick())
+            {
+                HandleClientTick();
+                HandleServerTick();
+            }
         }
         #endregion
 
@@ -66,11 +88,12 @@ namespace ForsakenGraves.Gameplay.Character.Player
     #region Client
         private void HandleClientTick()
         {
+            if (!IsOwner) return;
+            
             int currentTick = _networkTimer.CurrentTick;
             int bufferIndex = currentTick % BUFFER_SIZE;
 
             Vector3 movementInput = _inputPoller.GetMovementInput();
-            Debug.Log(movementInput);
             
             InputPayload inputPayload = new InputPayload()
                                         {
@@ -85,42 +108,73 @@ namespace ForsakenGraves.Gameplay.Character.Player
             _clientStateBuffer.Add(statePayload, bufferIndex);
 
             HandleServerReconciliation();
+            
+            if (Input.GetKeyDown(KeyCode.Space))
+                _characterController.Move(transform.forward * 10f);
         }
 
         private void HandleServerReconciliation()
         {
             if (!ShouldReconcile()) return;
 
-            float positionError;
-            StatePayload rewindState = default;
             int bufferIndex = _lastServerState.Tick % BUFFER_SIZE; //not enough data to reconcile
             
             if (bufferIndex - 1 < 0 ) return;
 
-            rewindState = IsHost ? _serverStateBuffer.Get(bufferIndex - 1) : _lastServerState;
-            positionError = Vector3.Distance(rewindState.Position, transform.position);
+            StatePayload rewindState = IsHost ? _serverStateBuffer.Get(bufferIndex - 1) : _lastServerState;
+            StatePayload clientState = IsHost ? _clientStateBuffer.Get(bufferIndex - 1) : _clientStateBuffer.Get(bufferIndex);
+            
+            float positionError = Vector3.Distance(rewindState.Position, clientState.Position);
+            
+            if (positionError > RECONCILIATION_POSITION_TRESHOLD)
+            {
+                //Debug.Log($"error : {positionError}  clientTick : {clientState.Tick} host state : {rewindState.Tick}");
+                ReconcileState(rewindState);
+                _reconciliationTimer.Start();
+            }
+
+            _lastProcessedServerState = rewindState;
+        }
+
+        private void ReconcileState(StatePayload rewindState)
+        {
+            transform.position = rewindState.Position;
+            
+            if (!rewindState.Equals(_lastServerState)) return;
+            
+            _clientStateBuffer.Add(rewindState, rewindState.Tick);
+            
+            //replay all input from the rewind state to the current state
+            int tickToReplay = _lastServerState.Tick;
+            int reconciliationCount = 0;
+            while (tickToReplay < _networkTimer.CurrentTick)
+            {
+                int bufferIndex = tickToReplay % BUFFER_SIZE;
+                InputPayload inputPayload = _clientInputBuffer.Get(bufferIndex);
+                StatePayload statePayload = ProcessMovement(inputPayload);
+                _clientStateBuffer.Add(statePayload, bufferIndex % BUFFER_SIZE);
+                tickToReplay++;
+                reconciliationCount++;
+            }
+
+            Debug.Log($"RECONCILED {reconciliationCount}");
         }
 
         private bool ShouldReconcile()
         {
-            throw new System.NotImplementedException();
-        }
+            bool isNewServerState = !_lastServerState.Equals(default);
+            bool isLastStateUndefinedOrDefault = _lastProcessedServerState.Equals(default) ||
+                                                 !_lastProcessedServerState.Equals(_lastServerState);
 
-        private StatePayload ProcessMovement(InputPayload inputPayload)
-        {
-            Move(inputPayload.InputVector);
-            
-            return new StatePayload()
-                   {
-                       Position = transform.position,
-                       Tick = inputPayload.Tick
-                   };
+            return isNewServerState && isLastStateUndefinedOrDefault && !_reconciliationTimer.IsRunning;
         }
     #endregion
 
     #region Server
         private void HandleServerTick()
         {
+            if (!IsServer) return;
+            
             int bufferIndex = -1; //safeguard to throw exception
 
             while (_serverInputQueue.Count > 0)
@@ -128,23 +182,13 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 InputPayload inputPayload = _serverInputQueue.Dequeue();
                 bufferIndex = inputPayload.Tick % BUFFER_SIZE;
                 
-                StatePayload statePayload = SimulateMovement(inputPayload);
+                StatePayload statePayload = ProcessMovement(inputPayload);
                 _serverStateBuffer.Add(statePayload, bufferIndex);
             }
             
             if (bufferIndex == -1) return;
-            SendToClientRpc(_serverStateBuffer.Get(bufferIndex));
-        }
-
-        private StatePayload SimulateMovement(InputPayload inputPayload)
-        {
-            Move(inputPayload.InputVector);
-
-            return new StatePayload()
-                   {
-                       Tick = _networkTimer.CurrentTick,
-                       Position = transform.position
-                   };
+            StatePayload payload = _serverStateBuffer.Get(bufferIndex);
+            SendToClientRpc(payload);
         }
 
         [Rpc(SendTo.ClientsAndHost)]
@@ -163,10 +207,22 @@ namespace ForsakenGraves.Gameplay.Character.Player
 #endregion
 
 #region Movement
-    private void Move(Vector3 movementInput)
-    {
-        _characterController.Move(movementInput * (_playerConfig.MovementSpeed * _tickTime));
-    }
+        private void Move(Vector3 movementInput)
+        {
+            _characterController.Move(movementInput * (_playerConfig.MovementSpeed * _tickTime));
+        }
+        
+        private StatePayload ProcessMovement(InputPayload inputPayload)
+        {
+            Move(inputPayload.InputVector);
+            Debug.Log(transform.position);
+            
+            return new StatePayload()
+                   {
+                       Position = transform.position,
+                       Tick = inputPayload.Tick
+                   };
+        }
 #endregion
         
 #region Component Activation regarding Ownership

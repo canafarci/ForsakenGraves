@@ -11,8 +11,7 @@ namespace ForsakenGraves.Gameplay.GameplayObjects
 
         public override void OnNetworkSpawn()
         {
-            ulong clientID = NetworkManager.Singleton.LocalClient.ClientId;
-            name = $"Client {clientID}'s Persistent Player";
+            name = $"Client {OwnerClientId}'s Persistent Player";
         }
     }
 }
