@@ -25,7 +25,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private float _tickTime;
 
         //client data
-
         private CircularBuffer<InputPayload> _clientInputBuffer = new(BUFFER_SIZE);
         private CircularBuffer<StatePayload> _clientStateBuffer = new(BUFFER_SIZE);
 
@@ -38,20 +37,16 @@ namespace ForsakenGraves.Gameplay.Character.Player
         //server data
         private CircularBuffer<StatePayload> _serverStateBuffer = new(BUFFER_SIZE);
         private Queue<InputPayload> _serverInputQueue = new();
-        private const float RECONCILIATION_POSITION_TRESHOLD = 0.05f;
-        private bool _spawned = false;
-
+        
         //reconciliation
         private CountdownTimer _reconciliationTimer;
+        private const float RECONCILIATION_POSITION_TRESHOLD = 0.05f;
         private const float RECONCILIATION_COOLDOWN_TIME = 1f;
 
 
         public override void OnNetworkSpawn()
         {
             ChangeComponentActivationRelativeToAuthority();
-            
-            Debug.Log($"clientId {OwnerClientId}, pos {transform.position}");
-            _spawned = true;
         }
 
 #region Initialization
@@ -73,8 +68,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
 private void FixedUpdate()
         {
-            
-            if (!_spawned) return;
+            if (!IsSpawned) return;
 
             while (_networkTimer.ShouldTick())
             {
@@ -109,8 +103,11 @@ private void FixedUpdate()
 
             HandleServerReconciliation();
             
+#if UNITY_EDITOR            
+            //here to test reconciliation
             if (Input.GetKeyDown(KeyCode.Space))
                 _characterController.Move(transform.forward * 10f);
+#endif            
         }
 
         private void HandleServerReconciliation()
@@ -128,7 +125,6 @@ private void FixedUpdate()
             
             if (positionError > RECONCILIATION_POSITION_TRESHOLD)
             {
-                //Debug.Log($"error : {positionError}  clientTick : {clientState.Tick} host state : {rewindState.Tick}");
                 ReconcileState(rewindState);
                 _reconciliationTimer.Start();
             }
@@ -149,6 +145,7 @@ private void FixedUpdate()
             int reconciliationCount = 0;
             while (tickToReplay < _networkTimer.CurrentTick)
             {
+                Physics.SyncTransforms();
                 int bufferIndex = tickToReplay % BUFFER_SIZE;
                 InputPayload inputPayload = _clientInputBuffer.Get(bufferIndex);
                 StatePayload statePayload = ProcessMovement(inputPayload);
@@ -156,8 +153,6 @@ private void FixedUpdate()
                 tickToReplay++;
                 reconciliationCount++;
             }
-
-            Debug.Log($"RECONCILED {reconciliationCount}");
         }
 
         private bool ShouldReconcile()
@@ -215,7 +210,6 @@ private void FixedUpdate()
         private StatePayload ProcessMovement(InputPayload inputPayload)
         {
             Move(inputPayload.InputVector);
-            Debug.Log(transform.position);
             
             return new StatePayload()
                    {
