@@ -8,13 +8,13 @@ namespace ForsakenGraves.Infrastructure.Networking.Data
     public struct InputPayload : INetworkSerializable
     {
         public int Tick;
-        public Vector3 InputVector;
+        public InputFlags Input;
         public float YRotation;
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref Tick);
-            serializer.SerializeValue(ref InputVector);
+            serializer.SerializeValue(ref Input);
             serializer.SerializeValue(ref YRotation);
         }
     }

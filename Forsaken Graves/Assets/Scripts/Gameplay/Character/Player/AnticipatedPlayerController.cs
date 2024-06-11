@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Networking;
 using ForsakenGraves.Infrastructure.Networking.Data;
 using ForsakenGraves.Infrastructure.Networking.DataStructures;
@@ -18,11 +18,15 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private PlayerConfig _playerConfig;
         [Inject] private CharacterController _characterController;
         [Inject] private CapsuleCollider _capsuleCollider;
-
+        
+        //netcode data
         private const int BUFFER_SIZE = 1024;
         private int _networkTickRate;
         private NetworkTimer _networkTimer;
         private float _tickTime;
+        
+        //jumping
+        private float _yVelocity = 0f;
 
         //client data
         private CircularBuffer<InputPayload> _clientInputBuffer = new(BUFFER_SIZE);
@@ -65,7 +69,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
             _reconciliationTimer.Tick(Time.deltaTime);
         }
 
-private void FixedUpdate()
+        private void FixedUpdate()
         {
             if (!IsSpawned) return;
 
@@ -92,26 +96,29 @@ private void FixedUpdate()
             int currentTick = _networkTimer.CurrentTick;
             int bufferIndex = currentTick % BUFFER_SIZE;
 
-            Vector3 movementInput = _inputPoller.GetMovementInput();
+            InputFlags movementInput = _inputPoller.GetMovementInput();
             
             InputPayload inputPayload = new InputPayload()
                                         {
                                             Tick = currentTick,
-                                            InputVector = movementInput,
+                                            Input = movementInput,
                                             YRotation = transform.eulerAngles.y
                                         };
                 
             _clientInputBuffer.Add(inputPayload, bufferIndex);
             SendMovementToServerRpc(inputPayload);
 
-            StatePayload statePayload = ProcessMovement(inputPayload);
-            _clientStateBuffer.Add(statePayload, bufferIndex);
+            if (!IsServer) //to avoid duplicate calls to the move method on host
+            {
+                StatePayload statePayload = ProcessMovement(inputPayload);
+                _clientStateBuffer.Add(statePayload, bufferIndex);
+            }
 
             HandleServerReconciliation();
             
 #if UNITY_EDITOR            
             //here to test reconciliation
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.G))
                 _characterController.Move(transform.forward * 10f);
 #endif            
         }
@@ -205,12 +212,42 @@ private void FixedUpdate()
     #endregion
     
     #region Movement Methods
-        private void Move(Vector3 movementInput)
+        private void Move(InputFlags movementInput)
         {
-            Vector3 moveInputRelativeToLook = Quaternion.Euler(0, transform.eulerAngles.y, 0) * movementInput;
+            Vector3 movementDirection = GetMovementVector(movementInput);
+            Vector3 moveInputRelativeToLook = Quaternion.Euler(0, transform.eulerAngles.y, 0) * movementDirection;
+            
+            UpdateVerticalVelocity(movementInput);
+            moveInputRelativeToLook.y = _yVelocity;
+            
+            bool isGrounded = _characterController.isGrounded;
+            if (isGrounded && _yVelocity < 0)
+            {
+                _yVelocity = 0f;
+            }
+            
             _characterController.Move(moveInputRelativeToLook * (_playerConfig.MovementSpeed * _tickTime));
         }
-        
+
+        private Vector3 GetMovementVector(InputFlags movementInput)
+        {
+            Vector3 movementVector = Vector3.zero;
+            
+            if ((movementInput & InputFlags.Up) != 0) 
+                movementVector += Vector3.forward;
+
+            if ((movementInput & InputFlags.Down) != 0)  
+                movementVector -= Vector3.forward;
+
+            if ((movementInput & InputFlags.Left) != 0) 
+                movementVector -= Vector3.right;
+
+            if ((movementInput & InputFlags.Right) != 0) 
+                movementVector += Vector3.right;
+
+            return movementVector;
+        }
+
         private StatePayload ProcessMovement(InputPayload inputPayload)
         {
             //set y rotation for reconciliation, no effect on local client while regular movement
@@ -220,7 +257,7 @@ private void FixedUpdate()
                 transform.rotation = rotation;
             }
             
-            Move(inputPayload.InputVector);
+            Move(inputPayload.Input);
             
             return new StatePayload()
                    {
@@ -246,13 +283,36 @@ private void FixedUpdate()
         #endregion
 
         #region Rotation Methods
-            private void Rotate(float rotationInput)
-            {
-                transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * _tickTime);
-            }
-       #endregion
+        private void Rotate(float rotationInput)
+        {
+            transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * _tickTime);
+        }
+    #endregion
 #endregion
 
+#region Jumping
+        private void UpdateVerticalVelocity(InputFlags movementInput)
+        {
+            bool characterIsGrounded = _characterController.isGrounded;
+            if (characterIsGrounded && _yVelocity < 0)
+            {
+                _yVelocity = 0f;
+            }
+
+            if ((movementInput & InputFlags.Jump) != 0 && characterIsGrounded)
+            {
+                AddVerticalVelocity();
+            }
+            
+            _yVelocity += Physics.gravity.y * Time.deltaTime;
+
+        }
+
+        private void AddVerticalVelocity()
+        {
+            _yVelocity += Mathf.Sqrt(_playerConfig.JumpHeight * -1.0f * Physics.gravity.y);
+        }
+#endregion
         
 #region Component Activation regarding Ownership
         private void ChangeComponentActivationRelativeToAuthority()

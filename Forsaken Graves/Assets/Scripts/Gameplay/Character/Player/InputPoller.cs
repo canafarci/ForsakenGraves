@@ -7,27 +7,35 @@ namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class InputPoller
     {
-        public Vector3 GetMovementInput()
+        private InputFlags _lastInput;
+
+        public InputFlags GetMovementInput()
         {
-            Vector3 movementInput = Vector3.zero;
-            if (Input.GetKey(KeyCode.W))
-            {
-                movementInput += Vector3.forward;
-            }
+            InputFlags movementInput = 0;
+            
+            if (Input.GetKey(KeyCode.W)) 
+                movementInput |= InputFlags.Up;
 
-            if (Input.GetKey(KeyCode.S))
-            {
-                movementInput -= Vector3.forward;
-            }
+            if (Input.GetKey(KeyCode.S)) 
+                movementInput |= InputFlags.Down;
 
-            if (Input.GetKey(KeyCode.A))
-            {
-                movementInput -= Vector3.right;
-            }
+            if (Input.GetKey(KeyCode.A)) 
+                movementInput |= InputFlags.Left;
 
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D)) 
+                movementInput |= InputFlags.Right;
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                movementInput |= InputFlags.Jump;
+            
+            //in order to simulate getkeydown in nonregular tick rate, 
+            //check last input and remove if same input is present
+            InputFlags lastInput = _lastInput;
+            _lastInput = movementInput;
+            
+            if ((lastInput & InputFlags.Jump) != 0)
             {
-                movementInput += Vector3.right;
+                movementInput &= ~InputFlags.Jump;
             }
             
             return movementInput;
@@ -39,6 +47,11 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 return true;
             
             return false;
+        }
+
+        public bool GetJumpInput()
+        {
+            return Input.GetKeyDown(KeyCode.Space);
         }
         
         public float GetRotationXInput()

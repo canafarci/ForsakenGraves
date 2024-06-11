@@ -9,5 +9,6 @@ namespace ForsakenGraves.Identifiers
         Left = 1 << 1,
         Down = 1 << 2,
         Right = 1 << 3,
+        Jump = 1 << 4
     }
 }
