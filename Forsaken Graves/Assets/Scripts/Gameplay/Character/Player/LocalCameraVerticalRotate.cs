@@ -6,7 +6,7 @@ using VContainer;
 
 namespace ForsakenGraves.Gameplay.Character.Player
 {
-    public class LocalCameraXRotate : NetworkBehaviour
+    public class LocalCameraVerticalRotate : NetworkBehaviour
     {
         [Inject] private InputPoller _inputPoller;
         [Inject] private PlayerConfig _playerConfig;
@@ -27,7 +27,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
             float mouseYRotation = _inputPoller.GetRotationYInput();
             if (Mathf.Approximately(0f, mouseYRotation)) return;
             
-            _xRotation -= mouseYRotation;
+            _xRotation += mouseYRotation;
+            
             _xRotation = Mathf.Clamp(_xRotation, _playerConfig.CameraMinXRotation, _playerConfig.CameraMaxXRotation);
 
             _cameraTransform.localRotation = Quaternion.Euler(_xRotation, 0, 0);
