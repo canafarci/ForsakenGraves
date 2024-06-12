@@ -2,6 +2,7 @@ using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.Character.Stats;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.Inputs;
 using ForsakenGraves.PreGame.Data;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace ForsakenGraves.Scope
             builder.RegisterInstance(_characterConfig);
             builder.RegisterInstance(_characterHealth);
 
-            builder.Register<InputPoller>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<InputPoller>().AsSelf();
         }
     }
 }

@@ -15,3 +15,5 @@ MonoBehaviour:
   MovementSpeed: 5
   RotationSpeed: 120
   JumpHeight: 0.4
+  CameraMinXRotation: -90
+  CameraMaxXRotation: 65

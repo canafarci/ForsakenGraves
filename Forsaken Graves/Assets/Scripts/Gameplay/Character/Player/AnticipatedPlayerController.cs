@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.Inputs;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Networking;
 using ForsakenGraves.Infrastructure.Networking.Data;

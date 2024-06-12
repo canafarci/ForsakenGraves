@@ -1,6 +1,7 @@
 using System;
 using ForsakenGraves.Gameplay.Character.Stats;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.Inputs;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

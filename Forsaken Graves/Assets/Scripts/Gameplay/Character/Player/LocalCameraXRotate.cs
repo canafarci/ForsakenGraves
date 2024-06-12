@@ -1,4 +1,5 @@
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.Inputs;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -12,6 +13,9 @@ namespace ForsakenGraves.Gameplay.Character.Player
         
         [SerializeField] private Transform _cameraTransform;
         
+        private float _xRotation;
+
+        
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
@@ -23,18 +27,10 @@ namespace ForsakenGraves.Gameplay.Character.Player
             float mouseYRotation = _inputPoller.GetRotationYInput();
             if (Mathf.Approximately(0f, mouseYRotation)) return;
             
-            _cameraTransform.Rotate(Vector3.left, mouseYRotation * _playerConfig.RotationSpeed * Time.deltaTime);
-            float clampedXRotationValue = _cameraTransform.rotation.eulerAngles.x;
+            _xRotation -= mouseYRotation;
+            _xRotation = Mathf.Clamp(_xRotation, _playerConfig.CameraMinXRotation, _playerConfig.CameraMaxXRotation);
 
-            if (clampedXRotationValue is >= 0 and < 180)
-                clampedXRotationValue = Mathf.Clamp(clampedXRotationValue, 0 , 45);
-            else if (clampedXRotationValue is > 180 and <= 360)
-                clampedXRotationValue = Mathf.Clamp(clampedXRotationValue, 270 , 360);
-
-            Vector3 clampedRotation = _cameraTransform.rotation.eulerAngles;
-            clampedRotation.x = clampedXRotationValue;
-
-            _cameraTransform.rotation = Quaternion.Euler(clampedRotation);
+            _cameraTransform.localRotation = Quaternion.Euler(_xRotation, 0, 0);
         }
     }
 }

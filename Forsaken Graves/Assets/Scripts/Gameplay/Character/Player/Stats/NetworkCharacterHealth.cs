@@ -29,11 +29,9 @@ namespace ForsakenGraves.Gameplay.Character.Stats
         private void HealthChangedHandler(float previousValue, float newValue)
         {
             CharacterHealth.Value = newValue;
-            Debug.Log($"HEALTH CHANGED TO: {newValue}");
 
             if (CharacterHealth.Value < 0f)
             {
-                Debug.Log("CHARACTER DIED");
                 //TODO play animation
             }
         }

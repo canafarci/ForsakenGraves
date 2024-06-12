@@ -30,12 +30,10 @@ namespace ForsakenGraves.Gameplay.Character
 
         private void NetworkCharacterDamagedHandler(float damage)
         {
-            Debug.Log($"Server received call for {damage} damage on GO {gameObject.name}");
             _networkCharacterHealth.CharacterHealth.Value -= damage;
 
             if (_networkCharacterHealth.CharacterHealth.Value <= 0f)
             {
-                Debug.Log($"Server CALLED DESPAWN");
                 KillCharacter();
             }
         }
