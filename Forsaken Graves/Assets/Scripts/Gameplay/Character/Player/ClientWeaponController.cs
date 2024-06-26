@@ -2,6 +2,7 @@ using System;
 using ForsakenGraves.Gameplay.Character.Stats;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Inputs;
+using ForsakenGraves.Gameplay.Weapons;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -22,6 +23,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
         // Maximum distance for the raycast
         private float _maxDistance = Mathf.Infinity;
         private Camera _camera;
+
+        private WeaponSO _weapon;
         
         public override void OnNetworkSpawn()
         {
@@ -37,7 +40,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Update()
         {
             // Check if the middle of the screen is being clicked
-            if (!_inputPoller.GetShootingInput() || _camera == null || !IsSpawned) return;
+            if (CantShoot()) return;
             
             // Cast a ray from the center of the screen
             Ray ray = _camera.ScreenPointToRay(new Vector3(halfScreenWidth, halfScreenHeight, 0));
@@ -48,9 +51,12 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 // Check if the hit object implements the ITargetable interface
                 if (hitInfo.collider.TryGetComponent(out ITargetable target))
                 {
-                    _serverCharacter.DamageTargetServerRpc(hitInfo.transform.gameObject, _characterConfig.Damage);
+                    float damage = _weapon == null ? _characterConfig.Damage : _weapon.Damage;
+                    _serverCharacter.DamageTargetServerRpc(hitInfo.transform.gameObject, damage);
                 }
             }
         }
+
+        private bool CantShoot() => !_inputPoller.GetShootingInput() || _camera == null || !IsSpawned;
     }
 }
