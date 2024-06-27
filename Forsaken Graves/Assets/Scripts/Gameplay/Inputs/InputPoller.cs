@@ -59,7 +59,7 @@ namespace ForsakenGraves.Gameplay.Inputs
 
         public bool GetShootingInput()
         {
-            return _attackAction.WasPressedThisFrame();
+            return _attackAction.IsPressed();
         }
         
         public float GetRotationXInput()
