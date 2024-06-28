@@ -131,7 +131,6 @@ GameObject:
   - component: {fileID: 163290960}
   - component: {fileID: 163290963}
   - component: {fileID: 163290965}
-  - component: {fileID: 163290964}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -178,9 +177,9 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.1
-  far clip plane: 5000
-  field of view: 60
+  near clip plane: 0.03
+  far clip plane: 1000
+  field of view: 40
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -207,7 +206,7 @@ Transform:
   m_GameObject: {fileID: 163290959}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 56.800125, y: 1.8, z: -100.86929}
+  m_LocalPosition: {x: 0.016893372, y: 1.5332785, z: 0.06341303}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -245,28 +244,6 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
---- !u!114 &163290964
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 163290959}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe1afa1a43e4c2690f43e59cc30bfef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mouseInputProperty: MouseInput
-  fovEaseMode:
-    easeFunc: 1
-    curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-  fovSpeed: 3
 --- !u!114 &163290965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -845,6 +822,7 @@ MonoBehaviour:
   _playerAvatarsSO: {fileID: 11400000, guid: f95f075d062064b7b8105c3ea50bb85b, type: 2}
   _netcodeEvents: {fileID: 1595686907}
   _gameplaySceneConfig: {fileID: 11400000, guid: 49e8d3620f31c471fbd99e8e0dd518d6, type: 2}
+  _weaponHolderSO: {fileID: 11400000, guid: 8d610767dec1742c88614dae6eec00f5, type: 2}
 --- !u!4 &1634551867
 Transform:
   m_ObjectHideFlags: 0

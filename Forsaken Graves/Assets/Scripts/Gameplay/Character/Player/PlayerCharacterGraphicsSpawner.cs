@@ -1,3 +1,4 @@
+using System;
 using ForsakenGraves.PreGame.Data;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,6 +15,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private bool _avatarSpawned = false;
 
+        public event Action OnAvatarSpawned;
+
         public override void OnNetworkSpawn()
         {
             if (!IsClient || _avatarSpawned) return;
@@ -29,6 +32,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
             Instantiate(avatarPrefab, _avatarParent);
 
             _avatarSpawned = true;
+            OnAvatarSpawned?.Invoke();
         }
     }
 }

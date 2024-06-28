@@ -24,5 +24,5 @@ MonoBehaviour:
   RigAsset: {fileID: 11400000, guid: 20c86149126a2b24cb88e9fc185cbd50, type: 2}
   WeaponBone:
     name: IK WeaponBone
-    index: -1
+    index: 48
     isVirtual: 0

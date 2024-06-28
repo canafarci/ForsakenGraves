@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Weapons
 {
-    [CreateAssetMenu(fileName = "WeaponDataSO", menuName = "ForsakenGraves/Weapons", order = 0)]
+    [CreateAssetMenu(fileName = "Weapon Data SO", menuName = "ForsakenGraves/Weapons/Weapon Data SO", order = 0)]
     public class WeaponDataSO : ScriptableObject
     {
         public string Name;

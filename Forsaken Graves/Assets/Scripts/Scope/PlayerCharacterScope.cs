@@ -14,29 +14,19 @@ namespace ForsakenGraves.Scope
 {
     public class PlayerCharacterScope : LifetimeScope
     {
-        [SerializeField] private ServerCharacter _serverCharacter;
-        [SerializeField] private CharacterController _characterController;
         [SerializeField] private CapsuleCollider _capsuleCollider;
-        [SerializeField] private ClientCharacterPlayerDataObject _clientCharacterPlayerDataObject;
-        [SerializeField ] private LayerMask _targetMask;
-        [SerializeField ] private NetworkCharacterHealth _characterHealth;
-        [SerializeField ] private ClientInventory _clientInventory;
+        [SerializeField] private LayerMask _targetMask;
         
         //data
         [SerializeField] private PlayerConfig _playerConfig;
         [SerializeField] private PlayerAvatarsSO _avatarsSO;
-        [SerializeField ] private CharacterConfig _characterConfig;
-        [SerializeField ] private PlayerAnimationData _playerAnimationData;
+        [SerializeField] private CharacterConfig _characterConfig;
+        [SerializeField] private PlayerAnimationData _playerAnimationData;
         
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance(_serverCharacter);
-            builder.RegisterInstance(_clientCharacterPlayerDataObject);
-            builder.RegisterInstance(_characterController);
             builder.RegisterInstance(_capsuleCollider);
             builder.RegisterInstance(_targetMask);
-            builder.RegisterInstance(_characterHealth);
-            builder.RegisterInstance(_clientInventory);
             
             //data
             builder.RegisterInstance(_avatarsSO);
@@ -45,7 +35,13 @@ namespace ForsakenGraves.Scope
             builder.RegisterInstance(_playerAnimationData);
 
             builder.RegisterEntryPoint<InputPoller>().AsSelf();
-            builder.RegisterComponentInHierarchy<KRigComponent>().AsSelf();
+            
+            builder.RegisterComponentInHierarchy<PlayerCharacterGraphicsSpawner>().AsSelf();
+            builder.RegisterComponentInHierarchy<ClientInventory>().AsSelf();
+            builder.RegisterComponentInHierarchy<CharacterController>().AsSelf();
+            builder.RegisterComponentInHierarchy<NetworkCharacterHealth>().AsSelf();
+            builder.RegisterComponentInHierarchy<ClientCharacterPlayerDataObject>().AsSelf();
+            builder.RegisterComponentInHierarchy<ServerCharacter>().AsSelf();
         }
     }
 }

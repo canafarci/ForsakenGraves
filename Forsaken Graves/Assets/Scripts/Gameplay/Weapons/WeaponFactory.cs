@@ -31,7 +31,7 @@ namespace ForsakenGraves.Gameplay.Weapons
 
         private Weapon CreateProjectileWeapon(WeaponDataSO weaponDataSO, ServerCharacter serverCharacter)
         {
-            return new BulletWeapon(weaponDataSO, _camera, serverCharacter);
+            throw new System.NotImplementedException();
         }
 
         private Weapon CreateMeleeWeapon(WeaponDataSO weaponDataSO, ServerCharacter serverCharacter)
@@ -41,7 +41,7 @@ namespace ForsakenGraves.Gameplay.Weapons
 
         private Weapon CreateBulletWeapon(WeaponDataSO weaponDataSO, ServerCharacter serverCharacter)
         {
-            throw new System.NotImplementedException();
+            return new BulletWeapon(weaponDataSO, _camera, serverCharacter);
         }
     }
 }

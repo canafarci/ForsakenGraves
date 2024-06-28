@@ -6,10 +6,10 @@ using UnityEngine.Assertions;
 
 namespace ForsakenGraves.Gameplay.Weapons
 {
-    [CreateAssetMenu(fileName = "WeaponHolderSO", menuName = "ForsakenGraves/Weapons", order = 0)]
+    [CreateAssetMenu(fileName = "Weapon Holder SO", menuName = "ForsakenGraves/Weapons/Weapon Holder SO", order = 0)]
     public class WeaponHolderSO : SerializedScriptableObject
     {
-        private Dictionary<WeaponID, WeaponDataSO> _weaponDataLookup;
+        [SerializeField] private Dictionary<WeaponID, WeaponDataSO> _weaponDataLookup;
 
         public WeaponDataSO GetWeaponData(WeaponID weaponID)
         {

@@ -75,6 +75,7 @@ GameObject:
   - component: {fileID: 7231576610617546516}
   - component: {fileID: 980958761301413283}
   - component: {fileID: 7903493446711805452}
+  - component: {fileID: 3988936022487060656}
   m_Layer: 3
   m_Name: PlayerCharacter
   m_TagString: Untagged
@@ -123,9 +124,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   _characterHealth: {fileID: 4011162478861460100}
+  _clientInventory: {fileID: 3988936022487060656}
   _playerConfig: {fileID: 11400000, guid: f4d6806f233c645c2acf37d179f122d4, type: 2}
   _avatarsSO: {fileID: 11400000, guid: f95f075d062064b7b8105c3ea50bb85b, type: 2}
   _characterConfig: {fileID: 11400000, guid: 8412dfa7f5a9d4c73b6d47f9c1563360, type: 2}
+  _playerAnimationData: {fileID: 11400000, guid: c96e1f6944aed44dbac69707f53058ee, type: 2}
 --- !u!114 &8598326320738452013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 93505577
+  GlobalObjectIdHash: 2307130470
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -353,3 +356,15 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3988936022487060656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7832303255236224990}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 144bee2055aa4033b3094b6cc74eaa60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

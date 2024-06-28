@@ -1,4 +1,7 @@
+#pragma warning disable CS4014
+
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.Identifiers;
@@ -14,22 +17,32 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private WeaponFactory _weaponFactory;
         [Inject] private ServerCharacter _serverCharacter;
         [Inject] private PlayerAnimationData _playerAnimationData;
-        [Inject] private KRigComponent _rigComponent;
+        [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         
         private Transform _weaponBone;
+        
         private List<Weapon> _playerWeapons = new();
         public Weapon ActiveWeapon { get; private set; }
+
+        private void Awake()
+        {
+            _graphicsSpawner.OnAvatarSpawned += AvatarSpawnedHandler;
+        }
+
+        private void AvatarSpawnedHandler()
+        {
+            _weaponBone = GetComponentInChildren<KRigComponent>().GetRigTransform(_playerAnimationData.WeaponBone);
+        }
 
         public override void OnNetworkSpawn()
         {
             if (!IsOwner) return;
             
-            _weaponBone = _rigComponent.GetRigTransform(_playerAnimationData.WeaponBone);
             //FOR DEVELOPMENT
             PickUpWeapon(WeaponID.AssaultRifle);
         }
 
-        public void PickUpWeapon(WeaponID weaponID)
+        private void PickUpWeapon(WeaponID weaponID)
         {
             Weapon weapon = _weaponFactory.CreateWeapon(weaponID, _serverCharacter);
             
@@ -38,19 +51,25 @@ namespace ForsakenGraves.Gameplay.Character.Player
             EquipWeapon(weapon);
         }
 
-        public void EquipWeapon(Weapon weapon)
+        private void EquipWeapon(Weapon weapon)
         {
             ActiveWeapon = weapon;
         }
 
-        private void InstantiateWeaponGraphics(Weapon weapon)
+        private async void InstantiateWeaponGraphics(Weapon weapon)
         {
+            await UniTask.WaitWhile(() => _weaponBone == null);
+            
             Transform weaponTransform = Instantiate(weapon.WeaponPrefab, transform.position, Quaternion.identity).transform;
             
             weaponTransform.parent = _weaponBone;
             weaponTransform.localPosition = Vector3.zero;
             weaponTransform.localRotation = Quaternion.identity;
-            
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            _graphicsSpawner.OnAvatarSpawned -= AvatarSpawnedHandler;
         }
     }
 }
