@@ -12,6 +12,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
     public class ClientWeaponController : NetworkBehaviour
     {
         [Inject] private InputPoller _inputPoller;
+        [Inject] private ClientInventory _clientInventory;
         
         private Camera _camera;
         private Weapon _weapon;

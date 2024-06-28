@@ -12,6 +12,8 @@ namespace ForsakenGraves.Gameplay.Weapons
         
         private float _lastFireTime;
 
+        public GameObject WeaponPrefab => _weaponDataSO.Prefab;
+        
         protected Weapon(WeaponDataSO weaponDataSO, Camera mainCamera, ServerCharacter ownerServerCharacter)
         {
             _weaponDataSO = weaponDataSO;

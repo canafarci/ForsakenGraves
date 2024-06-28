@@ -1,6 +1,7 @@
 using ForsakenGraves.Gameplay;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Spawners;
+using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.GameState;
 using ForsakenGraves.Infrastructure;
 using ForsakenGraves.PreGame.Data;
@@ -27,6 +28,9 @@ namespace ForsakenGraves.Scope
             builder.RegisterComponentInHierarchy<PlayerCharacterSpawner>().AsSelf();
 
             builder.RegisterEntryPoint<GameplaySettings>().AsSelf();
+            
+            //weapon
+            builder.RegisterEntryPoint<WeaponFactory>().AsSelf();
         }
     }
 }
