@@ -32,7 +32,7 @@ namespace ForsakenGraves.Scope
             builder.RegisterEntryPoint<GameplaySettings>().AsSelf();
             
             //weapon
-            builder.RegisterEntryPoint<WeaponFactory>().AsSelf();
+            builder.RegisterEntryPoint<WeaponBuilderDirector>().AsSelf();
         }
     }
 }

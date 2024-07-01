@@ -4,7 +4,6 @@ using ForsakenGraves.Gameplay.Character.Stats;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Inputs;
 using ForsakenGraves.PreGame.Data;
-using KINEMATION.KAnimationCore.Runtime.Rig;
 using Unity.Netcode.Components;
 using UnityEngine;
 using VContainer;

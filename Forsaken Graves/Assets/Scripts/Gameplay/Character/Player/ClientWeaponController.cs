@@ -15,7 +15,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private ClientInventory _clientInventory;
         
         private Camera _camera;
-        private Weapon _weapon;
         
         public override void OnNetworkSpawn()
         {
@@ -34,10 +33,10 @@ namespace ForsakenGraves.Gameplay.Character.Player
             if (CantShoot()) return;
             
             if (CanFire())
-                _weapon.Fire();
+                _clientInventory.ActiveWeapon.Fire();
         }
 
-        private bool CanFire() => _inputPoller.GetShootingInput() && _weapon.CanFire();
-        private bool CantShoot() => _camera == null || !IsSpawned;
+        private bool CantShoot() => _camera == null || _clientInventory.ActiveWeapon == null || !IsSpawned;
+        private bool CanFire() => _inputPoller.GetShootingInput() && _clientInventory.ActiveWeapon.CanFire();
     }
 }

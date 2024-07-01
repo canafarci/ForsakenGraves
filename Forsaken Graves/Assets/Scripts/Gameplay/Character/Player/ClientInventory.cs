@@ -5,7 +5,6 @@ using Cysharp.Threading.Tasks;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.Identifiers;
-using KINEMATION.KAnimationCore.Runtime.Rig;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;
@@ -14,14 +13,14 @@ namespace ForsakenGraves.Gameplay.Character.Player
 {
     public class ClientInventory : NetworkBehaviour
     {
-        [Inject] private WeaponFactory _weaponFactory;
+        [Inject] private WeaponBuilderDirector _weaponBuilderDirector;
         [Inject] private ServerCharacter _serverCharacter;
         [Inject] private PlayerAnimationData _playerAnimationData;
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         
-        private Transform _weaponBone;
+        private Transform _weaponParentTransform;
         
-        private List<Weapon> _playerWeapons = new();
+        private readonly List<Weapon> _playerWeapons = new();
         public Weapon ActiveWeapon { get; private set; }
 
         private void Awake()
@@ -31,7 +30,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private void AvatarSpawnedHandler()
         {
-            _weaponBone = GetComponentInChildren<KRigComponent>().GetRigTransform(_playerAnimationData.WeaponBone);
+            _weaponParentTransform = GetComponentInChildren<HandsSpawnTransform>().transform;
         }
 
         public override void OnNetworkSpawn()
@@ -39,12 +38,12 @@ namespace ForsakenGraves.Gameplay.Character.Player
             if (!IsOwner) return;
             
             //FOR DEVELOPMENT
-            PickUpWeapon(WeaponID.AssaultRifle);
+            PickUpWeapon(WeaponID.TommyGun);
         }
 
         private void PickUpWeapon(WeaponID weaponID)
         {
-            Weapon weapon = _weaponFactory.CreateWeapon(weaponID, _serverCharacter);
+            Weapon weapon = _weaponBuilderDirector.BuildWeapon(weaponID, _serverCharacter);
             
             _playerWeapons.Add(weapon);
             InstantiateWeaponGraphics(weapon);
@@ -58,13 +57,9 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private async void InstantiateWeaponGraphics(Weapon weapon)
         {
-            await UniTask.WaitWhile(() => _weaponBone == null);
+            await UniTask.WaitWhile(() => _weaponParentTransform == null);
             
-            Transform weaponTransform = Instantiate(weapon.WeaponPrefab, transform.position, Quaternion.identity).transform;
-            
-            weaponTransform.parent = _weaponBone;
-            weaponTransform.localPosition = Vector3.zero;
-            weaponTransform.localRotation = Quaternion.identity;
+            weapon.AttachToTransform(_weaponParentTransform);
         }
 
         public override void OnNetworkDespawn()

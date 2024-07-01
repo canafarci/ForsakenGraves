@@ -13,8 +13,6 @@ namespace ForsakenGraves.Gameplay.Weapons
         private float _maxDistance = Mathf.Infinity;
         // Layer mask to filter which objects should be considered for the raycast
         
-        public BulletWeapon(WeaponDataSO weaponDataSO, Camera mainCamera, ServerCharacter ownerServerCharacter) : base(weaponDataSO, mainCamera, ownerServerCharacter) { }
-        
         public override void Fire()
         {
             Ray ray = _mainCamera.ScreenPointToRay(new Vector3(halfScreenWidth, halfScreenHeight, 0));
