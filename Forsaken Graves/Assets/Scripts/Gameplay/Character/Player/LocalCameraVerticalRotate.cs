@@ -27,7 +27,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
             _cameraTransform = GetComponentInChildren<CinemachineCamera>().transform;
         }
 
-
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
@@ -38,7 +37,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             if (_cameraTransform == null) return;
             
-            float mouseYRotation = _inputPoller.GetRotationYInput();
+            float mouseYRotation = _inputPoller.GetRotationYInput() * Time.deltaTime * _playerConfig.RotationSpeed;
             if (Mathf.Approximately(0f, mouseYRotation)) return;
             
             _xRotation += mouseYRotation;

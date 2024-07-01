@@ -50,9 +50,9 @@ MonoBehaviour:
     supportTransparentBackface: 1
     supportTransparentDepthPrepass: 1
     supportTransparentDepthPostpass: 1
-    colorBufferFormat: 74
+    colorBufferFormat: 48
     supportCustomPass: 1
-    customBufferFormat: 8
+    customBufferFormat: 48
     supportedLitShaderMode: 2
     planarReflectionResolution:
       m_Values: 000100000004000000080000
@@ -344,7 +344,11 @@ MonoBehaviour:
   m_UseRenderGraph: 1
   m_CompositorCustomVolumeComponentsList:
     m_InjectionPoint: 1
-    m_CustomPostProcessTypesAsString: []
+    m_CustomPostProcessTypesAsString:
+    - UnityEngine.Rendering.HighDefinition.Compositor.ChromaKeying, Unity.RenderPipelines.HighDefinition.Runtime,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    - UnityEngine.Rendering.HighDefinition.Compositor.AlphaInjection, Unity.RenderPipelines.HighDefinition.Runtime,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Version: 25
   m_ObsoleteFrameSettings:
     overrides: 0

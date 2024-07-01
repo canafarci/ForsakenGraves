@@ -3,8 +3,8 @@ using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.Character.Stats;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Inputs;
+using ForsakenGraves.Infrastructure.Netcode;
 using ForsakenGraves.PreGame.Data;
-using Unity.Netcode.Components;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -41,6 +41,7 @@ namespace ForsakenGraves.Scope
             builder.RegisterComponentInHierarchy<NetworkCharacterHealth>().AsSelf();
             builder.RegisterComponentInHierarchy<ClientCharacterPlayerDataObject>().AsSelf();
             builder.RegisterComponentInHierarchy<ServerCharacter>().AsSelf();
+            builder.RegisterComponentInHierarchy<OwnerNetworkAnimator>().AsSelf();
         }
     }
 }
