@@ -5543,8 +5543,35 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7621312306802223834, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}
       insertIndex: 33
       addedObject: {fileID: 8778506140342534443}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7988720367816062507, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6903014109089279177}
   m_SourcePrefab: {fileID: 100100000, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}
+--- !u!1 &665690277339631770 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7988720367816062507, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}
+  m_PrefabInstance: {fileID: 7485161932263532209}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6903014109089279177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 665690277339631770}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0544e7b14d134a1449e61175446cfb95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ApplyAfter: 3
+  Tilt: 0
+  Pan: 0
+  Dutch: 0
+  ZoomScale: 1
+  FollowAttachment: 1
+  LookAtAttachment: 1
 --- !u!4 &1019207934558227563 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7621312306802223834, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}

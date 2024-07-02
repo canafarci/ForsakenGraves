@@ -474,7 +474,7 @@ MonoBehaviour:
       type: {class: HDRPDefaultVolumeProfileSettings, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
         m_Version: 0
-        m_VolumeProfile: {fileID: 11400000, guid: 4114f851a7ba54e44be39b568f75b3a9, type: 2}
+        m_VolumeProfile: {fileID: 11400000, guid: 39d5ace5b3fb8d048b51edce61ab3a98, type: 2}
     - rid: 5459084058876182799
       type: {class: WaterSystemRuntimeResources, ns: UnityEngine.Rendering.HighDefinition, asm: Unity.RenderPipelines.HighDefinition.Runtime}
       data:
