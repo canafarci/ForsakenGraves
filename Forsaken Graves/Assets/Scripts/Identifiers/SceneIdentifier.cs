@@ -7,6 +7,7 @@ namespace ForsakenGraves.Identifiers
         MainMenu = 1,
         PreGameScene = 2,
         PrototypeGameplayScene = 3,
-        PostGameScene = 4
+        PostGameScene = 4,
+        Alley_GameplayLevel = 5
     }
 }

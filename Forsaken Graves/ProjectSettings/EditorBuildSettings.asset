@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/PostGameScene.unity
     guid: c61c1f4e31ecb4cc4ad5851d6568f06d
+  - enabled: 1
+    path: Assets/Scenes/Alley_GameplayLevel.unity
+    guid: 5e06d8f9a7b56cb42b04641289a3fa8a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 181e710c6090c4690959f9237401884a, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.GameplayObjects;
 using ForsakenGraves.Gameplay.Messages;
@@ -14,14 +15,19 @@ namespace ForsakenGraves.Gameplay.Spawners
 {
     public class PlayerCharacterSpawner : NetworkBehaviour
     {
-        [SerializeField] private NetworkObject _playerPrefab;
         [Inject] private IPublisher<CharacterSpawnedMessage> _characterSpawnedMessagePublisher;
+        [SerializeField] private NetworkObject _playerPrefab;
+        [SerializeField] private List<Transform> _spawnTransforms;
+
+        private int _spawnIndex = 0;
         
         public void SpawnPlayerCharacter(ulong clientID)
         {
             NetworkObject playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientID);
             NetworkObject newPlayer = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
-            newPlayer.transform.position = new Vector3(Random.Range(-5f, 5f), 0f, Random.Range(-5f, 5f));
+
+            Vector3 spawnPos = _spawnTransforms[_spawnIndex++].position;
+            newPlayer.transform.position = spawnPos;
             
             ServerPlayerCharacter newPlayerPlayerCharacter = newPlayer.GetComponent<ServerPlayerCharacter>();
             

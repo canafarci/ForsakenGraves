@@ -58,7 +58,7 @@ namespace ForsakenGraves.GameState
             SavePlayerDataServerRpc();
             await UniTask.Delay(500);
             
-            _loadScenePublisher.Publish(new LoadSceneMessage(SceneIdentifier.PrototypeGameplayScene, true));
+            _loadScenePublisher.Publish(new LoadSceneMessage(SceneIdentifier.Alley_GameplayLevel, true));
         }
         
         [Rpc(SendTo.Server)]
