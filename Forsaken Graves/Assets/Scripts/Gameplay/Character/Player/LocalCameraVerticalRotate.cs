@@ -1,3 +1,4 @@
+using ForsakenGraves.Gameplay.Cameras;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Inputs;
 using Unity.Cinemachine;
@@ -24,7 +25,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private void AvatarSpawnedHandler()
         {
-            _cameraTransform = GetComponentInChildren<CinemachineCamera>().transform;
+            _cameraTransform = GetComponentInChildren<CameraTargetReference>().transform;
         }
 
         public override void OnNetworkSpawn()

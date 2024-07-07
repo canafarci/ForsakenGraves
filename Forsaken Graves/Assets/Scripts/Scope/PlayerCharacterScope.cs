@@ -1,3 +1,4 @@
+using ForsakenGraves.Gameplay.Cameras;
 using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.Character.Stats;
@@ -42,6 +43,9 @@ namespace ForsakenGraves.Scope
             builder.RegisterComponentInHierarchy<ClientCharacterPlayerDataObject>().AsSelf();
             builder.RegisterComponentInHierarchy<ServerCharacter>().AsSelf();
             builder.RegisterComponentInHierarchy<OwnerNetworkAnimator>().AsSelf();
+            
+            //camera
+            builder.RegisterEntryPoint<CameraController>().AsSelf();
         }
     }
 }
