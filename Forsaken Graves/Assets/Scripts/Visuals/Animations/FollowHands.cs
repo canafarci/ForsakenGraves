@@ -10,7 +10,7 @@ namespace ForsakenGraves.Visuals.Animations
     {
         private Transform _transformToFollow;
         private PlayerConfig _playerConfig;
-        private Vector3 velocity = Vector3.zero;
+        private Vector3 _horizontalVelocity = Vector3.zero;
 
 
         public void Initialize(Transform transformToFollow, PlayerConfig playerConfig)
@@ -24,20 +24,27 @@ namespace ForsakenGraves.Visuals.Animations
             NetworkTicker.OnNetworkTick += NetworkTick;
         }
 
-        private async void NetworkTick(int currentTick)
+        private void NetworkTick(int currentTick)
+        {
+            if (!_transformToFollow) return;
+            
+
+        }
+
+        private void FixedUpdate()
         {
             if (!_transformToFollow) return;
 
-            //await UniTask.Delay(10);
+            transform.position = _transformToFollow.position;
+            transform.rotation = _transformToFollow.rotation;
             
+            // transform.position = Vector3.Lerp(transform.position,
+            //                                   _transformToFollow.position,
+            //                                   Time.fixedDeltaTime * _playerConfig.HandsLerpSpeed);
+            //
             // transform.rotation = Quaternion.Slerp(transform.rotation,
-            //                                      _transformToFollow.rotation,
-            //                                      NetworkTicker.TickRate * _playerConfig.HandsSlerpSpeed);
-            
-            transform.position = Vector3.SmoothDamp(transform.position,
-                                                  _transformToFollow.position,
-                                                  ref velocity,
-                                                  NetworkTicker.TickRate * _playerConfig.HandsLerpSpeed);
+            //                                       _transformToFollow.rotation,
+            //                                       Time.fixedDeltaTime * _playerConfig.HandsSlerpSpeed);
         }
 
         private void OnDestroy()

@@ -27,11 +27,10 @@ namespace ForsakenGraves.Gameplay.Character.Player
             {
                 _targetReference = GetComponentInChildren<CameraTargetReference>();
                 _cameraController.SetCameraTargetReference(_targetReference);
-                
                 _cameraController.SetGameplayCameraTargets();
 
                 _handsFollow = GetComponentInChildren<FollowHands>();
-                _handsFollow.Initialize(_targetReference.HandsFollowTransform, _playerConfig);
+                _handsFollow.Initialize(_targetReference.HandsFollowTransform,_playerConfig);
                 
                 _handsFollow.transform.SetParent(null);
             }

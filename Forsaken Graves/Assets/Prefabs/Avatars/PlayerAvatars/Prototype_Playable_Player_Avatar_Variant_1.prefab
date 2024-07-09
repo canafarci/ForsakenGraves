@@ -2376,10 +2376,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4976649467767665416, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}
-      propertyPath: m_Name
-      value: HandsReferencePos
-      objectReference: {fileID: 0}
     - target: {fileID: 7102044144766431328, guid: 8e8db2328c28a4bec999384f5dab53b4, type: 3}
       propertyPath: m_Name
       value: Prototype_Playable_Player_Avatar_Variant_1

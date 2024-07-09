@@ -62,14 +62,9 @@ namespace ForsakenGraves.Gameplay.Inputs
             return _attackAction.IsPressed();
         }
         
-        public float GetRotationXInput()
+        public Vector2 GetRotationInput()
         {
-            return _lookAction.ReadValue<Vector2>().x;
-        }
-        
-        public float GetRotationYInput()
-        {
-            return _lookAction.ReadValue<Vector2>().y;
+            return _lookAction.ReadValue<Vector2>();
         }
         
         private InputFlags MovementInputFromOldInputSystem(InputFlags movementInput)

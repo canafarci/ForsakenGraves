@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using ForsakenGraves.Gameplay.Cameras;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Inputs;
 using ForsakenGraves.Identifiers;
@@ -18,9 +20,14 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private PlayerConfig _playerConfig;
         [Inject] private CharacterController _characterController;
         [Inject] private CapsuleCollider _capsuleCollider;
+        [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         
         //netcode data
         private const int BUFFER_SIZE = 1024;
+        
+        //rotation
+        private float _cameraXRotation;
+        private Transform _cameraTransform;
         
         //jumping
         private float _yVelocity = 0f;
@@ -41,6 +48,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         
         //reconciliation
         private CountdownTimer _reconciliationTimer;
+        
         private const float RECONCILIATION_POSITION_TRESHOLD = 0.05f;
         private const float RECONCILIATION_COOLDOWN_TIME = 1f;
         
@@ -53,7 +61,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Awake()
         {
             _reconciliationTimer = new CountdownTimer(RECONCILIATION_COOLDOWN_TIME);
-            NetworkTicker.OnNetworkTick += NetworkTick;
+            _graphicsSpawner.OnAvatarSpawned += AvatarSpawnedHandler;
         }
 
         #endregion
@@ -62,8 +70,14 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Update()
         {
             _reconciliationTimer.Tick(Time.deltaTime);
+            //this is client authoritative, but updates in network loop to prevent desync and animation issues
         }
-        
+
+        private void FixedUpdate()
+        {
+            HandleRotation();
+        }
+
         private void NetworkTick(int currentTick)
         {
             if (!IsSpawned) return;
@@ -72,8 +86,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
             
             HandleClientTickForMovement(currentTick);
             HandleServerTickForMovement();
-            //this is client authoritative, but updates in network loop to prevent desync and animation issues
-            HandleRotation();
         }
 #endregion
 
@@ -265,17 +277,31 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             if (!IsOwner)  return;
 
-            float rotationInput = _inputPoller.GetRotationXInput();
-            Rotate(rotationInput);
+            Vector2 rotationInput = _inputPoller.GetRotationInput();
+            float horizontalInput = rotationInput.x;
+            float verticalInput = rotationInput.y;
+            
+            RotateHorizontal(horizontalInput);
+            RotateCameraVertical(verticalInput);
         }
-        
+
         #endregion
 
         #region Rotation Methods
-        private void Rotate(float rotationInput)
+        private void RotateHorizontal(float rotationInput)
         {
-            transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * NetworkTicker.TickRate);
+            transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * Time.fixedDeltaTime);
         }
+        
+        private void RotateCameraVertical(float verticalInput)
+        {
+            if (Mathf.Approximately(0f, verticalInput)) return;
+            
+            _cameraXRotation += verticalInput * _playerConfig.RotationSpeed * Time.fixedDeltaTime;
+            _cameraXRotation = Mathf.Clamp(_cameraXRotation, _playerConfig.CameraMinXRotation, _playerConfig.CameraMaxXRotation);
+            _cameraTransform.localRotation = Quaternion.Euler(_cameraXRotation, 0, 0);
+        }
+        
     #endregion
 #endregion
 
@@ -327,11 +353,27 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             _characterController.enabled = true;
             _capsuleCollider.enabled = false;
+            
+            NetworkTicker.OnNetworkTick += NetworkTick;
+            
+        }
+
+        private void AvatarSpawnedHandler()
+        {
+            if (IsOwner)
+                _cameraTransform = GetComponentInChildren<CameraTargetReference>().CameraTransform;
         }
 
         public override void OnDestroy()
         {
             NetworkTicker.OnNetworkTick -= NetworkTick;
+
+            if (IsOwner || IsServer)
+            {
+                NetworkTicker.OnNetworkTick -= NetworkTick;
+            }
+            
+            _graphicsSpawner.OnAvatarSpawned -= AvatarSpawnedHandler;
             base.OnDestroy();
         }
 

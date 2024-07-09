@@ -292,10 +292,10 @@ MonoBehaviour:
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
-    FieldOfView: 60.000004
+    FieldOfView: 40
     OrthographicSize: 10
-    NearClipPlane: 0.03
-    FarClipPlane: 1000
+    NearClipPlane: 0.1
+    FarClipPlane: 5000
     Dutch: 0
     ModeOverride: 0
     PhysicalProperties:
@@ -1237,6 +1237,18 @@ PrefabInstance:
     - target: {fileID: 5845791191791901325, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 284273298
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699406783851797916, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -77.6484
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699406783851797916, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.2697434
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699406783851797916, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -109.0336
       objectReference: {fileID: 0}
     - target: {fileID: 7064263204669071975, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
       propertyPath: 'autoInjectGameObjects.Array.data[2]'

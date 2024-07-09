@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Player Input Config
   m_EditorClassIdentifier: 
   MovementSpeed: 5
-  RotationSpeed: 5
+  RotationSpeed: 1
   JumpHeight: 0.4
   CameraMinXRotation: -90
   CameraMaxXRotation: 65
-  HandsSlerpSpeed: 26
+  HandsSlerpSpeed: 2
   HandsLerpSpeed: 2

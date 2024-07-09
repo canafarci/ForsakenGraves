@@ -22,7 +22,7 @@ namespace ForsakenGraves.Gameplay.Cameras
         {
             GameCamera gameplayCamera = _cameraLookup[GameCameraType.GamePlay];
             
-            gameplayCamera.CinemachineCamera.Follow = _cameraTargetReference.CameraPosTarget;
+            gameplayCamera.CinemachineCamera.Follow = _cameraTargetReference.CameraTransform;
             gameplayCamera.CinemachineCamera.LookAt = _cameraTargetReference.CameraLookAtTarget;
         }
         
