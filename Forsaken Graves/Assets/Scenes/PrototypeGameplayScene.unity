@@ -1150,6 +1150,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1889196679913434170, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2582958544533866585, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 77.6654
@@ -1190,6 +1194,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3801101076810151648, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -77.6484
+      objectReference: {fileID: 0}
+    - target: {fileID: 3801101076810151648, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.2697434
+      objectReference: {fileID: 0}
+    - target: {fileID: 3801101076810151648, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -109.0336
+      objectReference: {fileID: 0}
+    - target: {fileID: 4063845085677676431, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: UpdateMethod
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4224278671912492775, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
       propertyPath: m_Name
       value: GameplayCore
@@ -1206,6 +1226,22 @@ PrefabInstance:
       propertyPath: 'autoInjectGameObjects.Array.data[2]'
       value: 
       objectReference: {fileID: 1937825254}
+    - target: {fileID: 7655710741730908826, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: field of view
+      value: 60.000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655710741730908826, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: far clip plane
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655710741730908826, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: near clip plane
+      value: 0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 7655710741730908826, guid: 03cda2c6821cd14408f5c5af2197279a, type: 3}
+      propertyPath: orthographic size
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

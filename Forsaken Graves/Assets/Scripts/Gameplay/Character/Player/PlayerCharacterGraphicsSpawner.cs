@@ -14,7 +14,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [SerializeField] private Transform _avatarParent;
 
         private bool _avatarSpawned = false;
-
         public event Action OnAvatarSpawned;
 
         public override void OnNetworkSpawn()

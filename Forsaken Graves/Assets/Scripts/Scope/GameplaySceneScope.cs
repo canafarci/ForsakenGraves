@@ -1,10 +1,13 @@
 using ForsakenGraves.Gameplay;
+using ForsakenGraves.Gameplay.Cameras;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Spawners;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.GameState;
 using ForsakenGraves.Infrastructure;
+using ForsakenGraves.Infrastructure.Networking;
 using ForsakenGraves.PreGame.Data;
+using Unity.Cinemachine;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -33,6 +36,11 @@ namespace ForsakenGraves.Scope
             
             //weapon
             builder.RegisterEntryPoint<WeaponBuilderDirector>().AsSelf();
+            //camera
+            builder.RegisterComponentInHierarchy<CinemachineBrain>().AsSelf();
+            builder.RegisterEntryPoint<CameraTicker>().AsSelf();
+            //network
+            builder.RegisterEntryPoint<NetworkTicker>().AsSelf();
         }
     }
 }

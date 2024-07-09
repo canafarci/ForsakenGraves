@@ -1,4 +1,7 @@
+using System;
 using ForsakenGraves.Gameplay.Cameras;
+using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Visuals.Animations;
 using Unity.Netcode;
 using VContainer;
 
@@ -8,7 +11,11 @@ namespace ForsakenGraves.Gameplay.Character.Player
     {
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         [Inject] private CameraController _cameraController;
+        [Inject] private PlayerConfig _playerConfig;
         
+        private FollowHands _handsFollow;
+        private CameraTargetReference _targetReference;
+
         private void Awake()
         {
             _graphicsSpawner.OnAvatarSpawned += AvatarSpawnedHandler;
@@ -18,16 +25,26 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             if (IsOwner)
             {
-                _cameraController.SetCameraTargetReference(GetComponentInChildren<CameraTargetReference>());
-                _cameraController.SetHandsTransform(GetComponentInChildren<HandsSpawnTransform>());
-                _cameraController.SetGameplayCamera();
+                _targetReference = GetComponentInChildren<CameraTargetReference>();
+                // _cameraController.SetCameraTargetReference(_targetReference);
+                //
+                // _cameraController.SetGameplayCamera();
+
+                _handsFollow = GetComponentInChildren<FollowHands>();
+                _handsFollow.Initialize(_targetReference.HandsFollowTransform, _playerConfig);
+                
+                _handsFollow.transform.SetParent(null);
             }
             else
             {
-                _cameraController.Dispose();
+                // _cameraController.Dispose();
             }
         }
 
+        private void Update()
+        {
+            if (!IsOwner || !_handsFollow) return;
+        }
 
         public override void OnNetworkDespawn()
         {

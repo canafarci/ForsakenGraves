@@ -30,10 +30,10 @@ namespace ForsakenGraves.Gameplay.Inputs
             bool jumpPressed = _jumpAction.IsPressed();
             
             if (movementVector.y > 0) 
-                movementInput |= InputFlags.Up;
+                movementInput |= InputFlags.Forward;
 
             if (movementVector.y < 0) 
-                movementInput |= InputFlags.Down;
+                movementInput |= InputFlags.Back;
 
             if (movementVector.x < 0) 
                 movementInput |= InputFlags.Left;
@@ -75,10 +75,10 @@ namespace ForsakenGraves.Gameplay.Inputs
         private InputFlags MovementInputFromOldInputSystem(InputFlags movementInput)
         {
             if (UnityEngine.Input.GetKey(KeyCode.W)) 
-                movementInput |= InputFlags.Up;
+                movementInput |= InputFlags.Forward;
 
             if (UnityEngine.Input.GetKey(KeyCode.S)) 
-                movementInput |= InputFlags.Down;
+                movementInput |= InputFlags.Back;
 
             if (UnityEngine.Input.GetKey(KeyCode.A)) 
                 movementInput |= InputFlags.Left;

@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.Identifiers;
+using ForsakenGraves.Visuals.Animations;
 using Unity.Netcode;
 using UnityEngine;
 using VContainer;

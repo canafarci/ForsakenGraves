@@ -17,3 +17,5 @@ MonoBehaviour:
   JumpHeight: 0.4
   CameraMinXRotation: -90
   CameraMaxXRotation: 65
+  HandsSlerpSpeed: 26
+  HandsLerpSpeed: 500

@@ -10,5 +10,7 @@ namespace ForsakenGraves.Gameplay.Data
         public float JumpHeight;
         public float CameraMinXRotation;
         public float CameraMaxXRotation;
+        public float HandsSlerpSpeed;
+        public float HandsLerpSpeed;
     }
 }
