@@ -1,4 +1,7 @@
+using System;
+using Cysharp.Threading.Tasks;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Infrastructure.Networking;
 using UnityEngine;
 
 namespace ForsakenGraves.Visuals.Animations
@@ -7,6 +10,8 @@ namespace ForsakenGraves.Visuals.Animations
     {
         private Transform _transformToFollow;
         private PlayerConfig _playerConfig;
+        private Vector3 velocity = Vector3.zero;
+
 
         public void Initialize(Transform transformToFollow, PlayerConfig playerConfig)
         {
@@ -14,17 +19,30 @@ namespace ForsakenGraves.Visuals.Animations
             _playerConfig = playerConfig;
         }
 
-        private void FixedUpdate()
+        private void Awake()
+        {
+            NetworkTicker.OnNetworkTick += NetworkTick;
+        }
+
+        private async void NetworkTick(int currentTick)
         {
             if (!_transformToFollow) return;
+
+            //await UniTask.Delay(10);
             
-            transform.rotation = Quaternion.Slerp(transform.rotation,
-                                                  _transformToFollow.rotation,
-                                                  Time.fixedDeltaTime * _playerConfig.HandsSlerpSpeed);
+            // transform.rotation = Quaternion.Slerp(transform.rotation,
+            //                                      _transformToFollow.rotation,
+            //                                      NetworkTicker.TickRate * _playerConfig.HandsSlerpSpeed);
             
-            transform.transform.position = Vector3.Lerp(transform.position,
-                                                        _transformToFollow.position,
-                                                        Time.fixedDeltaTime * _playerConfig.HandsLerpSpeed);
+            transform.position = Vector3.SmoothDamp(transform.position,
+                                                  _transformToFollow.position,
+                                                  ref velocity,
+                                                  NetworkTicker.TickRate * _playerConfig.HandsLerpSpeed);
+        }
+
+        private void OnDestroy()
+        {
+            NetworkTicker.OnNetworkTick -= NetworkTick;
         }
     }
 }

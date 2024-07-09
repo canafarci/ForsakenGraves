@@ -26,9 +26,9 @@ namespace ForsakenGraves.Gameplay.Character.Player
             if (IsOwner)
             {
                 _targetReference = GetComponentInChildren<CameraTargetReference>();
-                // _cameraController.SetCameraTargetReference(_targetReference);
-                //
-                // _cameraController.SetGameplayCamera();
+                _cameraController.SetCameraTargetReference(_targetReference);
+                
+                _cameraController.SetGameplayCameraTargets();
 
                 _handsFollow = GetComponentInChildren<FollowHands>();
                 _handsFollow.Initialize(_targetReference.HandsFollowTransform, _playerConfig);
@@ -37,7 +37,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
             }
             else
             {
-                // _cameraController.Dispose();
+                _cameraController.Dispose();
             }
         }
 

@@ -1,6 +1,7 @@
 using ForsakenGraves.Gameplay.Cameras;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Inputs;
+using ForsakenGraves.Infrastructure.Networking;
 using Unity.Cinemachine;
 using Unity.Netcode;
 using UnityEngine;
@@ -21,6 +22,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Awake()
         {
             _graphicsSpawner.OnAvatarSpawned += AvatarSpawnedHandler;
+            NetworkTicker.OnNetworkTick += NetworkTick;
         }
 
         private void AvatarSpawnedHandler()
@@ -34,7 +36,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 enabled = false;
         }
 
-        private void Update()
+        private void NetworkTick(int currentTick)
         {
             if (_cameraTransform == null) return;
             
@@ -51,6 +53,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
         public override void OnNetworkDespawn()
         {
             _graphicsSpawner.OnAvatarSpawned -= AvatarSpawnedHandler;
+            NetworkTicker.OnNetworkTick -= NetworkTick;
+
         }
     }
 }
