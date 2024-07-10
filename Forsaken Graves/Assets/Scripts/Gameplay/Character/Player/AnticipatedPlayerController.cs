@@ -71,10 +71,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             _reconciliationTimer.Tick(Time.deltaTime);
             //this is client authoritative, but updates in network loop to prevent desync and animation issues
-        }
-
-        private void FixedUpdate()
-        {
             HandleRotation();
         }
 
