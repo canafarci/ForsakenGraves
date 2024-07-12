@@ -1,41 +1,35 @@
-using Cysharp.Threading.Tasks;
+using System;
 using ForsakenGraves.Infrastructure.Networking;
 using Unity.Cinemachine;
-using Unity.Netcode;
-using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
 namespace ForsakenGraves.Gameplay.Cameras
 {
-    public class CameraTicker : IInitializable, ITickable
+    public class CameraTicker : IInitializable, IDisposable
     {
-        [Inject] private NetworkManager _networkManager;
-        [Inject] private CinemachineBrain _cinemachineBrain;
-        
-        private NetworkTimer _networkTimer;
-        private int _networkTickRate;
-        
+        // [Inject] private CinemachineBrain _cinemachineBrain;
+        //
+        // private int _networkTickRate;
+        //
         public void Initialize()
         {
-            _networkTickRate = (int)_networkManager.NetworkTickSystem.TickRate;
-            _networkTimer = new NetworkTimer(_networkTickRate);
+        //     NetworkTicker.OnNetworkTick += NetworkTick;
         }
-        
-        public void Tick()
+        //
+        // private void NetworkTick(int currentTick)
+        // {
+        //     ManualUpdateCamera();
+        // }
+        //
+        // private void ManualUpdateCamera()
+        // {
+        //     _cinemachineBrain.ManualUpdate();
+        // }
+        //
+        public void Dispose()
         {
-            _networkTimer.Tick(Time.deltaTime);
-        
-            while (_networkTimer.ShouldTick())
-            {
-                ManualUpdateCamera();
-            }
-        }
-        
-        private async void ManualUpdateCamera()
-        {
-            await UniTask.Delay(2);
-            _cinemachineBrain.ManualUpdate();
+        //     NetworkTicker.OnNetworkTick -= NetworkTick;
         }
     }
 }

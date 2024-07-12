@@ -12,9 +12,10 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         [Inject] private CameraController _cameraController;
         [Inject] private PlayerConfig _playerConfig;
+        [Inject] private AnticipatedPlayerController _anticipatedPlayerController;
         
-        private FollowHands _handsFollow;
         private CameraTargetReference _targetReference;
+        private HandsFacade _handsFacade;
 
         private void Awake()
         {
@@ -29,20 +30,13 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 _cameraController.SetCameraTargetReference(_targetReference);
                 _cameraController.SetGameplayCameraTargets();
 
-                _handsFollow = GetComponentInChildren<FollowHands>();
-                _handsFollow.Initialize(_targetReference.HandsFollowTransform,_playerConfig);
-                
-                _handsFollow.transform.SetParent(null);
+                _handsFacade = GetComponentInChildren<HandsFacade>();
+                _handsFacade.InitializeHandsFollow(_targetReference.HandsFollowTransform, _playerConfig, _anticipatedPlayerController);
             }
             else
             {
                 _cameraController.Dispose();
             }
-        }
-
-        private void Update()
-        {
-            if (!IsOwner || !_handsFollow) return;
         }
 
         public override void OnNetworkDespawn()

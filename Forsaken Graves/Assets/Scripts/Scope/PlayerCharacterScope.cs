@@ -43,6 +43,7 @@ namespace ForsakenGraves.Scope
             builder.RegisterComponentInHierarchy<ClientCharacterPlayerDataObject>().AsSelf();
             builder.RegisterComponentInHierarchy<ServerCharacter>().AsSelf();
             builder.RegisterComponentInHierarchy<OwnerNetworkAnimator>().AsSelf();
+            builder.RegisterComponentInHierarchy<AnticipatedPlayerController>().AsSelf();
             
             //camera
             builder.RegisterEntryPoint<CameraController>().AsSelf();

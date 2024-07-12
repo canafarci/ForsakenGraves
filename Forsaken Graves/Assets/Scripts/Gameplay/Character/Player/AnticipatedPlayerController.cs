@@ -51,6 +51,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
         
         private const float RECONCILIATION_POSITION_TRESHOLD = 0.05f;
         private const float RECONCILIATION_COOLDOWN_TIME = 1f;
+
+        public event Action OnTransformUpdated;
         
         public override void OnNetworkSpawn()
         {
@@ -70,18 +72,18 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Update()
         {
             _reconciliationTimer.Tick(Time.deltaTime);
-            //this is client authoritative, but updates in network loop to prevent desync and animation issues
-            HandleRotation();
         }
 
         private void NetworkTick(int currentTick)
         {
             if (!IsSpawned) return;
-
-            Debug.Log("called");
             
             HandleClientTickForMovement(currentTick);
             HandleServerTickForMovement();
+            //this is client authoritative, but updates in network loop to prevent desync and animation issues
+            HandleRotation();
+            
+            OnTransformUpdated?.Invoke();
         }
 #endregion
 
@@ -286,14 +288,14 @@ namespace ForsakenGraves.Gameplay.Character.Player
         #region Rotation Methods
         private void RotateHorizontal(float rotationInput)
         {
-            transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * Time.fixedDeltaTime);
+            transform.Rotate(Vector3.up, rotationInput * _playerConfig.RotationSpeed * NetworkTicker.TickRate);
         }
         
         private void RotateCameraVertical(float verticalInput)
         {
             if (Mathf.Approximately(0f, verticalInput)) return;
             
-            _cameraXRotation += verticalInput * _playerConfig.RotationSpeed * Time.fixedDeltaTime;
+            _cameraXRotation += verticalInput * _playerConfig.RotationSpeed * NetworkTicker.TickRate;
             _cameraXRotation = Mathf.Clamp(_cameraXRotation, _playerConfig.CameraMinXRotation, _playerConfig.CameraMaxXRotation);
             _cameraTransform.localRotation = Quaternion.Euler(_cameraXRotation, 0, 0);
         }

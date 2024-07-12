@@ -18,8 +18,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private ServerCharacter _serverCharacter;
         [Inject] private PlayerAnimationData _playerAnimationData;
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
-        
-        private Transform _weaponParentTransform;
+
+        private HandsFacade _handsFacade;
         
         private readonly List<Weapon> _playerWeapons = new();
         public Weapon ActiveWeapon { get; private set; }
@@ -31,7 +31,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private void AvatarSpawnedHandler()
         {
-            _weaponParentTransform = GetComponentInChildren<HandsSpawnTransform>().transform;
+            _handsFacade = GetComponentInChildren<HandsFacade>();
         }
 
         public override void OnNetworkSpawn()
@@ -58,9 +58,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
 
         private async void InstantiateWeaponGraphics(Weapon weapon)
         {
-            await UniTask.WaitWhile(() => _weaponParentTransform == null);
-            
-            weapon.AttachToTransform(_weaponParentTransform);
+            await UniTask.WaitWhile(() => _handsFacade == null);
+            _handsFacade.InitializeWeapon(weapon);
         }
 
         public override void OnNetworkDespawn()

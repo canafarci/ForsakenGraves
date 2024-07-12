@@ -33,7 +33,6 @@ namespace ForsakenGraves.Infrastructure.Networking
             while (_networkTimer.ShouldTick())
             {
                 NetworkTick(_networkTimer.CurrentTick);
-                Debug.Log("TICKED");
             }
         }
 
