@@ -1,5 +1,6 @@
 using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Gameplay.Character.Stats;
+using ForsakenGraves.Visuals.Animations;
 using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Weapons
@@ -11,10 +12,15 @@ namespace ForsakenGraves.Gameplay.Weapons
         
         // Maximum distance for the raycast
         private float _maxDistance = Mathf.Infinity;
-        // Layer mask to filter which objects should be considered for the raycast
         
+        // Layer mask to filter which objects should be considered for the raycast
         public override void Fire()
         {
+            if (!CanFire()) return;
+            
+            _lastFireTime = Time.time;
+            
+            WeaponAnimator.SetTrigger(AnimationHashes.Shoot);
             Ray ray = _mainCamera.ScreenPointToRay(new Vector3(halfScreenWidth, halfScreenHeight, 0));
 
             // Perform the raycast

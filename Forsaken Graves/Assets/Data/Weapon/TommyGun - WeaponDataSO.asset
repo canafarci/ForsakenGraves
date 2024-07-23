@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Tommy Gun
   WeaponType: 1
   Damage: 10
-  FireRate: 0.1
+  FireRate: 0.167
   TargetLayerMask:
     serializedVersion: 2
     m_Bits: 8

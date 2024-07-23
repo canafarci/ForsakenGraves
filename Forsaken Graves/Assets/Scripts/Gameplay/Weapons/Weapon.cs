@@ -15,11 +15,11 @@ namespace ForsakenGraves.Gameplay.Weapons
         protected Camera _mainCamera;
         protected ServerCharacter _ownerServerCharacter;
         
-        private float _lastFireTime;
+        protected float _lastFireTime;
 
         public GameObject WeaponPrefab => _weaponDataSO.Prefab;
 
-        public bool CanFire()
+        protected bool CanFire()
         {
             return Time.time - (_lastFireTime + _weaponDataSO.FireRate) > 0f;
         }
@@ -36,8 +36,8 @@ namespace ForsakenGraves.Gameplay.Weapons
         public class Builder
         {
             private ServerCharacter _ownerServerCharacter;
-            private  WeaponDataSO _weaponDataSO;
-            private  Camera _mainCamera;
+            private WeaponDataSO _weaponDataSO;
+            private Camera _mainCamera;
             private Transform _weaponTransform;
             private Animator _weaponAnimator;
 
