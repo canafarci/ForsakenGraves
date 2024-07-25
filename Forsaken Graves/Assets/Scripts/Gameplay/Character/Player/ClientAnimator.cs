@@ -1,5 +1,7 @@
 using System;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.Weapons;
+using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Netcode;
 using ForsakenGraves.Infrastructure.Networking;
 using ForsakenGraves.Visuals.Animations;
@@ -16,8 +18,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         [Inject] private PlayerConfig _playerConfig;
         [Inject] private AnticipatedPlayerController _anticipatedPlayerController;
-
-
+        
         private Vector3 _lastPosition;
         private Vector3 _currentPosition;
         private HandsFacade _handsFacade;
@@ -27,7 +28,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             _graphicsSpawner.OnAvatarSpawned += AvatarSpawnedHandler;
             _anticipatedPlayerController.OnTransformUpdated += UpdatePosition;
-
         }
         
         public override void OnNetworkSpawn()
@@ -37,8 +37,24 @@ namespace ForsakenGraves.Gameplay.Character.Player
                 enabled = false;
                 return;
             }
+
+            Weapon.OnWeaponAnimationChanged += WeaponAnimationChangedHandler;
         }
-        
+
+        private void WeaponAnimationChangedHandler(AnimationType animationType)
+        {
+            Animator animator = _ownerNetworkAnimator.Animator;
+            switch (animationType)
+            {
+                case AnimationType.Firing:
+                    animator.SetBool(AnimationHashes.Shoot, true);
+                    break;
+                case AnimationType.Idle:
+                    animator.SetBool(AnimationHashes.Shoot, false);
+                    break;
+            }
+        }
+
         private  void AvatarSpawnedHandler()
         {
             _ownerNetworkAnimator.Animator.Rebind();
@@ -59,12 +75,13 @@ namespace ForsakenGraves.Gameplay.Character.Player
                                   (float)Math.Pow(_playerConfig.MovementSpeed * NetworkTicker.TickRate, 2);
             
             if (movementSpeed > 1) movementSpeed = 1;
-
-
             movementSpeed = Mathf.Lerp(_lastMovementSpeed, movementSpeed, NetworkTicker.TickRate * 5f);
             
             _handsFacade.HandsAnimator.SetFloat(AnimationHashes.MovementSpeed, 
                                                 movementSpeed);
+            _ownerNetworkAnimator.Animator.SetFloat(AnimationHashes.MovementSpeed, 
+                                                    movementSpeed);
+            
             _lastPosition = _currentPosition;
             _lastMovementSpeed = movementSpeed;
         }
@@ -73,7 +90,11 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             _graphicsSpawner.OnAvatarSpawned -= AvatarSpawnedHandler;
             _anticipatedPlayerController.OnTransformUpdated -= UpdatePosition;
-
+            
+            if (IsOwner)
+            {
+                Weapon.OnWeaponAnimationChanged -= WeaponAnimationChangedHandler;
+            }
         }
     }
 }

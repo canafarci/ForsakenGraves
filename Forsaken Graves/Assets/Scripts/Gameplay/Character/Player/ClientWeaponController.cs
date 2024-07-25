@@ -29,7 +29,11 @@ namespace ForsakenGraves.Gameplay.Character.Player
             if (CantShoot()) return;
             
             if (_inputPoller.GetShootingInput())
-                _clientInventory.ActiveWeapon.Fire();
+                _clientInventory.ActiveWeapon.StartFire();
+            else
+            {
+                _clientInventory.ActiveWeapon.StopFire();
+            }
         }
 
         private bool CantShoot() => _camera == null || _clientInventory.ActiveWeapon == null || !IsSpawned;

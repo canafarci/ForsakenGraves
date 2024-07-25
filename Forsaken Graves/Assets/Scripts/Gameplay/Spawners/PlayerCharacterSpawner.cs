@@ -24,12 +24,7 @@ namespace ForsakenGraves.Gameplay.Spawners
         public void SpawnPlayerCharacter(ulong clientID)
         {
             NetworkObject playerNetworkObject = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientID);
-            NetworkObject newPlayer = Instantiate(_playerPrefab, Vector3.zero, Quaternion.identity);
-
-            Vector3 spawnPos = _spawnTransforms[_spawnIndex++].position;
-            newPlayer.transform.position = spawnPos;
-            
-            ServerPlayerCharacter newPlayerPlayerCharacter = newPlayer.GetComponent<ServerPlayerCharacter>();
+            NetworkObject newPlayer = Instantiate(_playerPrefab, _spawnTransforms[_spawnIndex++].position, Quaternion.identity);
             
             bool persistentPlayerExists = playerNetworkObject.TryGetComponent(out PersistentPlayer persistentPlayer);
             Assert.IsTrue(persistentPlayerExists,  $"Persistent player for {clientID} is not present!");

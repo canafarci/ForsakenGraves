@@ -13,8 +13,7 @@ namespace ForsakenGraves.Gameplay.Weapons
         // Maximum distance for the raycast
         private float _maxDistance = Mathf.Infinity;
         
-        // Layer mask to filter which objects should be considered for the raycast
-        public override void Fire()
+        protected override void Fire()
         {
             if (!CanFire()) return;
             

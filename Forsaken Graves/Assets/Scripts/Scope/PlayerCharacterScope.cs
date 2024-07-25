@@ -36,14 +36,14 @@ namespace ForsakenGraves.Scope
 
             builder.RegisterEntryPoint<InputPoller>().AsSelf();
             
-            builder.RegisterComponentInHierarchy<PlayerCharacterGraphicsSpawner>().AsSelf();
-            builder.RegisterComponentInHierarchy<ClientInventory>().AsSelf();
-            builder.RegisterComponentInHierarchy<CharacterController>().AsSelf();
-            builder.RegisterComponentInHierarchy<NetworkCharacterHealth>().AsSelf();
-            builder.RegisterComponentInHierarchy<ClientCharacterPlayerDataObject>().AsSelf();
-            builder.RegisterComponentInHierarchy<ServerCharacter>().AsSelf();
-            builder.RegisterComponentInHierarchy<OwnerNetworkAnimator>().AsSelf();
-            builder.RegisterComponentInHierarchy<AnticipatedPlayerController>().AsSelf();
+            builder.RegisterComponentInHierarchy<PlayerCharacterGraphicsSpawner>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<ClientInventory>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<CharacterController>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<NetworkCharacterHealth>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<ClientCharacterPlayerDataObject>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<ServerCharacter>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<OwnerNetworkAnimator>().UnderTransform(transform).AsSelf();
+            builder.RegisterComponentInHierarchy<AnticipatedPlayerController>().UnderTransform(transform).AsSelf();
             
             //camera
             builder.RegisterEntryPoint<CameraController>().AsSelf();

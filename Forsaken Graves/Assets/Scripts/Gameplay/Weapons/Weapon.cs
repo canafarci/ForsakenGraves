@@ -1,13 +1,16 @@
 
+using System;
 using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Identifiers;
+using ForsakenGraves.Visuals.Animations;
+using Unity.Plastic.Newtonsoft.Json.Serialization;
 using UnityEngine;
 
 namespace ForsakenGraves.Gameplay.Weapons
 {
     public abstract class Weapon
     {
-        public Transform WeaponTransform { get; private set; }
+        private Transform _weaponTransform;
         public Animator WeaponAnimator { get; private set; }
         public WeaponType WeaponType => _weaponDataSO.WeaponType;
         
@@ -16,6 +19,9 @@ namespace ForsakenGraves.Gameplay.Weapons
         protected ServerCharacter _ownerServerCharacter;
         
         protected float _lastFireTime;
+        protected WeaponState _weaponState = WeaponState.Idle;
+
+        public static event Action<AnimationType> OnWeaponAnimationChanged; 
 
         public GameObject WeaponPrefab => _weaponDataSO.Prefab;
 
@@ -24,13 +30,44 @@ namespace ForsakenGraves.Gameplay.Weapons
             return Time.time - (_lastFireTime + _weaponDataSO.FireRate) > 0f;
         }
 
-        public abstract void Fire();
+        protected abstract void Fire();
 
         public void AttachToTransform(Transform parent)
         {
-            WeaponTransform.parent = parent;
-            WeaponTransform.localPosition = Vector3.zero;
-            WeaponTransform.localRotation = Quaternion.identity;
+            _weaponTransform.parent = parent;
+            _weaponTransform.localPosition = Vector3.zero;
+            _weaponTransform.localRotation = Quaternion.identity;
+        }
+        
+        public void StartFire()
+        {
+            if (_weaponState == WeaponState.Idle)
+            {
+                WeaponAnimator.SetBool(AnimationHashes.Shoot, true);
+                _weaponState = WeaponState.Firing;
+                OnWeaponAnimationChanged?.Invoke(AnimationType.Firing);
+            }
+            
+            if (_weaponState == WeaponState.Reloading) return;
+
+            Fire();
+        }
+
+        public void StopFire()
+        {
+            if (_weaponState == WeaponState.Firing)
+            {
+                WeaponAnimator.SetBool(AnimationHashes.Shoot, false);
+                _weaponState = WeaponState.Idle;
+                OnWeaponAnimationChanged?.Invoke(AnimationType.Idle);
+            }
+        }
+        
+        protected enum WeaponState
+        {
+            Firing,
+            Idle,
+            Reloading
         }
 
         public class Builder
@@ -75,7 +112,7 @@ namespace ForsakenGraves.Gameplay.Weapons
                 weapon._ownerServerCharacter = _ownerServerCharacter;
                 weapon._weaponDataSO = _weaponDataSO;
                 weapon._mainCamera = _mainCamera;
-                weapon.WeaponTransform = _weaponTransform;
+                weapon._weaponTransform = _weaponTransform;
                 weapon.WeaponAnimator = _weaponAnimator;
 
                 return weapon;

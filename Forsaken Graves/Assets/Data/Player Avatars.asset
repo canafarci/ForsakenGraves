@@ -18,5 +18,5 @@ MonoBehaviour:
   - {fileID: 1521861300499579670, guid: 6a57b06627fff47bba4d9b11213dd00c, type: 3}
   PlayableAvatars:
   - {fileID: 391571944789120721, guid: f43a87b6147b14154acf2ceae262242d, type: 3}
-  - {fileID: 391571944789120721, guid: 38a06a235c4af40d2b1759a5f7973b05, type: 3}
-  - {fileID: 391571944789120721, guid: 5d91046c1fbcf468cba731e4c88facd7, type: 3}
+  - {fileID: 391571944789120721, guid: f43a87b6147b14154acf2ceae262242d, type: 3}
+  - {fileID: 391571944789120721, guid: f43a87b6147b14154acf2ceae262242d, type: 3}
