@@ -1,5 +1,6 @@
 
 using System;
+using Animancer;
 using ForsakenGraves.Gameplay.Character;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Visuals.Animations;
@@ -11,23 +12,23 @@ namespace ForsakenGraves.Gameplay.Weapons
     public abstract class Weapon
     {
         private Transform _weaponTransform;
-        public Animator WeaponAnimator { get; private set; }
-        public WeaponType WeaponType => _weaponDataSO.WeaponType;
+        public AnimancerComponent WeaponAnimancer { get; private set; }
         
         protected WeaponDataSO _weaponDataSO;
         protected Camera _mainCamera;
         protected ServerCharacter _ownerServerCharacter;
-        
         protected float _lastFireTime;
         protected WeaponState _weaponState = WeaponState.Idle;
 
         public static event Action<AnimationType> OnWeaponAnimationChanged; 
 
-        public GameObject WeaponPrefab => _weaponDataSO.Prefab;
+        public GameObject WeaponPrefab => WeaponDataSO.Prefab;
+        public WeaponType WeaponType => WeaponDataSO.WeaponType;
+        public WeaponDataSO WeaponDataSO => _weaponDataSO;
 
         protected bool CanFire()
         {
-            return Time.time - (_lastFireTime + _weaponDataSO.FireRate) > 0f;
+            return Time.time - (_lastFireTime + WeaponDataSO.FireRate) > 0f;
         }
 
         protected abstract void Fire();
@@ -43,7 +44,7 @@ namespace ForsakenGraves.Gameplay.Weapons
         {
             if (_weaponState == WeaponState.Idle)
             {
-                WeaponAnimator.SetBool(AnimationHashes.Shoot, true);
+                //WeaponAnimancer.SetBool(AnimationHashes.Shoot, true);
                 _weaponState = WeaponState.Firing;
                 OnWeaponAnimationChanged?.Invoke(AnimationType.Firing);
             }
@@ -57,7 +58,7 @@ namespace ForsakenGraves.Gameplay.Weapons
         {
             if (_weaponState == WeaponState.Firing)
             {
-                WeaponAnimator.SetBool(AnimationHashes.Shoot, false);
+                //WeaponAnimator.SetBool(AnimationHashes.Shoot, false);
                 _weaponState = WeaponState.Idle;
                 OnWeaponAnimationChanged?.Invoke(AnimationType.Idle);
             }
@@ -76,7 +77,7 @@ namespace ForsakenGraves.Gameplay.Weapons
             private WeaponDataSO _weaponDataSO;
             private Camera _mainCamera;
             private Transform _weaponTransform;
-            private Animator _weaponAnimator;
+            private AnimancerComponent _weaponAnimancer;
 
             public Builder WithOwner(ServerCharacter serverCharacter)
             {
@@ -99,7 +100,7 @@ namespace ForsakenGraves.Gameplay.Weapons
             public Weapon Build()
             {
                 _weaponTransform = GameObject.Instantiate(_weaponDataSO.Prefab).transform;
-                _weaponAnimator = _weaponTransform.GetComponent<Animator>();
+                _weaponAnimancer = _weaponTransform.GetComponent<AnimancerComponent>();
 
                 WeaponType weaponType = _weaponDataSO.WeaponType;
                 Weapon weapon = weaponType switch
@@ -113,7 +114,7 @@ namespace ForsakenGraves.Gameplay.Weapons
                 weapon._weaponDataSO = _weaponDataSO;
                 weapon._mainCamera = _mainCamera;
                 weapon._weaponTransform = _weaponTransform;
-                weapon.WeaponAnimator = _weaponAnimator;
+                weapon.WeaponAnimancer = _weaponAnimancer;
 
                 return weapon;
             }

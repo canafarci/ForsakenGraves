@@ -20,3 +20,5 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   Prefab: {fileID: 1689443325830150, guid: 574c9fdf09139bd44911ffd288611a72, type: 3}
+  LinearMixerTransitionAsset:
+    _Asset: {fileID: 11400000, guid: db82de3f320d78d46a113d31a23f0e91, type: 2}

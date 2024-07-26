@@ -19,16 +19,16 @@ namespace ForsakenGraves.Gameplay.Weapons
             
             _lastFireTime = Time.time;
             
-            WeaponAnimator.SetTrigger(AnimationHashes.Shoot);
+            //WeaponAnimator.SetTrigger(AnimationHashes.Shoot);
             Ray ray = _mainCamera.ScreenPointToRay(new Vector3(halfScreenWidth, halfScreenHeight, 0));
 
             // Perform the raycast
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, _maxDistance, _weaponDataSO.TargetLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, _maxDistance, WeaponDataSO.TargetLayerMask))
             {
                 // Check if the hit object implements the ITargetable interface
                 if (hitInfo.collider.TryGetComponent(out ITargetable target))
                 {
-                    _ownerServerCharacter.DamageTargetServerRpc(hitInfo.transform.gameObject, _weaponDataSO.Damage);
+                    _ownerServerCharacter.DamageTargetServerRpc(hitInfo.transform.gameObject, WeaponDataSO.Damage);
                 }
             }            
         }

@@ -1,3 +1,4 @@
+using Animancer;
 using ForsakenGraves.Identifiers;
 using UnityEngine;
 
@@ -14,5 +15,6 @@ namespace ForsakenGraves.Gameplay.Weapons
         public LayerMask TargetLayerMask;
         
         public GameObject Prefab;
+        public LinearMixerTransitionAsset.UnShared LinearMixerTransitionAsset;
     }
 }

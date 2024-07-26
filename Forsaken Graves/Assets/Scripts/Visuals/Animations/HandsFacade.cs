@@ -1,9 +1,11 @@
 using System;
+using Animancer;
 using Cysharp.Threading.Tasks;
 using ForsakenGraves.Gameplay.Character.Player;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Weapons;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VContainer;
 
 namespace ForsakenGraves.Visuals.Animations
@@ -12,14 +14,28 @@ namespace ForsakenGraves.Visuals.Animations
     {
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         
-        [SerializeField] private Animator _handsAnimator;
+        [SerializeField] private AnimancerComponent _handsAnimancer;
         [SerializeField] private FollowHands _followHands;
         [SerializeField] private HandsSpawnTransform _handsSpawnTransform;
+
+        private Weapon _weapon;
         
-        public Animator HandsAnimator => _handsAnimator;
+        public AnimancerComponent HandsAnimancer => _handsAnimancer;
         public FollowHands FollowHands => _followHands;
+        public LinearMixerTransitionAsset.UnShared LinearMixer => _weapon.WeaponDataSO.LinearMixerTransitionAsset;
 
         private HandsInitializationState _handsInitializationState = HandsInitializationState.NoneInitialized;
+        
+        public void InitializeWeapon(Weapon weapon)
+        {
+            _weapon = weapon;
+            
+            weapon.AttachToTransform(_handsSpawnTransform.transform);
+            _handsAnimancer = weapon.WeaponAnimancer;
+            _handsAnimancer.Play(weapon.WeaponDataSO.LinearMixerTransitionAsset);
+            
+            UpdateInitializationState(HandsInitializationState.WeaponInitialized);
+        }
 
         public void InitializeHandsFollow(Transform targetReferenceHandsFollowTransform, 
                                           PlayerConfig playerConfig,
@@ -66,13 +82,6 @@ namespace ForsakenGraves.Visuals.Animations
             AnimatorInitialized = 2,
             WeaponInitialized = 3,
             InitializationFinished = 99
-        }
-
-        public void InitializeWeapon(Weapon weapon)
-        {
-            weapon.AttachToTransform(_handsSpawnTransform.transform);
-            _handsAnimator = weapon.WeaponAnimator;
-            UpdateInitializationState(HandsInitializationState.WeaponInitialized);
         }
     }
 }

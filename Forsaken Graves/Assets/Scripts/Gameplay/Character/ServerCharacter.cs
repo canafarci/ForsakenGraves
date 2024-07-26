@@ -64,6 +64,7 @@ namespace ForsakenGraves.Gameplay.Character
         {
             NetworkObject networkObject = networkObjectReference;
             if (networkObject == null) return; //character reference is already despawned
+            if (networkObject.NetworkObjectId == NetworkObjectId) return; //hit itself
             
             if (networkObject.TryGetComponent(out ITargetable targetable))
             {

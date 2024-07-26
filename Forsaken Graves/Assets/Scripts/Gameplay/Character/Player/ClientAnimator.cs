@@ -27,9 +27,14 @@ namespace ForsakenGraves.Gameplay.Character.Player
         private void Awake()
         {
             _graphicsSpawner.OnAvatarSpawned += AvatarSpawnedHandler;
-            _anticipatedPlayerController.OnTransformUpdated += UpdatePosition;
+            _anticipatedPlayerController.OnTransformUpdated += PositionUpdatedHandler;
         }
-        
+
+        private void OnEnable()
+        {
+            
+        }
+
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
@@ -65,9 +70,9 @@ namespace ForsakenGraves.Gameplay.Character.Player
             }
         }
         
-        private void UpdatePosition()
+        private void PositionUpdatedHandler()
         {
-            if (!IsOwner || _handsFacade == null ||_handsFacade.HandsAnimator == null) return;
+            if (!IsOwner || _handsFacade == null ||_handsFacade.HandsAnimancer == null) return;
             
             _currentPosition = transform.position;
             
@@ -76,9 +81,8 @@ namespace ForsakenGraves.Gameplay.Character.Player
             
             if (movementSpeed > 1) movementSpeed = 1;
             movementSpeed = Mathf.Lerp(_lastMovementSpeed, movementSpeed, NetworkTicker.TickRate * 5f);
-            
-            _handsFacade.HandsAnimator.SetFloat(AnimationHashes.MovementSpeed, 
-                                                movementSpeed);
+
+            _handsFacade.LinearMixer.State.Parameter = movementSpeed;
             _ownerNetworkAnimator.Animator.SetFloat(AnimationHashes.MovementSpeed, 
                                                     movementSpeed);
             
@@ -89,7 +93,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         public override void OnNetworkDespawn()
         {
             _graphicsSpawner.OnAvatarSpawned -= AvatarSpawnedHandler;
-            _anticipatedPlayerController.OnTransformUpdated -= UpdatePosition;
+            _anticipatedPlayerController.OnTransformUpdated -= PositionUpdatedHandler;
             
             if (IsOwner)
             {
