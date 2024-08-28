@@ -52,7 +52,7 @@ namespace ForsakenGraves.GameState
 
         private async void LoadGameplayScene()
         {
-            _preGameNetwork.IsLobbyLocked.Value = true;
+            _preGameNetwork.SetIsLobbyLocked(true);
             
             await UniTask.Delay(500);
             SavePlayerDataServerRpc();

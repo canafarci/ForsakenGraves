@@ -91,6 +91,7 @@ namespace ForsakenGraves.UnityService.Lobbies
                                   Player = new Player(id: authId, data: localUserData)
                               };
 
-            return await LobbyService.Instance.QuickJoinLobbyAsync(joinRequest);        }
+            return await LobbyService.Instance.QuickJoinLobbyAsync(joinRequest);        
+        }
     }
 }

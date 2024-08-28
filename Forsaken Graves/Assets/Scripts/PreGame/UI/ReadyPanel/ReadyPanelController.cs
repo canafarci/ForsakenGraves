@@ -29,12 +29,12 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         public override void Initialize()
         {
             base.Initialize();
-            _mediator.ReadyButtonClicked += ReadButtonClickedHandler;
+            _mediator.ReadyButtonClicked += ReadyButtonClickedHandler;
         }
 
-        private void ReadButtonClickedHandler()
+        private void ReadyButtonClickedHandler()
         {
-            if (_preGameNetwork.IsLobbyLocked.Value) return;
+            if (_preGameNetwork.IsLobbyLocked) return;
             
             _preGameNetwork.OnReadyClickedServerRpc();
         }
@@ -66,7 +66,7 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         public override void Dispose()
         {
             base.Dispose();
-            _mediator.ReadyButtonClicked -= ReadButtonClickedHandler;
+            _mediator.ReadyButtonClicked -= ReadyButtonClickedHandler;
         }
     }
 }

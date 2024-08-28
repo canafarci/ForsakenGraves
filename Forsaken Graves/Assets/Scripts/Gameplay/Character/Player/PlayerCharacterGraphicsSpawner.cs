@@ -35,9 +35,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
             Instantiate(avatarPrefab, _avatarParent);
 
             _avatarSpawned = true;
-            
-            if (!IsServer)
-                EditorApplication.isPaused = true;
 
             OnAvatarSpawned?.Invoke();
         }

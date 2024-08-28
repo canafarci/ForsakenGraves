@@ -51,7 +51,7 @@ namespace ForsakenGraves.PreGame.AvatarSelect
 
         private void NetworkListChangedHandler(NetworkListEvent<PlayerLobbyData> changeEvent)
         {
-            if (_preGameNetwork.IsLobbyLocked.Value) return;
+            if (_preGameNetwork.IsLobbyLocked) return;
             
             NetworkList<PlayerLobbyData> playerLobbyDataNetworkList = _preGameNetwork.PlayerLobbyDataNetworkList;
             ulong clientID = NetworkManager.Singleton.LocalClient.ClientId;

@@ -8,11 +8,13 @@ namespace ForsakenGraves.PreGame
     public class PreGameNetwork : NetworkBehaviour
     {
         private NetworkList<PlayerLobbyData> _playerLobbyDataNetworkList;
-        private NetworkVariable<bool> _isLobbyLocked = new NetworkVariable<bool>(false);
+        private readonly NetworkVariable<bool> _isLobbyLocked = new NetworkVariable<bool>(false);
 
+        private bool _localIsLobbyLockedValue;
+        
         public NetworkList<PlayerLobbyData> PlayerLobbyDataNetworkList => _playerLobbyDataNetworkList;
-        public NetworkVariable<bool> IsLobbyLocked => _isLobbyLocked;
-
+        public bool IsLobbyLocked => _localIsLobbyLockedValue;
+        
         public event Action<ulong> OnPlayerReadyChanged;
         public event Action<ulong, int> OnClientAvatarChanged;
         
@@ -29,7 +31,16 @@ namespace ForsakenGraves.PreGame
 
         private void OnLobbyLockedChanged(bool previousValue, bool newValue)
         {
-            _isLobbyLocked.Value = newValue;
+            //actually used for checks, in order to avoid server/client check, a local variable is used
+            _localIsLobbyLockedValue = newValue;
+        }
+        
+        public void SetIsLobbyLocked(bool isLobbyLocked)
+        {
+            //sends events for clients
+            _isLobbyLocked.Value = isLobbyLocked;
+            //actually used for checks
+            _localIsLobbyLockedValue = isLobbyLocked;
         }
 
         public void ChangeLobbyData(int networkListPlayerIndex, PlayerLobbyData clientLobbyData)
@@ -79,5 +90,7 @@ namespace ForsakenGraves.PreGame
             if (IsServer) return;
             _isLobbyLocked.OnValueChanged -= OnLobbyLockedChanged;
         }
+
+  
     }
 }

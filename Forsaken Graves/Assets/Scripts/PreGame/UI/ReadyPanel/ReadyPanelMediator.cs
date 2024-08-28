@@ -44,7 +44,6 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         public void Dispose()
         {
             _view.ReadyButton.onClick.RemoveAllListeners();
-            Debug.Log("REMOVED DDDD");
         }
     }
 }

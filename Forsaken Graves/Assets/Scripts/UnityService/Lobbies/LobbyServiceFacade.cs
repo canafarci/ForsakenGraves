@@ -191,6 +191,7 @@ namespace ForsakenGraves.UnityService.Lobbies
             lobbyEventCallbacks.LobbyChanged += OnLobbyChanges;
             lobbyEventCallbacks.KickedFromLobby += OnKickedFromLobby;
             lobbyEventCallbacks.LobbyEventConnectionStateChanged += OnLobbyEventConnectionStateChanged;
+            lobbyEventCallbacks.LobbyDeleted += OnLobbyDeleted;
             // The LobbyEventCallbacks object created here will now be managed by the Lobby SDK. The callbacks will be
             // unsubscribed from when we call UnsubscribeAsync on the ILobbyEvents object we receive and store here.
             _lobbyEvents = await _lobbyApiInterface.SubscribeToLobby(_localLobby.LobbyID, lobbyEventCallbacks);
@@ -244,11 +245,26 @@ namespace ForsakenGraves.UnityService.Lobbies
             Debug.Log($"LobbyEventConnectionState changed to {lobbyEventConnectionState}");
         }
         
+        private void OnLobbyDeleted()
+        {
+            Debug.Log("Lobby Deleted");
+            ResetLobby();
+            EndTracking();
+        }
+        
         private async void UnsubscribeToJoinedLobbyAsync()
         {
             if (_lobbyEvents != null && _lobbyEventConnectionState != LobbyEventConnectionState.Unsubscribed)
             {
-                await _lobbyEvents.UnsubscribeAsync();
+                try
+                {
+                    await _lobbyEvents.UnsubscribeAsync();
+
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
             }
         }
 #endregion
@@ -359,11 +375,16 @@ namespace ForsakenGraves.UnityService.Lobbies
             {
                 try
                 {
+                    Debug.Log(_localLobby.LobbyID);
                     await _lobbyApiInterface.DeleteLobby(_localLobby.LobbyID);
                 }
-                catch (LobbyServiceException e)
+                catch (LobbyServiceException e) when (e is not { Reason: LobbyExceptionReason.LobbyNotFound }) // if lobby is already closed, it cannot be deleted again
                 {
                     Debug.LogError(e); //TODO show error
+                }
+                catch (LobbyServiceException e) when (e is { Reason: LobbyExceptionReason.LobbyNotFound })
+                {
+                    Debug.LogWarning("Lobby could not be deleted, as it could not be found");
                 }
                 finally
                 {
