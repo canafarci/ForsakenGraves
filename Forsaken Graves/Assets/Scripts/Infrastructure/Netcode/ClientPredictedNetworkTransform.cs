@@ -18,7 +18,7 @@ namespace ForsakenGraves.Infrastructure.Netcode
             _updateInterpolationMethodInfo = typeof(NetworkTransform).GetMethod("UpdateInterpolation", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
         
-        protected override void Update()
+        public override void OnUpdate()
         {
             // If not spawned or this instance has authority, exit early
             if (!IsSpawned || CanCommitToTransform || IsOwner)

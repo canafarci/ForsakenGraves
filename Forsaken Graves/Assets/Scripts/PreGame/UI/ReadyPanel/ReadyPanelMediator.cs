@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 using VContainer.Unity;
 
 namespace ForsakenGraves.PreGame.UI.ReadyPanel
@@ -43,6 +44,7 @@ namespace ForsakenGraves.PreGame.UI.ReadyPanel
         public void Dispose()
         {
             _view.ReadyButton.onClick.RemoveAllListeners();
+            Debug.Log("REMOVED DDDD");
         }
     }
 }
