@@ -1,4 +1,5 @@
 using System;
+using Animancer;
 using ForsakenGraves.Gameplay.Data;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.Identifiers;
@@ -30,11 +31,6 @@ namespace ForsakenGraves.Gameplay.Character.Player
             _anticipatedPlayerController.OnTransformUpdated += PositionUpdatedHandler;
         }
 
-        private void OnEnable()
-        {
-            
-        }
-
         public override void OnNetworkSpawn()
         {
             if (!IsOwner)
@@ -52,12 +48,24 @@ namespace ForsakenGraves.Gameplay.Character.Player
             switch (animationType)
             {
                 case AnimationType.Firing:
+                    AnimancerState state =  _handsFacade.HandsAnimancer.Play(_clientInventory.ActiveWeapon.WeaponDataSO.FireAnimationClip);
+                    state.Events.Add(0.1f, PlayWeaponFX);
                     animator.SetBool(AnimationHashes.Shoot, true);
                     break;
+                
                 case AnimationType.Idle:
+                    _handsFacade.HandsAnimancer.Play(_clientInventory.ActiveWeapon.WeaponDataSO.LinearMixerTransitionAsset);
                     animator.SetBool(AnimationHashes.Shoot, false);
                     break;
             }
+        }
+
+        private void PlayWeaponFX()
+        {
+            Weapon activeWeapon = _clientInventory.ActiveWeapon;
+            AudioClip clip = activeWeapon.WeaponDataSO.GetRandomFireSound();
+            activeWeapon.FireParticleSystem.Play();
+            activeWeapon.FireAudioSource.PlayOneShot(clip);
         }
 
         private  void AvatarSpawnedHandler()

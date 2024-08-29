@@ -31,10 +31,15 @@ namespace ForsakenGraves.Visuals.Animations
             _weapon = weapon;
             
             weapon.AttachToTransform(_handsSpawnTransform.transform);
+            SetUpAnimations(weapon);
+
+            UpdateInitializationState(HandsInitializationState.WeaponInitialized);
+        }
+
+        private void SetUpAnimations(Weapon weapon)
+        {
             _handsAnimancer = weapon.WeaponAnimancer;
             _handsAnimancer.Play(weapon.WeaponDataSO.LinearMixerTransitionAsset);
-            
-            UpdateInitializationState(HandsInitializationState.WeaponInitialized);
         }
 
         public void InitializeHandsFollow(Transform targetReferenceHandsFollowTransform, 

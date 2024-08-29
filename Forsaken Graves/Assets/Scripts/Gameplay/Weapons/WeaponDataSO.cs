@@ -16,5 +16,15 @@ namespace ForsakenGraves.Gameplay.Weapons
         
         public GameObject Prefab;
         public LinearMixerTransitionAsset.UnShared LinearMixerTransitionAsset;
+        public AnimationClip FireAnimationClip;
+        
+        [SerializeField] private AudioClip[] FireSounds;
+
+        public AudioClip GetRandomFireSound()
+        {
+            int random = (int)Random.Range(0, FireSounds.Length);
+            AudioClip clip = FireSounds[random];
+            return clip;
+        }
     }
 }

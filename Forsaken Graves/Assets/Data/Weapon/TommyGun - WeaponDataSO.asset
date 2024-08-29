@@ -22,3 +22,9 @@ MonoBehaviour:
   Prefab: {fileID: 1689443325830150, guid: 574c9fdf09139bd44911ffd288611a72, type: 3}
   LinearMixerTransitionAsset:
     _Asset: {fileID: 11400000, guid: db82de3f320d78d46a113d31a23f0e91, type: 2}
+  FireAnimationClip: {fileID: 7400000, guid: 63df19a2c684fba4285cbd93f503206a, type: 3}
+  FireSounds:
+  - {fileID: 8300000, guid: 6699b89489d80564b9477b1493b3fe87, type: 3}
+  - {fileID: 8300000, guid: 471a8076af81518418a46984c1e22e94, type: 3}
+  - {fileID: 8300000, guid: cb0994577cc21a042aa60d95d7492b88, type: 3}
+  - {fileID: 8300000, guid: 9221138060c30434b80b4df607f65bf5, type: 3}

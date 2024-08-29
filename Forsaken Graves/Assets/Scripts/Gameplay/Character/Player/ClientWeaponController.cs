@@ -27,9 +27,11 @@ namespace ForsakenGraves.Gameplay.Character.Player
         {
             // Check if the middle of the screen is being clicked
             if (CantShoot()) return;
-            
+
             if (_inputPoller.GetShootingInput())
+            {
                 _clientInventory.ActiveWeapon.StartFire();
+            }
             else
             {
                 _clientInventory.ActiveWeapon.StopFire();

@@ -12,19 +12,21 @@ namespace ForsakenGraves.Gameplay.Weapons
     public abstract class Weapon
     {
         private Transform _weaponTransform;
-        public AnimancerComponent WeaponAnimancer { get; private set; }
         
         protected WeaponDataSO _weaponDataSO;
         protected Camera _mainCamera;
         protected ServerCharacter _ownerServerCharacter;
         protected float _lastFireTime;
         protected WeaponState _weaponState = WeaponState.Idle;
+        
+        public ParticleSystem FireParticleSystem { get; private set; }
+        public AnimancerComponent WeaponAnimancer { get; private set; }
+        public AudioSource FireAudioSource { get; private set; }
 
         public static event Action<AnimationType> OnWeaponAnimationChanged; 
-
-        public GameObject WeaponPrefab => WeaponDataSO.Prefab;
-        public WeaponType WeaponType => WeaponDataSO.WeaponType;
+        
         public WeaponDataSO WeaponDataSO => _weaponDataSO;
+        
 
         protected bool CanFire()
         {
@@ -44,7 +46,6 @@ namespace ForsakenGraves.Gameplay.Weapons
         {
             if (_weaponState == WeaponState.Idle)
             {
-                //WeaponAnimancer.SetBool(AnimationHashes.Shoot, true);
                 _weaponState = WeaponState.Firing;
                 OnWeaponAnimationChanged?.Invoke(AnimationType.Firing);
             }
@@ -58,7 +59,6 @@ namespace ForsakenGraves.Gameplay.Weapons
         {
             if (_weaponState == WeaponState.Firing)
             {
-                //WeaponAnimator.SetBool(AnimationHashes.Shoot, false);
                 _weaponState = WeaponState.Idle;
                 OnWeaponAnimationChanged?.Invoke(AnimationType.Idle);
             }
@@ -78,6 +78,8 @@ namespace ForsakenGraves.Gameplay.Weapons
             private Camera _mainCamera;
             private Transform _weaponTransform;
             private AnimancerComponent _weaponAnimancer;
+            private ParticleSystem _fireParticleSystem;
+            private AudioSource _fireAudioSource;
 
             public Builder WithOwner(ServerCharacter serverCharacter)
             {
@@ -101,6 +103,8 @@ namespace ForsakenGraves.Gameplay.Weapons
             {
                 _weaponTransform = GameObject.Instantiate(_weaponDataSO.Prefab).transform;
                 _weaponAnimancer = _weaponTransform.GetComponent<AnimancerComponent>();
+                _fireParticleSystem = _weaponTransform.GetComponentInChildren<ParticleSystem>();
+                _fireAudioSource = _weaponTransform.GetComponentInChildren<AudioSource>();
 
                 WeaponType weaponType = _weaponDataSO.WeaponType;
                 Weapon weapon = weaponType switch
@@ -114,6 +118,8 @@ namespace ForsakenGraves.Gameplay.Weapons
                 weapon._weaponDataSO = _weaponDataSO;
                 weapon._mainCamera = _mainCamera;
                 weapon._weaponTransform = _weaponTransform;
+                weapon.FireAudioSource = _fireAudioSource;
+                weapon.FireParticleSystem = _fireParticleSystem;
                 weapon.WeaponAnimancer = _weaponAnimancer;
 
                 return weapon;
