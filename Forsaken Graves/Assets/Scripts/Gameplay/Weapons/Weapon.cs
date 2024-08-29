@@ -12,6 +12,7 @@ namespace ForsakenGraves.Gameplay.Weapons
     public abstract class Weapon
     {
         private Transform _weaponTransform;
+        private WeaponProjectileSpawnPoint _weaponProjectileSpawnPoint;
         
         protected WeaponDataSO _weaponDataSO;
         protected Camera _mainCamera;
@@ -22,6 +23,8 @@ namespace ForsakenGraves.Gameplay.Weapons
         public ParticleSystem FireParticleSystem { get; private set; }
         public AnimancerComponent WeaponAnimancer { get; private set; }
         public AudioSource FireAudioSource { get; private set; }
+
+        public Transform WeaponProjectileSpawnPoint => _weaponProjectileSpawnPoint.projectileSpawnPoint;
 
         public static event Action<AnimationType> OnWeaponAnimationChanged; 
         
@@ -80,6 +83,7 @@ namespace ForsakenGraves.Gameplay.Weapons
             private AnimancerComponent _weaponAnimancer;
             private ParticleSystem _fireParticleSystem;
             private AudioSource _fireAudioSource;
+            private WeaponProjectileSpawnPoint _weaponProjectileSpawnPoint;
 
             public Builder WithOwner(ServerCharacter serverCharacter)
             {
@@ -105,6 +109,7 @@ namespace ForsakenGraves.Gameplay.Weapons
                 _weaponAnimancer = _weaponTransform.GetComponent<AnimancerComponent>();
                 _fireParticleSystem = _weaponTransform.GetComponentInChildren<ParticleSystem>();
                 _fireAudioSource = _weaponTransform.GetComponentInChildren<AudioSource>();
+                _weaponProjectileSpawnPoint = _weaponTransform.GetComponentInChildren<WeaponProjectileSpawnPoint>();
 
                 WeaponType weaponType = _weaponDataSO.WeaponType;
                 Weapon weapon = weaponType switch
@@ -118,6 +123,7 @@ namespace ForsakenGraves.Gameplay.Weapons
                 weapon._weaponDataSO = _weaponDataSO;
                 weapon._mainCamera = _mainCamera;
                 weapon._weaponTransform = _weaponTransform;
+                weapon._weaponProjectileSpawnPoint = _weaponProjectileSpawnPoint;
                 weapon.FireAudioSource = _fireAudioSource;
                 weapon.FireParticleSystem = _fireParticleSystem;
                 weapon.WeaponAnimancer = _weaponAnimancer;

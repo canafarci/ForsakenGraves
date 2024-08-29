@@ -1,6 +1,7 @@
 using System;
 using Animancer;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.GameplayObjects;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.Identifiers;
 using ForsakenGraves.Infrastructure.Netcode;
@@ -19,6 +20,7 @@ namespace ForsakenGraves.Gameplay.Character.Player
         [Inject] private PlayerCharacterGraphicsSpawner _graphicsSpawner;
         [Inject] private PlayerConfig _playerConfig;
         [Inject] private AnticipatedPlayerController _anticipatedPlayerController;
+        [Inject] private NetworkObjectPool _networkObjectPool;
         
         private Vector3 _lastPosition;
         private Vector3 _currentPosition;
@@ -66,6 +68,12 @@ namespace ForsakenGraves.Gameplay.Character.Player
             AudioClip clip = activeWeapon.WeaponDataSO.GetRandomFireSound();
             activeWeapon.FireParticleSystem.Play();
             activeWeapon.FireAudioSource.PlayOneShot(clip);
+            
+            Transform projectileSpawnTransform = _clientInventory.ActiveWeapon.WeaponProjectileSpawnPoint;
+            
+            _networkObjectPool.GetNetworkObject(PooledObjectID.Bullet,
+                                                projectileSpawnTransform.position,
+                                                projectileSpawnTransform.rotation);
         }
 
         private  void AvatarSpawnedHandler()

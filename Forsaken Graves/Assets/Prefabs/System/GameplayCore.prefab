@@ -128,6 +128,78 @@ MonoBehaviour:
         stencilFailOperation: 0
         stencilDepthFailOperation: 0
         shaderPass: 0
+--- !u!1 &1384060157908446775
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4023556682877528699}
+  - component: {fileID: 8810218635634307202}
+  - component: {fileID: 2757939574122716340}
+  m_Layer: 0
+  m_Name: NetworkPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4023556682877528699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384060157908446775}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2582958544533866585}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8810218635634307202
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384060157908446775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cc094c8e691476eba5be2d7ff92e35f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PooledPrefabsList:
+  - PooledObjectID: 0
+    Prefab: {fileID: 736113312387026766, guid: 87c543f1e869d9a45891434379a3a168, type: 3}
+    PrewarmCount: 20
+--- !u!114 &2757939574122716340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384060157908446775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 573839783
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &1539121696169542829
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,6 +278,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 1937961663
   InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -393,10 +467,11 @@ MonoBehaviour:
   - {fileID: 4046920682036947987}
   - {fileID: 1990624485836382653}
   - {fileID: 0}
-  _playerAvatarsSO: {fileID: 11400000, guid: f95f075d062064b7b8105c3ea50bb85b, type: 2}
-  _netcodeEvents: {fileID: 5920983529990780793}
-  _gameplaySceneConfig: {fileID: 11400000, guid: 49e8d3620f31c471fbd99e8e0dd518d6, type: 2}
-  _weaponHolderSO: {fileID: 11400000, guid: 8d610767dec1742c88614dae6eec00f5, type: 2}
+  PlayerAvatarsSO: {fileID: 11400000, guid: f95f075d062064b7b8105c3ea50bb85b, type: 2}
+  NetcodeEvents: {fileID: 5920983529990780793}
+  GameplaySceneConfig: {fileID: 11400000, guid: 49e8d3620f31c471fbd99e8e0dd518d6, type: 2}
+  WeaponHolderSO: {fileID: 11400000, guid: 8d610767dec1742c88614dae6eec00f5, type: 2}
+  NetworkObjectPool: {fileID: 8810218635634307202}
 --- !u!1 &4046920682036947987
 GameObject:
   m_ObjectHideFlags: 0
@@ -445,6 +520,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 309773726
   InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -512,6 +589,7 @@ Transform:
   - {fileID: 8684946122247410811}
   - {fileID: 6480981209169141123}
   - {fileID: 6699406783851797916}
+  - {fileID: 4023556682877528699}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5184174100144407227

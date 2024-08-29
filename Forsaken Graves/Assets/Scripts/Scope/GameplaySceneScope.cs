@@ -1,6 +1,7 @@
 using ForsakenGraves.Gameplay;
 using ForsakenGraves.Gameplay.Cameras;
 using ForsakenGraves.Gameplay.Data;
+using ForsakenGraves.Gameplay.GameplayObjects;
 using ForsakenGraves.Gameplay.Spawners;
 using ForsakenGraves.Gameplay.Weapons;
 using ForsakenGraves.GameState;
@@ -9,6 +10,7 @@ using ForsakenGraves.Infrastructure.Networking;
 using ForsakenGraves.PreGame.Data;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VContainer;
 using VContainer.Unity;
 
@@ -16,17 +18,19 @@ namespace ForsakenGraves.Scope
 {
     public class GameplaySceneScope : LifetimeScope
     {
-        [SerializeField] private PlayerAvatarsSO _playerAvatarsSO; 
-        [SerializeField] private NetcodeEvents _netcodeEvents;
-        [SerializeField] private GameplaySceneConfig _gameplaySceneConfig;
-        [SerializeField] private WeaponHolderSO _weaponHolderSO;
+        [SerializeField] private PlayerAvatarsSO PlayerAvatarsSO; 
+        [SerializeField] private NetcodeEvents NetcodeEvents;
+        [SerializeField] private GameplaySceneConfig GameplaySceneConfig;
+        [SerializeField] private WeaponHolderSO WeaponHolderSO;
+        [SerializeField] private NetworkObjectPool NetworkObjectPool;
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance(_playerAvatarsSO);
-            builder.RegisterInstance(_gameplaySceneConfig);
-            builder.RegisterInstance(_netcodeEvents);
-            builder.RegisterInstance(_weaponHolderSO);
+            builder.RegisterInstance(PlayerAvatarsSO);
+            builder.RegisterInstance(GameplaySceneConfig);
+            builder.RegisterInstance(NetcodeEvents);
+            builder.RegisterInstance(WeaponHolderSO);
+            builder.RegisterInstance(NetworkObjectPool);
 
             builder.RegisterComponentInHierarchy<ServerGameplaySceneState>().AsSelf();
             builder.RegisterComponentInHierarchy<ServerCharacterSpawnState>().AsSelf();

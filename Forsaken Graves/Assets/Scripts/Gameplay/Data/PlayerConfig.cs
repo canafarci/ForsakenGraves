@@ -6,6 +6,9 @@ namespace ForsakenGraves.Gameplay.Data
     public class PlayerConfig : ScriptableObject
     {
         public float MovementSpeed;
+        public float SprintSpeed;
+        public float SprintDuration;
+        public float SprintRecoveryRate;
         public float RotationSpeed;
         public float JumpHeight;
         public float CameraMinXRotation;

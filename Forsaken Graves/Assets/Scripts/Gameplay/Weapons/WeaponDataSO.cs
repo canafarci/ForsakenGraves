@@ -22,7 +22,7 @@ namespace ForsakenGraves.Gameplay.Weapons
 
         public AudioClip GetRandomFireSound()
         {
-            int random = (int)Random.Range(0, FireSounds.Length);
+            int random = Random.Range(0, FireSounds.Length);
             AudioClip clip = FireSounds[random];
             return clip;
         }
